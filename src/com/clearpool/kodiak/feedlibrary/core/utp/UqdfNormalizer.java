@@ -232,7 +232,8 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 
 				// IPO opened
 				if (previousState != null && previousState.getTradingState() == TradingState.AUCTION && previousState.getMarketSession() == MarketSession.CLOSED
-						&& tradingState == TradingState.TRADING) this.states.updateMarketSessionAndTradingState(symbol, MarketSession.NORMAL, tradingState, timestamp);
+						&& tradingState == TradingState.TRADING && MdDateUtil.US_OPEN_TIME <= timestamp && timestamp <= this.closeTime) this.states
+						.updateMarketSessionAndTradingState(symbol, MarketSession.NORMAL, tradingState, timestamp);
 				else this.states.updateTradingState(symbol, tradingState, timestamp);
 			}
 			else if (msgType == TYPE_ISSUE_SYMBOL_DIRECTORY_MESSAGE)
