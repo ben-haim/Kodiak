@@ -49,11 +49,15 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 	private static final char NBBO_SHORT = '6';
 	private static final int DEFAULT_LOT_SIZE = 100;
 
+	private static final long PRE_MARKET_TIME = getPreMarketTime();
+	private static final long OPEN_TIME = getOpenTime();
+	private static final long CLOSE_TIME = getCloseTime();
+	private static final long POST_MARKET_TIME = getPostMarketTime();
+
 	private final NbboQuoteCache nbbos;
 	private final BboQuoteCache bbos;
 	private final StateCache states;
 	private final Map<String, Integer> lotSizes;
-	private final long closeTime;
 
 	private boolean hasOpened;
 	private boolean hasClosed;
@@ -64,8 +68,6 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		this.bbos = new BboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.BBO), MdFeed.CQS, range);
 		this.states = new StateCache((IMdStateListener) callbacks.get(MdServiceType.STATE), MdFeed.CQS, range);
 		this.lotSizes = getLotSizes();
-		this.closeTime = getCloseTime();
-
 		this.hasOpened = false;
 		this.hasClosed = false;
 	}
@@ -85,6 +87,26 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		return map;
 	}
 
+	private static long getPreMarketTime()
+	{
+		Object preMarketTimeValue = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "PREMARKETTIME");
+		if (preMarketTimeValue == null) return MdDateUtil.createTime(new Date(), 4, 0, 0).getTime();
+		String[] preMarketTimeSplit = ((String) preMarketTimeValue).split(":");
+		Date premarkettime = MdDateUtil.createTime(new Date(), Integer.parseInt(preMarketTimeSplit[0]), Integer.parseInt(preMarketTimeSplit[1]), 0);
+		LOGGER.info("Premarkettime=" + premarkettime);
+		return premarkettime.getTime();
+	}
+
+	private static long getOpenTime()
+	{
+		Object openTimeValue = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "OPENTIME");
+		if (openTimeValue == null) return MdDateUtil.createTime(new Date(), 9, 30, 0).getTime();
+		String[] openTimeSplit = ((String) openTimeValue).split(":");
+		Date opentime = MdDateUtil.createTime(new Date(), Integer.parseInt(openTimeSplit[0]), Integer.parseInt(openTimeSplit[1]), 0);
+		LOGGER.info("Opentime=" + opentime);
+		return opentime.getTime();
+	}
+
 	private static long getCloseTime()
 	{
 		Object closeTimeValue = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "CLOSETIME");
@@ -93,6 +115,16 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		Date closetime = MdDateUtil.createTime(new Date(), Integer.parseInt(closeTimeSplit[0]), Integer.parseInt(closeTimeSplit[1]), 0);
 		LOGGER.info("Closetime=" + closetime);
 		return closetime.getTime();
+	}
+
+	private static long getPostMarketTime()
+	{
+		Object postMarketTimeValue = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "POSTMARKETTIME");
+		if (postMarketTimeValue == null) return MdDateUtil.createTime(new Date(), 20, 0, 0).getTime();
+		String[] postMarketTimeSplit = ((String) postMarketTimeValue).split(":");
+		Date postmarkettime = MdDateUtil.createTime(new Date(), Integer.parseInt(postMarketTimeSplit[0]), Integer.parseInt(postMarketTimeSplit[1]), 0);
+		LOGGER.info("Postmarkettime=" + postmarkettime);
+		return postmarkettime.getTime();
 	}
 
 	@Override
@@ -197,11 +229,11 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 						getTradingState(quoteCondition, isPrimaryListing), timestamp);
 
 				// Maybe change state for all symbols
-				if (!this.hasOpened && MdDateUtil.US_OPEN_TIME <= timestamp && timestamp < this.closeTime)
+				if (!this.hasOpened && CqsNormalizer.OPEN_TIME <= timestamp && timestamp < CqsNormalizer.CLOSE_TIME)
 				{
 					this.hasOpened = true;
 				}
-				else if (!this.hasClosed && timestamp >= this.closeTime)
+				else if (!this.hasClosed && timestamp >= CqsNormalizer.CLOSE_TIME)
 				{
 					this.states.updateAllSymbols(MarketSession.CLOSED, timestamp, null);
 					this.hasClosed = true;
@@ -418,12 +450,15 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 	}
 
 	@Override
-	public MarketSession getMarketSession(String symbol, long timestamp)
+	public MarketSession getMarketSession(long timestamp)
 	{
 		// Everything closes at default time
 		if (this.hasClosed) return MarketSession.CLOSED;
 		else if (this.hasOpened) return MarketSession.NORMAL;
-		if (MdDateUtil.US_OPEN_TIME <= timestamp && timestamp <= this.closeTime) return MarketSession.NORMAL;
+
+		if (CqsNormalizer.PRE_MARKET_TIME <= timestamp && timestamp < CqsNormalizer.OPEN_TIME) return MarketSession.PREMARKET;
+		if (CqsNormalizer.OPEN_TIME <= timestamp && timestamp < CqsNormalizer.CLOSE_TIME) return MarketSession.NORMAL;
+		if (CqsNormalizer.CLOSE_TIME <= timestamp && timestamp < CqsNormalizer.POST_MARKET_TIME) return MarketSession.POSTMARKET;
 		return MarketSession.CLOSED;
 	}
 }

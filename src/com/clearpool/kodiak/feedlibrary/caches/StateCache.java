@@ -258,8 +258,7 @@ public class StateCache implements IMdServiceCache
 		ISymbolConverter symbolConverter = SymbolConverterFactory.getConverterInstance(this.feedType);
 		if (symbolConverter != null) state.setSymbol(symbolConverter.convert(symbol));
 		else state.setSymbol(symbol);
-		MarketSession marketSession = (this.marketSessionSetter == null) ? MarketSession.CLOSED : this.marketSessionSetter.getMarketSession(symbol, timestamp);
-		state.setMarketSession(marketSession);
+		state.setMarketSession((this.marketSessionSetter == null) ? MarketSession.CLOSED : this.marketSessionSetter.getMarketSession(timestamp));
 		state.setTradingState(TradingState.TRADING);
 		return state;
 	}

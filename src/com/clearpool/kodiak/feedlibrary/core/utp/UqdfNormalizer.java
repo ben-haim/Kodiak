@@ -51,11 +51,15 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 	private static final char NASDAQ_PARTICIPANT = 'Q';
 	private static final int DEFAULT_LOT_SIZE = 100;
 
+	private static final long PRE_MARKET_TIME = getPreMarketTime();
+	private static final long OPEN_TIME = getOpenTime();
+	private static final long CLOSE_TIME = getCloseTime();
+	private static final long POST_MARKET_TIME = getPostMarketTime();
+
 	private final NbboQuoteCache nbbos;
 	private final BboQuoteCache bbos;
 	private final StateCache states;
 	private final Map<String, Integer> lotSizes;
-	private final long closeTime;
 	private final Set<String> ipoSymbols;
 
 	private boolean receivedOpen;
@@ -67,7 +71,6 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 		this.bbos = new BboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.BBO), MdFeed.UQDF, range);
 		this.states = new StateCache((IMdStateListener) callbacks.get(MdServiceType.STATE), this, MdFeed.UQDF, range);
 		this.lotSizes = getLotSizes();
-		this.closeTime = getCloseTime();
 		this.ipoSymbols = new HashSet<>();
 
 		this.receivedOpen = false;
@@ -87,12 +90,44 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 		return map;
 	}
 
+	private static long getPreMarketTime()
+	{
+		Object preMarketTimeValue = MdFeedProps.getInstanceProperty(MdFeed.UQDF.toString(), "PREMARKETTIME");
+		if (preMarketTimeValue == null) return MdDateUtil.createTime(new Date(), 4, 0, 0).getTime();
+		String[] preMarketTimeSplit = ((String) preMarketTimeValue).split(":");
+		Date premarkettime = MdDateUtil.createTime(new Date(), Integer.parseInt(preMarketTimeSplit[0]), Integer.parseInt(preMarketTimeSplit[1]), 0);
+		LOGGER.info("Premarkettime=" + premarkettime);
+		return premarkettime.getTime();
+	}
+
+	private static long getOpenTime()
+	{
+		Object openTimeValue = MdFeedProps.getInstanceProperty(MdFeed.UQDF.toString(), "OPENTIME");
+		if (openTimeValue == null) return MdDateUtil.createTime(new Date(), 9, 30, 0).getTime();
+		String[] openTimeSplit = ((String) openTimeValue).split(":");
+		Date opentime = MdDateUtil.createTime(new Date(), Integer.parseInt(openTimeSplit[0]), Integer.parseInt(openTimeSplit[1]), 0);
+		LOGGER.info("Opentime=" + opentime);
+		return opentime.getTime();
+	}
+
 	private static long getCloseTime()
 	{
 		Object closeTimeValue = MdFeedProps.getInstanceProperty(MdFeed.UQDF.toString(), "CLOSETIME");
 		if (closeTimeValue == null) return MdDateUtil.createTime(new Date(), 16, 0, 0).getTime();
 		String[] closeTimeSplit = ((String) closeTimeValue).split(":");
-		return MdDateUtil.createTime(new Date(), Integer.parseInt(closeTimeSplit[0]), Integer.parseInt(closeTimeSplit[1]), 0).getTime();
+		Date closetime = MdDateUtil.createTime(new Date(), Integer.parseInt(closeTimeSplit[0]), Integer.parseInt(closeTimeSplit[1]), 0);
+		LOGGER.info("Closetime=" + closetime);
+		return closetime.getTime();
+	}
+
+	private static long getPostMarketTime()
+	{
+		Object postMarketTimeValue = MdFeedProps.getInstanceProperty(MdFeed.UQDF.toString(), "POSTMARKETTIME");
+		if (postMarketTimeValue == null) return MdDateUtil.createTime(new Date(), 20, 0, 0).getTime();
+		String[] postMarketTimeSplit = ((String) postMarketTimeValue).split(":");
+		Date postmarkettime = MdDateUtil.createTime(new Date(), Integer.parseInt(postMarketTimeSplit[0]), Integer.parseInt(postMarketTimeSplit[1]), 0);
+		LOGGER.info("Postmarkettime=" + postmarkettime);
+		return postmarkettime.getTime();
 	}
 
 	@Override
@@ -232,7 +267,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 
 				// IPO opened
 				if (previousState != null && previousState.getTradingState() == TradingState.AUCTION && previousState.getMarketSession() == MarketSession.CLOSED
-						&& tradingState == TradingState.TRADING && MdDateUtil.US_OPEN_TIME <= timestamp && timestamp <= this.closeTime) this.states
+						&& tradingState == TradingState.TRADING && UqdfNormalizer.OPEN_TIME <= timestamp && timestamp <= UqdfNormalizer.CLOSE_TIME) this.states
 						.updateMarketSessionAndTradingState(symbol, MarketSession.NORMAL, tradingState, timestamp);
 				else this.states.updateTradingState(symbol, tradingState, timestamp);
 			}
@@ -439,12 +474,14 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 	}
 
 	@Override
-	public MarketSession getMarketSession(String symbol, long timestamp)
+	public MarketSession getMarketSession(long timestamp)
 	{
 		if (this.receivedClose) return MarketSession.CLOSED;
 		else if (this.receivedOpen) return MarketSession.NORMAL;
 
-		if (MdDateUtil.US_OPEN_TIME <= timestamp && timestamp <= this.closeTime) return MarketSession.NORMAL;
+		if (UqdfNormalizer.PRE_MARKET_TIME <= timestamp && timestamp < UqdfNormalizer.OPEN_TIME) return MarketSession.PREMARKET;
+		if (UqdfNormalizer.OPEN_TIME <= timestamp && timestamp < UqdfNormalizer.CLOSE_TIME) return MarketSession.NORMAL;
+		if (UqdfNormalizer.CLOSE_TIME <= timestamp && timestamp < UqdfNormalizer.POST_MARKET_TIME) return MarketSession.POSTMARKET;
 		return MarketSession.CLOSED;
 	}
 }
