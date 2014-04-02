@@ -66,7 +66,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 	{
 		this.nbbos = new NbboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.NBBO), MdFeed.CQS, range);
 		this.bbos = new BboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.BBO), MdFeed.CQS, range);
-		this.states = new StateCache((IMdStateListener) callbacks.get(MdServiceType.STATE), MdFeed.CQS, range);
+		this.states = new StateCache((IMdStateListener) callbacks.get(MdServiceType.STATE), this, MdFeed.CQS, range);
 		this.lotSizes = getLotSizes();
 		this.hasOpened = false;
 		this.hasClosed = false;

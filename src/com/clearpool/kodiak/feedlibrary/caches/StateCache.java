@@ -23,11 +23,6 @@ public class StateCache implements IMdServiceCache
 	private final Map<String, MarketState> states;
 	private final IMarketSessionSettable marketSessionSetter;
 
-	public StateCache(IMdStateListener iMdStateListener, MdFeed feedType, String range)
-	{
-		this(iMdStateListener, null, feedType, range);
-	}
-
 	public StateCache(IMdStateListener iMdStateListener, IMarketSessionSettable marketSessionSetter, MdFeed feedType, String range)
 	{
 		this.stateListener = iMdStateListener;
