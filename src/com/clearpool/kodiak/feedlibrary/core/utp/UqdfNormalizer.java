@@ -266,7 +266,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 				MarketState previousState = this.states.getData(symbol);
 
 				// IPO opened
-				if (previousState != null && previousState.getTradingState() == TradingState.AUCTION && previousState.getMarketSession() == MarketSession.CLOSED
+				if (previousState != null && previousState.getTradingState() == TradingState.AUCTION && previousState.getMarketSession() == MarketSession.PREMARKET
 						&& tradingState == TradingState.TRADING && UqdfNormalizer.OPEN_TIME <= timestamp && timestamp <= UqdfNormalizer.CLOSE_TIME) this.states
 						.updateMarketSessionAndTradingState(symbol, MarketSession.NORMAL, tradingState, timestamp);
 				else this.states.updateTradingState(symbol, tradingState, timestamp);
@@ -357,7 +357,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 			else if (msgType == TYPE_MARKET_SESSION_CLOSE && utpPacket.getParticipantId() == NASDAQ_PARTICIPANT)
 			{
 				this.receivedClose = true;
-				this.states.updateAllSymbols(MarketSession.CLOSED, timestamp, null);
+				this.states.updateAllSymbols(MarketSession.POSTMARKET, timestamp, null);
 				LOGGER.info(processorName + " - Got market session close for NASDAQ");
 			}
 			else

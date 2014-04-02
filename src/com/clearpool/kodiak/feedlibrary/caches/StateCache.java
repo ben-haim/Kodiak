@@ -187,7 +187,7 @@ public class StateCache implements IMdServiceCache
 		}
 
 		boolean sendUpdate = false;
-		if (updateMarketSession && (state.getMarketSession() == MarketSession.CLOSED || state.getMarketSession() == null))
+		if (updateMarketSession && (state.getMarketSession() == MarketSession.PREMARKET || state.getMarketSession() == null))
 		{
 			if (state.getUpperBand() == 0 && state.getLowerBand() == 0 && (lowerBand != 0 || upperBand != 0))
 			{
@@ -253,7 +253,7 @@ public class StateCache implements IMdServiceCache
 		ISymbolConverter symbolConverter = SymbolConverterFactory.getConverterInstance(this.feedType);
 		if (symbolConverter != null) state.setSymbol(symbolConverter.convert(symbol));
 		else state.setSymbol(symbol);
-		state.setMarketSession((this.marketSessionSetter == null) ? MarketSession.CLOSED : this.marketSessionSetter.getMarketSession(timestamp));
+		state.setMarketSession(this.marketSessionSetter.getMarketSession(timestamp));
 		state.setTradingState(TradingState.TRADING);
 		return state;
 	}

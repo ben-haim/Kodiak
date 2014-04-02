@@ -235,7 +235,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 				}
 				else if (!this.hasClosed && timestamp >= CqsNormalizer.CLOSE_TIME)
 				{
-					this.states.updateAllSymbols(MarketSession.CLOSED, timestamp, null);
+					this.states.updateAllSymbols(MarketSession.POSTMARKET, timestamp, null);
 					this.hasClosed = true;
 				}
 			}
