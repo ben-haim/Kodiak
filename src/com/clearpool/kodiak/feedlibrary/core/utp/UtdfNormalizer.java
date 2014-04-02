@@ -348,11 +348,14 @@ public class UtdfNormalizer implements IMdNormalizer
 				}
 			}
 
-			this.closePriceWriter.write(symbol);
-			this.closePriceWriter.write(",");
-			this.closePriceWriter.write(Double.valueOf(price).toString());
-			this.closePriceWriter.newLine();
-			this.closePriceWriter.flush();
+			if (this.closePriceWriter != null)
+			{
+				this.closePriceWriter.write(symbol);
+				this.closePriceWriter.write(",");
+				this.closePriceWriter.write(Double.valueOf(price).toString());
+				this.closePriceWriter.newLine();
+				this.closePriceWriter.flush();
+			}
 		}
 		catch (Exception e)
 		{
