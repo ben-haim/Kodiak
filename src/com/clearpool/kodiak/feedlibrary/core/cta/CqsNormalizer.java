@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import com.clearpool.kodiak.feedlibrary.caches.BboQuoteCache;
@@ -52,7 +53,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 	private final BboQuoteCache bbos;
 	private final StateCache states;
 	private final Map<String, Integer> lotSizes;
-	private final Date closeTime;
+	private final long closeTime;
 
 	private boolean hasOpened;
 	private boolean hasClosed;
@@ -75,7 +76,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		if (lotSizeValues == null) return null;
 		Map<String, String> stringMap = MdFeedProps.getAsMap((String) lotSizeValues);
 		Map<String, Integer> map = new HashMap<String, Integer>();
-		for (Map.Entry<String, String> entry : stringMap.entrySet())
+		for (Entry<String, String> entry : stringMap.entrySet())
 		{
 			String key = entry.getKey();
 			Integer value = Integer.valueOf(entry.getValue());
@@ -84,14 +85,14 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		return map;
 	}
 
-	private static Date getCloseTime()
+	private static long getCloseTime()
 	{
 		Object closeTimeValue = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "CLOSETIME");
-		if (closeTimeValue == null) return MdDateUtil.createTime(new Date(), 16, 0, 0);
+		if (closeTimeValue == null) return MdDateUtil.createTime(new Date(), 16, 0, 0).getTime();
 		String[] closeTimeSplit = ((String) closeTimeValue).split(":");
 		Date closetime = MdDateUtil.createTime(new Date(), Integer.parseInt(closeTimeSplit[0]), Integer.parseInt(closeTimeSplit[1]), 0);
 		LOGGER.info("Closetime=" + closetime);
-		return closetime;
+		return closetime.getTime();
 	}
 
 	@Override
@@ -106,14 +107,17 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		if (shouldIgnore) return;
 
 		CtaPacket ctaPacket = (CtaPacket) packet;
+		char msgCategory = ctaPacket.getMessageCategory();
+		char msgType = ctaPacket.getMessageType();
+		long timestamp = ctaPacket.getTimestamp();
 		ByteBuffer buffer = ctaPacket.getBuffer();
 
-		if (ctaPacket.getMessageCategory() == CATEGORY_BOND || ctaPacket.getMessageCategory() == CATEGORY_LOCAL) return;
-		if (ctaPacket.getMessageCategory() == CATEGORY_EQUITY)
+		if (msgCategory == CATEGORY_BOND || msgCategory == CATEGORY_LOCAL) return;
+		if (msgCategory == CATEGORY_EQUITY)
 		{
-			if (ctaPacket.getMessageType() == TYPE_SHORT_QUOTE || ctaPacket.getMessageType() == TYPE_LONG_QUOTE)
+			if (msgType == TYPE_SHORT_QUOTE || msgType == TYPE_LONG_QUOTE)
 			{
-				boolean isLong = ctaPacket.getMessageType() == TYPE_LONG_QUOTE;
+				boolean isLong = msgType == TYPE_LONG_QUOTE;
 				String symbol = ByteBufferUtil.getString(buffer, isLong ? 11 : 3).trim();
 				int lotSize = getLotSize(symbol);
 				if (isLong) ByteBufferUtil.advancePosition(buffer, 2); // suffix, test message indicator
@@ -146,13 +150,13 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 				// Update lower and upper bands
 				if (quoteCondition == '0')
 				{
-					this.states.updateLowerAndUpperBands(symbol, bidPrice, askPrice, ctaPacket.getTimestamp(), true);
+					this.states.updateLowerAndUpperBands(symbol, bidPrice, askPrice, timestamp, true);
 				}
 				else
 				{
 					// Update BBO
-					int bboConditionCode = getBboConditionCode(retailInterestIndicator, luldIndicator, quoteCondition, 0);
-					this.bbos.updateBidAndOffer(symbol, exchange, bidPrice, bidSize, askPrice, askSize, ctaPacket.getTimestamp(), bboConditionCode);
+					this.bbos.updateBidAndOffer(symbol, exchange, bidPrice, bidSize, askPrice, askSize, timestamp,
+							getBboConditionCode(retailInterestIndicator, luldIndicator, quoteCondition, 0));
 
 					// Update NBBO
 					if (nbboIndicator == NBBO_SHORT || nbboIndicator == NBBO_LONG)
@@ -173,39 +177,38 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 						String finraBestAskMarketMaker = isNbboLong ? ByteBufferUtil.getString(buffer, 4).trim() : null;
 						Exchange bestAskExchange = CtaUtils.getExchange(bestAskParticipantId, finraBestAskMarketMaker);
 						ByteBufferUtil.advancePosition(buffer, isNbboLong ? 3 : 1); // reserved
-						this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestAskPrice, bestAskSize, bestAskExchange, ctaPacket.getTimestamp(),
+						this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestAskPrice, bestAskSize, bestAskExchange, timestamp,
 								String.valueOf(quoteCondition));
 					}
 					else if (nbboIndicator == NBBO_CONTAINED)
 					{
-						this.nbbos.updateBidAndOffer(symbol, bidPrice, bidSize, exchange, askPrice, askSize, exchange, ctaPacket.getTimestamp(), String.valueOf(quoteCondition));
+						this.nbbos.updateBidAndOffer(symbol, bidPrice, bidSize, exchange, askPrice, askSize, exchange, timestamp, String.valueOf(quoteCondition));
 					}
 					else if (nbboIndicator == NBBO_NONE)
 					{
-						this.nbbos.updateBidAndOffer(symbol, 0, 0, null, 0, 0, null, ctaPacket.getTimestamp(), String.valueOf(quoteCondition));
+						this.nbbos.updateBidAndOffer(symbol, 0, 0, null, 0, 0, null, timestamp, String.valueOf(quoteCondition));
 					}
 				}
 
 				// Update state for symbol
 				MarketState previousState = this.states.getData(symbol);
-				int previousStateCondition = (previousState == null) ? 0 : previousState.getConditionCode();
-				int stateConditionCode = getStateConditionCode(nbboLuldIndicator, shortSaleRestrictionIndicator, previousStateCondition);
-				TradingState tradingState = getTradingState(quoteCondition, isPrimaryListing);
-				this.states.updateState(symbol, null, stateConditionCode, tradingState, ctaPacket.getTimestamp());
+				this.states.updateState(symbol, null,
+						getStateConditionCode(nbboLuldIndicator, shortSaleRestrictionIndicator, (previousState == null) ? 0 : previousState.getConditionCode()),
+						getTradingState(quoteCondition, isPrimaryListing), timestamp);
 
 				// Maybe change state for all symbols
-				if (!this.hasOpened && MdDateUtil.US_OPEN_TIME.getTime() <= ctaPacket.getTimestamp() && ctaPacket.getTimestamp() < this.closeTime.getTime())
+				if (!this.hasOpened && MdDateUtil.US_OPEN_TIME <= timestamp && timestamp < this.closeTime)
 				{
 					this.hasOpened = true;
 				}
-				else if (!this.hasClosed && ctaPacket.getTimestamp() >= this.closeTime.getTime())
+				else if (!this.hasClosed && timestamp >= this.closeTime)
 				{
-					this.states.updateAllSymbols(MarketSession.CLOSED, ctaPacket.getTimestamp(), null);
+					this.states.updateAllSymbols(MarketSession.CLOSED, timestamp, null);
 					this.hasClosed = true;
 				}
 			}
 		}
-		else if (ctaPacket.getMessageCategory() == CATEGORY_ADMINISTRATIVE)
+		else if (msgCategory == CATEGORY_ADMINISTRATIVE)
 		{
 			String message = ByteBufferUtil.getString(buffer, buffer.remaining()).trim();
 			if (message.startsWith("ALERT ALERT ALERT"))
@@ -217,9 +220,9 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 				LOGGER.info(processorName + " - Received Admin Message - " + message);
 			}
 		}
-		else if (ctaPacket.getMessageCategory() == CATEGORY_MARKET_STATUS)
+		else if (msgCategory == CATEGORY_MARKET_STATUS)
 		{
-			if (ctaPacket.getMessageType() == TYPE_MWCB_DECLINE_LEVEL)
+			if (msgType == TYPE_MWCB_DECLINE_LEVEL)
 			{
 				char priceDenominatorIndicator = (char) buffer.get();
 				double level1Price = CtaUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 12), priceDenominatorIndicator);
@@ -233,16 +236,16 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 				LOGGER.info(processorName + " - MWCB S&P500 Decline - Level2=" + level2Price);
 				LOGGER.info(processorName + " - MWCB S&P500 Decline - Level3=" + level3Price);
 			}
-			else if (ctaPacket.getMessageType() == TYPE_MWCB_STATUS)
+			else if (msgType == TYPE_MWCB_STATUS)
 			{
 				char levelIndicator = (char) buffer.get();
 				ByteBufferUtil.advancePosition(buffer, 3);
 				LOGGER.info(processorName + " - MWCB Status - Level=" + levelIndicator);
 			}
 		}
-		else if (ctaPacket.getMessageCategory() == CATEGORY_CONTROL)
+		else if (msgCategory == CATEGORY_CONTROL)
 		{
-			LOGGER.info(processorName + " - Received Control Message Type=" + ctaPacket.getMessageType());
+			LOGGER.info(processorName + " - Received Control Message Type=" + msgType);
 		}
 	}
 
@@ -287,71 +290,27 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 			case 'R':
 				break;
 			case 'C':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'D':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'G':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'I':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'J':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'K':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'L':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'M':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'N':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'P':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'Q':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'S':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'T':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'U':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'V':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'X':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'Y':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'Z':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case '0':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case '1':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case '2':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case '3':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case '9':
 				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
 				break;
@@ -412,8 +371,6 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 			case ' ':
 				break;
 			case 'A':
-				conditionCode = MdEntity.setCondition(conditionCode, MarketState.CONDITION_SHORT_SALE_RESTRICTION);
-				break;
 			case 'C':
 				conditionCode = MdEntity.setCondition(conditionCode, MarketState.CONDITION_SHORT_SALE_RESTRICTION);
 				break;
@@ -430,31 +387,21 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 			switch (quoteCondition)
 			{
 				case 'R':
+				case 'T':
 					return TradingState.TRADING;
 				case 'D':
-					return TradingState.HALTED;
 				case 'J':
-					return TradingState.HALTED;
 				case 'K':
+				case 'P':
+				case 'Q':
+				case 'V':
+				case 'Z':
+				case '1':
+				case '2':
+				case '3':
 					return TradingState.HALTED;
 				case 'M':
 					return TradingState.PAUSED;
-				case 'P':
-					return TradingState.HALTED;
-				case 'Q':
-					return TradingState.HALTED;
-				case 'T':
-					return TradingState.TRADING;
-				case 'V':
-					return TradingState.HALTED;
-				case 'Z':
-					return TradingState.HALTED;
-				case '1':
-					return TradingState.HALTED;
-				case '2':
-					return TradingState.HALTED;
-				case '3':
-					return TradingState.HALTED;
 				default:
 					return TradingState.TRADING;
 			}
@@ -476,7 +423,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		// Everything closes at default time
 		if (this.hasClosed) return MarketSession.CLOSED;
 		else if (this.hasOpened) return MarketSession.NORMAL;
-		if (MdDateUtil.US_OPEN_TIME.getTime() <= timestamp && timestamp <= this.closeTime.getTime()) return MarketSession.NORMAL;
+		if (MdDateUtil.US_OPEN_TIME <= timestamp && timestamp <= this.closeTime) return MarketSession.NORMAL;
 		return MarketSession.CLOSED;
 	}
 }

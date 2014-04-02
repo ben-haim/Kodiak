@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -54,7 +55,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 	private final BboQuoteCache bbos;
 	private final StateCache states;
 	private final Map<String, Integer> lotSizes;
-	private final Date closeTime;
+	private final long closeTime;
 	private final Set<String> ipoSymbols;
 
 	private boolean receivedOpen;
@@ -79,21 +80,19 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 		if (lotSizeValues == null) return new HashMap<String, Integer>();
 		Map<String, String> stringMap = MdFeedProps.getAsMap((String) lotSizeValues);
 		Map<String, Integer> map = new HashMap<String, Integer>();
-		for (Map.Entry<String, String> entry : stringMap.entrySet())
+		for (Entry<String, String> entry : stringMap.entrySet())
 		{
-			String key = entry.getKey();
-			Integer value = Integer.valueOf(entry.getValue());
-			map.put(key, value);
+			map.put(entry.getKey(), Integer.valueOf(entry.getValue()));
 		}
 		return map;
 	}
 
-	private static Date getCloseTime()
+	private static long getCloseTime()
 	{
 		Object closeTimeValue = MdFeedProps.getInstanceProperty(MdFeed.UQDF.toString(), "CLOSETIME");
-		if (closeTimeValue == null) return MdDateUtil.createTime(new Date(), 16, 0, 0);
+		if (closeTimeValue == null) return MdDateUtil.createTime(new Date(), 16, 0, 0).getTime();
 		String[] closeTimeSplit = ((String) closeTimeValue).split(":");
-		return MdDateUtil.createTime(new Date(), Integer.parseInt(closeTimeSplit[0]), Integer.parseInt(closeTimeSplit[1]), 0);
+		return MdDateUtil.createTime(new Date(), Integer.parseInt(closeTimeSplit[0]), Integer.parseInt(closeTimeSplit[1]), 0).getTime();
 	}
 
 	@Override
@@ -107,11 +106,14 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 	{
 		if (shouldIgnore) return;
 		UtpPacket utpPacket = (UtpPacket) packet;
+		char msgCategory = utpPacket.getMessageCategory();
+		char msgType = utpPacket.getMessageType();
+		long timestamp = utpPacket.getTimestamp();
 		ByteBuffer buffer = utpPacket.getBuffer();
 
-		if (utpPacket.getMessageCategory() == CATEGORY_QUOTE)
+		if (msgCategory == CATEGORY_QUOTE)
 		{
-			boolean isLong = utpPacket.getMessageType() == TYPE_LONG_QUOTE;
+			boolean isLong = msgType == TYPE_LONG_QUOTE;
 			String symbol = ByteBufferUtil.getString(buffer, isLong ? 11 : 5).trim();
 			int lotSize = getLotSize(symbol);
 			ByteBufferUtil.advancePosition(buffer, 2); // reserved, sipGeenratedUpdated
@@ -131,8 +133,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 			Exchange exchange = UtpUtils.getExchange(utpPacket.getParticipantId(), null);
 
 			// Update BBO
-			int bboConditionCode = getBboConditionCode(rlpIndicator, luldBboIndicator, quoteCondition, 0);
-			this.bbos.updateBidAndOffer(symbol, exchange, bidPrice, bidSize, askPrice, askSize, utpPacket.getTimestamp(), bboConditionCode);
+			this.bbos.updateBidAndOffer(symbol, exchange, bidPrice, bidSize, askPrice, askSize, timestamp, getBboConditionCode(rlpIndicator, luldBboIndicator, quoteCondition, 0));
 
 			// Update NBBO
 			Exchange bestBidExchange;
@@ -149,7 +150,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 				case '0':
 					break;
 				case '1':
-					this.nbbos.updateBidAndOffer(symbol, 0, 0, null, 0, 0, null, utpPacket.getTimestamp(), String.valueOf(quoteCondition));
+					this.nbbos.updateBidAndOffer(symbol, 0, 0, null, 0, 0, null, timestamp, String.valueOf(quoteCondition));
 					break;
 				case '2':
 					ByteBufferUtil.advancePosition(buffer, 1); // nbbo quote condition
@@ -162,7 +163,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 					bestAskPriceDenominator = (char) buffer.get();
 					bestAskPrice = UtpUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 6), bestAskPriceDenominator);
 					bestAskSize = lotSize * (int) ByteBufferUtil.readAsciiLong(buffer, 2);
-					this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestAskPrice, bestAskSize, bestAskExchange, utpPacket.getTimestamp(),
+					this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestAskPrice, bestAskSize, bestAskExchange, timestamp,
 							String.valueOf(quoteCondition));
 					break;
 				case '3':
@@ -177,11 +178,11 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 					bestAskPrice = UtpUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 10), bestAskPriceDenominator);
 					bestAskSize = lotSize * (int) ByteBufferUtil.readAsciiLong(buffer, 7);
 					ByteBufferUtil.advancePosition(buffer, 3); // currency
-					this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestAskPrice, bestAskSize, bestAskExchange, utpPacket.getTimestamp(),
+					this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestAskPrice, bestAskSize, bestAskExchange, timestamp,
 							String.valueOf(quoteCondition));
 					break;
 				case '4':
-					this.nbbos.updateBidAndOffer(symbol, bidPrice, bidSize, exchange, askPrice, askSize, exchange, utpPacket.getTimestamp(), String.valueOf(quoteCondition));
+					this.nbbos.updateBidAndOffer(symbol, bidPrice, bidSize, exchange, askPrice, askSize, exchange, timestamp, String.valueOf(quoteCondition));
 					break;
 				default:
 					break;
@@ -189,24 +190,21 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 
 			// Update State
 			MarketState previousState = this.states.getData(symbol);
-			int previousStateConditionCode = (previousState == null) ? 0 : previousState.getConditionCode();
-			int stateConditionCode = getStateConditionCode(luldNbboIndicator, previousStateConditionCode);
-			this.states.updateState(symbol, null, stateConditionCode, null, utpPacket.getTimestamp());
+			this.states.updateState(symbol, null, getStateConditionCode(luldNbboIndicator, (previousState == null) ? 0 : previousState.getConditionCode()), null, timestamp);
 		}
-		else if (utpPacket.getMessageCategory() == CATEGORY_ADMINISTRATIVE)
+		else if (msgCategory == CATEGORY_ADMINISTRATIVE)
 		{
-			if (utpPacket.getMessageType() == TYPE_ADMIN_MESSAGE)
+			if (msgType == TYPE_ADMIN_MESSAGE)
 			{
 				String message = ByteBufferUtil.getString(buffer, buffer.remaining()).trim();
 				LOGGER.info(processorName + " - Received Admin Message - " + message);
 				if (message.startsWith("IPO PRICE AT"))
 				{
 					String[] spaceSplit = message.split(" ");
-					String symbol = spaceSplit[4];
-					this.ipoSymbols.add(symbol);
+					this.ipoSymbols.add(spaceSplit[4]);
 				}
 			}
-			else if (utpPacket.getMessageType() == TYPE_CROSS_SRO_TRADING_ACTION_MESSAGE)
+			else if (msgType == TYPE_CROSS_SRO_TRADING_ACTION_MESSAGE)
 			{
 				String symbol = ByteBufferUtil.getString(buffer, 11).trim();
 				char action = (char) buffer.get();
@@ -234,25 +232,19 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 
 				// IPO opened
 				if (previousState != null && previousState.getTradingState() == TradingState.AUCTION && previousState.getMarketSession() == MarketSession.CLOSED
-						&& tradingState == TradingState.TRADING)
-				{
-					this.states.updateMarketSessionAndTradingState(symbol, MarketSession.NORMAL, tradingState, utpPacket.getTimestamp());
-				}
-				else
-				{
-					this.states.updateTradingState(symbol, tradingState, utpPacket.getTimestamp());
-				}
+						&& tradingState == TradingState.TRADING) this.states.updateMarketSessionAndTradingState(symbol, MarketSession.NORMAL, tradingState, timestamp);
+				else this.states.updateTradingState(symbol, tradingState, timestamp);
 			}
-			else if (utpPacket.getMessageType() == TYPE_ISSUE_SYMBOL_DIRECTORY_MESSAGE)
+			else if (msgType == TYPE_ISSUE_SYMBOL_DIRECTORY_MESSAGE)
 			{
 				String symbol = ByteBufferUtil.getString(buffer, 11).trim();
 				ByteBufferUtil.advancePosition(buffer, 45); // Old issue symbol, Issue Name, Issue Type, Market Category, Authenticity, SSTI
 				int roundLotSize = (int) ByteBufferUtil.readAsciiLong(buffer, 5);
 				ByteBufferUtil.advancePosition(buffer, 1); // Financial status indicator
 				this.lotSizes.put(symbol, Integer.valueOf(roundLotSize));
-				this.states.updateMarketSessionAndTradingState(symbol, MarketSession.CLOSED, TradingState.TRADING, utpPacket.getTimestamp());
+				this.states.updateMarketSessionAndTradingState(symbol, MarketSession.CLOSED, TradingState.TRADING, timestamp);
 			}
-			else if (utpPacket.getMessageType() == TYPE_REG_SHO_SSPTR_INDICATOR)
+			else if (msgType == TYPE_REG_SHO_SSPTR_INDICATOR)
 			{
 				String symbol = ByteBufferUtil.getString(buffer, 11).trim();
 				char regShoAction = (char) buffer.get();
@@ -265,17 +257,15 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 					case '0':
 						break;
 					case '1':
-						MdEntity.setCondition(conditionCode, MarketState.CONDITION_SHORT_SALE_RESTRICTION);
-						break;
 					case '2':
 						MdEntity.setCondition(conditionCode, MarketState.CONDITION_SHORT_SALE_RESTRICTION);
 						break;
 					default:
 						break;
 				}
-				this.states.updateConditionCode(symbol, conditionCode, utpPacket.getTimestamp());
+				this.states.updateConditionCode(symbol, conditionCode, timestamp);
 			}
-			else if (utpPacket.getMessageType() == TYPE_LULD_PRICE_BAND_MESSAGE)
+			else if (msgType == TYPE_LULD_PRICE_BAND_MESSAGE)
 			{
 				String symbol = ByteBufferUtil.getString(buffer, 11).trim();
 				ByteBufferUtil.advancePosition(buffer, 10); // luldBandIndicator, luldEffectiveTime
@@ -283,9 +273,9 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 				double lowerBand = UtpUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 10), limitDownPriceDenominator);
 				char limitUpPriceDenominator = (char) buffer.get();
 				double upperBand = UtpUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 10), limitUpPriceDenominator);
-				this.states.updateLowerAndUpperBands(symbol, lowerBand, upperBand, utpPacket.getTimestamp(), false);
+				this.states.updateLowerAndUpperBands(symbol, lowerBand, upperBand, timestamp, false);
 			}
-			else if (utpPacket.getMessageType() == TYPE_MWCB_DECLINE_LEVEL_MESSAGE)
+			else if (msgType == TYPE_MWCB_DECLINE_LEVEL_MESSAGE)
 			{
 				char mwcbDenominator = (char) buffer.get();
 				double level1Price = UtpUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 12), mwcbDenominator);
@@ -299,7 +289,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 				LOGGER.info(processorName + " - MWCB S&P500 Decline - Level2=" + level2Price);
 				LOGGER.info(processorName + " - MWCB S&P500 Decline - Level3=" + level3Price);
 			}
-			else if (utpPacket.getMessageType() == TYPE_MWCB_STATUS_MESSAGE)
+			else if (msgType == TYPE_MWCB_STATUS_MESSAGE)
 			{
 				char mwcbStatusLevelIndicator = (char) buffer.get();
 				ByteBufferUtil.advancePosition(buffer, 3);
@@ -320,23 +310,23 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 				}
 			}
 		}
-		else if (utpPacket.getMessageCategory() == CATEGORY_CONTROL)
+		else if (msgCategory == CATEGORY_CONTROL)
 		{
-			if (utpPacket.getMessageType() == TYPE_MARKET_SESSION_OPEN && utpPacket.getParticipantId() == NASDAQ_PARTICIPANT)
+			if (msgType == TYPE_MARKET_SESSION_OPEN && utpPacket.getParticipantId() == NASDAQ_PARTICIPANT)
 			{
 				this.receivedOpen = true;
-				this.states.updateAllSymbols(MarketSession.NORMAL, utpPacket.getTimestamp(), this.ipoSymbols);
+				this.states.updateAllSymbols(MarketSession.NORMAL, timestamp, this.ipoSymbols);
 				LOGGER.info(processorName + " - Got market session open for NASDAQ");
 			}
-			else if (utpPacket.getMessageType() == TYPE_MARKET_SESSION_CLOSE && utpPacket.getParticipantId() == NASDAQ_PARTICIPANT)
+			else if (msgType == TYPE_MARKET_SESSION_CLOSE && utpPacket.getParticipantId() == NASDAQ_PARTICIPANT)
 			{
 				this.receivedClose = true;
-				this.states.updateAllSymbols(MarketSession.CLOSED, utpPacket.getTimestamp(), null);
+				this.states.updateAllSymbols(MarketSession.CLOSED, timestamp, null);
 				LOGGER.info(processorName + " - Got market session close for NASDAQ");
 			}
 			else
 			{
-				LOGGER.info(processorName + " - Received Control Message Type=" + utpPacket.getMessageType());
+				LOGGER.info(processorName + " - Received Control Message Type=" + msgType);
 			}
 		}
 	}
@@ -368,8 +358,6 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_BID_NON_EXECUTABLE);
 				break;
 			case 'B':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_ASK_NON_EXECUTABLE);
-				break;
 			case 'C':
 				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_ASK_NON_EXECUTABLE);
 				break;
@@ -380,23 +368,11 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 		switch (quoteCondition)
 		{
 			case 'F':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'I':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'L':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'N':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'U':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'X':
-				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
-				break;
 			case 'Z':
 				conditionCode = MdEntity.setCondition(conditionCode, Quote.CONDITION_EXCLUDED_FROM_NBBO);
 				break;
@@ -467,7 +443,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 		if (this.receivedClose) return MarketSession.CLOSED;
 		else if (this.receivedOpen) return MarketSession.NORMAL;
 
-		if (MdDateUtil.US_OPEN_TIME.getTime() <= timestamp && timestamp <= this.closeTime.getTime()) return MarketSession.NORMAL;
+		if (MdDateUtil.US_OPEN_TIME <= timestamp && timestamp <= this.closeTime) return MarketSession.NORMAL;
 		return MarketSession.CLOSED;
 	}
 }

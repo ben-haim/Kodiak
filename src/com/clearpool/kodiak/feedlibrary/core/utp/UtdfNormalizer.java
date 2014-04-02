@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -76,9 +77,7 @@ public class UtdfNormalizer implements IMdNormalizer
 					while ((line = reader.readLine()) != null)
 					{
 						String[] split = line.split(",");
-						String symbol = split[0];
-						Double price = Double.valueOf(split[1]);
-						prices.put(symbol, price);
+						prices.put(split[0], Double.valueOf(split[1]));
 					}
 				}
 				catch (Exception e)
@@ -92,13 +91,12 @@ public class UtdfNormalizer implements IMdNormalizer
 					String firstRange = rangeSplit[0].replace("[", "");
 					String secondRange = rangeSplit[1].replace("]", "") + "ZZZZZZZZ";
 
-					for (Map.Entry<String, Double> entry : prices.entrySet())
+					for (Entry<String, Double> entry : prices.entrySet())
 					{
 						String symbol = entry.getKey();
-						double price = entry.getValue().doubleValue();
 						if (firstRange.compareTo(symbol) <= 0 && symbol.compareTo(secondRange) <= 0)
 						{
-							this.sales.setLatestClosePrice(symbol, Exchange.USEQ_SIP, price, DateUtil.TODAY_MIDNIGHT_EST.getTime(), "SDS");
+							this.sales.setLatestClosePrice(symbol, Exchange.USEQ_SIP, entry.getValue().doubleValue(), DateUtil.TODAY_MIDNIGHT_EST.getTime(), "SDS");
 						}
 					}
 				}
@@ -121,13 +119,17 @@ public class UtdfNormalizer implements IMdNormalizer
 	{
 		if (shouldIgnore) return;
 		UtpPacket utpPacket = (UtpPacket) packet;
+		char msgCategory = utpPacket.getMessageCategory();
+		char msgType = utpPacket.getMessageType();
+		char participantId = utpPacket.getParticipantId();
+		long timestamp = utpPacket.getTimestamp();
 		ByteBuffer buffer = utpPacket.getBuffer();
 
-		if (utpPacket.getMessageCategory() == CATEGORY_TRADE)
+		if (msgCategory == CATEGORY_TRADE)
 		{
-			if (utpPacket.getMessageType() == TYPE_SHORT_TRADE || utpPacket.getMessageType() == TYPE_LONG_TRADE)
+			if (msgType == TYPE_SHORT_TRADE || msgType == TYPE_LONG_TRADE)
 			{
-				boolean isLong = utpPacket.getMessageType() == TYPE_LONG_TRADE;
+				boolean isLong = msgType == TYPE_LONG_TRADE;
 				String symbol = ByteBufferUtil.getString(buffer, isLong ? 11 : 5).trim();
 				if (isLong) ByteBufferUtil.advancePosition(buffer, 1); // trade through exempt flag
 				String saleCondition = ByteBufferUtil.getString(buffer, isLong ? 4 : 1);
@@ -138,12 +140,10 @@ public class UtdfNormalizer implements IMdNormalizer
 				int size = (int) ByteBufferUtil.readAsciiLong(buffer, isLong ? 9 : 6);
 				ByteBufferUtil.advancePosition(buffer, 1); // consolidated price change indicator
 
-				Exchange exchange = UtpUtils.getExchange(utpPacket.getParticipantId());
-				Sale previousSale = this.sales.getData(symbol);
-				int conditionCode = getSaleConditions(saleCondition, previousSale, utpPacket.getParticipantId() == NASDAQ_PARTICIPANT);
-				this.sales.updateWithSaleCondition(symbol, price, size, exchange, utpPacket.getTimestamp(), conditionCode, saleCondition);
+				this.sales.updateWithSaleCondition(symbol, price, size, UtpUtils.getExchange(participantId), timestamp,
+						getSaleConditions(saleCondition, this.sales.getData(symbol), participantId == NASDAQ_PARTICIPANT), saleCondition);
 			}
-			else if (utpPacket.getMessageType() == TYPE_CORRECTION)
+			else if (msgType == TYPE_CORRECTION)
 			{
 				long originalSequenceNumber = ByteBufferUtil.readAsciiLong(buffer, 8);
 				String symbol = ByteBufferUtil.getString(buffer, 11).trim();
@@ -172,14 +172,13 @@ public class UtdfNormalizer implements IMdNormalizer
 				long consolidatedVolume = ByteBufferUtil.readAsciiLong(buffer, 11);
 				ByteBufferUtil.advancePosition(buffer, 1); // consolidatedPriceChangeIndicator
 
-				int originalConditionCode = getSaleConditions(originalSaleCondition, null, utpPacket.getParticipantId() == NASDAQ_PARTICIPANT);
-				int correctedConditionCode = getSaleConditions(correctedSaleCondition, null, utpPacket.getParticipantId() == NASDAQ_PARTICIPANT);
-				this.sales.correctWithStats(symbol, originalPrice, originalSize, originalConditionCode, correctedPrice, correctedSize, correctedConditionCode,
-						utpPacket.getTimestamp(), lastExchange, lastPrice, highPrice, lowPrice, -1, consolidatedVolume);
+				this.sales.correctWithStats(symbol, originalPrice, originalSize, getSaleConditions(originalSaleCondition, null, participantId == NASDAQ_PARTICIPANT),
+						correctedPrice, correctedSize, getSaleConditions(correctedSaleCondition, null, participantId == NASDAQ_PARTICIPANT), timestamp, lastExchange, lastPrice,
+						highPrice, lowPrice, -1, consolidatedVolume);
 				LOGGER.info(processorName + " - Received Correction Message - Symbol=" + symbol + " orig=" + originalPrice + "@" + originalSize + " (origiSeqNo="
 						+ originalSequenceNumber + ") corrected=" + correctedPrice + "@" + correctedSize);
 			}
-			else if (utpPacket.getMessageType() == TYPE_CANCEL_ERROR)
+			else if (msgType == TYPE_CANCEL_ERROR)
 			{
 				long originalSequenceNumber = ByteBufferUtil.readAsciiLong(buffer, 8);
 				String symbol = ByteBufferUtil.getString(buffer, 11).trim();
@@ -201,30 +200,27 @@ public class UtdfNormalizer implements IMdNormalizer
 				long consolidatedVolume = ByteBufferUtil.readAsciiLong(buffer, 11);
 				ByteBufferUtil.advancePosition(buffer, 1); // consolidatedPriceChangeIndicator
 
-				int originalConditionCode = getSaleConditions(originalSaleCondition, null, utpPacket.getParticipantId() == NASDAQ_PARTICIPANT);
-				this.sales.cancelWithStats(symbol, originalPrice, originalSize, originalConditionCode, utpPacket.getTimestamp(), lastExchange, lastPrice, highPrice, lowPrice, -1,
-						consolidatedVolume);
+				this.sales.cancelWithStats(symbol, originalPrice, originalSize, getSaleConditions(originalSaleCondition, null, participantId == NASDAQ_PARTICIPANT), timestamp,
+						lastExchange, lastPrice, highPrice, lowPrice, -1, consolidatedVolume);
 				LOGGER.info(processorName + " - Received Cancel Message - Symbol=" + symbol + " orig=" + originalPrice + "@" + originalSize + " (origiSeqNo="
 						+ originalSequenceNumber + ")");
 			}
 		}
-		else if (utpPacket.getMessageCategory() == CATEGORY_ADMINISTRATIVE)
+		else if (msgCategory == CATEGORY_ADMINISTRATIVE)
 		{
-			if (utpPacket.getMessageType() == TYPE_ADMIN_MESSAGE)
+			if (msgType == TYPE_ADMIN_MESSAGE)
 			{
 				String message = ByteBufferUtil.getString(buffer, buffer.remaining()).trim();
 				LOGGER.info(processorName + " - Received Admin Message - " + message);
 				if (message.startsWith("IPO PRICE AT"))
 				{
 					String[] spaceSplit = message.split(" ");
-					String symbol = spaceSplit[4];
 					String priceString = spaceSplit[5];
-					int index = priceString.indexOf(".");
-					double price = Integer.valueOf(priceString.substring(0, index)).intValue() / 100d;
-					this.sales.setLatestClosePrice(symbol, Exchange.USEQ_SIP, price, utpPacket.getTimestamp(), "SDS");
+					this.sales.setLatestClosePrice(spaceSplit[4], Exchange.USEQ_SIP, Integer.valueOf(priceString.substring(0, priceString.indexOf("."))).intValue() / 100d,
+							timestamp, "SDS");
 				}
 			}
-			else if (utpPacket.getMessageType() == TYPE_CLOSING_TRADE_SUMMARY_REPORT)
+			else if (msgType == TYPE_CLOSING_TRADE_SUMMARY_REPORT)
 			{
 				String symbol = ByteBufferUtil.getString(buffer, 11).trim();
 				char highPriceDenominator = (char) buffer.get();
@@ -240,17 +236,14 @@ public class UtdfNormalizer implements IMdNormalizer
 				int numberOfMarketCenters = (int) ByteBufferUtil.readAsciiLong(buffer, 2);
 				ByteBufferUtil.advancePosition(buffer, numberOfMarketCenters * 24);
 
-				this.sales.updateEndofDay(symbol, closingPrice, lowPrice, highPrice, consolidatedVolume, utpPacket.getTimestamp(), closingPriceExchange);
+				this.sales.updateEndofDay(symbol, closingPrice, lowPrice, highPrice, consolidatedVolume, timestamp, closingPriceExchange);
 				writeClosePriceToFile(symbol, closingPrice);
 			}
 		}
-		else if (utpPacket.getMessageCategory() == CATEGORY_CONTROL)
+		else if (msgCategory == CATEGORY_CONTROL)
 		{
-			if (utpPacket.getMessageType() == TYPE_END_OF_CONSOLIDATED_LAST_SALE_ELIGIBILITY)
-			{
-				this.receivedEndOfLastSaleEligibleControlMessage = true;
-			}
-			LOGGER.info(processorName + " - Received Control Message Type=" + utpPacket.getMessageType());
+			if (msgType == TYPE_END_OF_CONSOLIDATED_LAST_SALE_ELIGIBILITY) this.receivedEndOfLastSaleEligibleControlMessage = true;
+			LOGGER.info(processorName + " - Received Control Message Type=" + msgType);
 		}
 	}
 
@@ -287,84 +280,46 @@ public class UtdfNormalizer implements IMdNormalizer
 		switch (charSaleCondition)
 		{
 			case '@':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
 			case 'A':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
 			case 'B':
+			case 'D':
+			case 'F':
+			case 'K':
+			case 'O':
+			case 'S':
+			case 'V':
+			case 'X':
+			case 'Y':
+			case '1':
+			case '5':
+			case '6':
 				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
 			case 'C':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME);
-			case 'D':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
-			case 'F':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
-			case 'G':
-				if (noteOne)
-					return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW,
-							Sale.CONDITION_CODE_LAST);
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW);
-			case 'H':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VOLUME);
 			case 'I':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME);
-			case 'K':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
-			case 'L':
-				if (noteTwo)
-					return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW,
-							Sale.CONDITION_CODE_LAST);
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW);
-			case 'N':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VOLUME);
-			case 'O':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
-			case 'P':
-				if (noteOne)
-					return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW,
-							Sale.CONDITION_CODE_LAST);
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW);
 			case 'R':
 				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME);
-			case 'S':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
-			case 'T':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LAST);
-			case 'U':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LAST);
-			case 'V':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
-			case 'W':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VOLUME);
-			case 'X':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
-			case 'Y':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
+			case 'G':
+			case 'P':
 			case 'Z':
-				if (noteOne)
-					return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW,
-							Sale.CONDITION_CODE_LAST);
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW);
-			case '1':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
-			case '2':
-				if (noteTwo)
-					return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW,
-							Sale.CONDITION_CODE_LAST);
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW);
 			case '3':
-				if (noteOne)
-					return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW,
-							Sale.CONDITION_CODE_LAST);
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW);
 			case '4':
 				if (noteOne)
 					return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW,
 							Sale.CONDITION_CODE_LAST);
 				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW);
-			case '5':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
-			case '6':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
+			case 'H':
+			case 'N':
+			case 'W':
+				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VOLUME);
+			case 'L':
+			case '2':
+				if (noteTwo)
+					return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW,
+							Sale.CONDITION_CODE_LAST);
+				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW);
+			case 'T':
+			case 'U':
+				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LAST);
 			default:
 				return 0;
 		}

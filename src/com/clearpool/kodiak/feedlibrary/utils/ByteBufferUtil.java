@@ -11,14 +11,14 @@ public class ByteBufferUtil
 
 	public static short getUnsignedByte(ByteBuffer buffer)
 	{
-		return (short)(buffer.get() & 0xFF);
+		return (short) (buffer.get() & 0xFF);
 	}
-	
+
 	public static int getUnsignedShort(ByteBuffer buffer)
 	{
 		return buffer.getShort() & 0xFFFF;
 	}
-	
+
 	public static long getUnsignedInt(ByteBuffer buffer)
 	{
 		return buffer.getInt() & 0xFFFFFFFF;
@@ -27,7 +27,7 @@ public class ByteBufferUtil
 	public static String getString(ByteBuffer buffer, int length)
 	{
 		byte[] bytes = new byte[length];
-		for(int i=0; i<length; i++)
+		for (int i = 0; i < length; i++)
 		{
 			bytes[i] = buffer.get();
 		}
@@ -37,7 +37,7 @@ public class ByteBufferUtil
 	public static long readAsciiLong(ByteBuffer buffer, int length)
 	{
 		long val = 0;
-		for(int i=0; i<length; i++)
+		for (int i = 0; i < length; i++)
 		{
 			int charVal = buffer.get() - '0';
 			val = val * 10 + charVal;

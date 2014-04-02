@@ -9,7 +9,7 @@ public class MdDateUtil
 {
 	public static final TimeZone DEFAULT_TIMEZONE = TimeZone.getTimeZone("America/New_York");
 	public static final Date TODAY_EST = getToday().getTime();
-	public static final Date US_OPEN_TIME = MdDateUtil.createTime(new Date(), 9, 30, 0);
+	public static final long US_OPEN_TIME = MdDateUtil.createTime(new Date(), 9, 30, 0).getTime();
 
 	private static GregorianCalendar getToday()
 	{

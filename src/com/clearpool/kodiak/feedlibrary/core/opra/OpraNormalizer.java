@@ -133,7 +133,8 @@ public class OpraNormalizer implements IMdNormalizer
 					bestOfferDenominatorCode = (char) buffer.get();
 					bestOfferPrice = getPrice(buffer.getInt(), bestOfferDenominatorCode);
 					bestOfferSize = (int) ByteBufferUtil.getUnsignedInt(buffer);
-					this.nbbos.updateBidAndOffer(symbol, bidPrice, bidSize, exchange, bestOfferPrice, bestOfferSize, bestOfferExchange, opraPacket.getTimestamp(), String.valueOf(indicator));
+					this.nbbos.updateBidAndOffer(symbol, bidPrice, bidSize, exchange, bestOfferPrice, bestOfferSize, bestOfferExchange, opraPacket.getTimestamp(),
+							String.valueOf(indicator));
 					break;
 				case 'H':
 					this.nbbos.updateBidAndOffer(symbol, bidPrice, bidSize, exchange, 0, 0, null, opraPacket.getTimestamp(), String.valueOf(indicator));
@@ -166,7 +167,8 @@ public class OpraNormalizer implements IMdNormalizer
 					bestBidDenominatorCode = (char) buffer.get();
 					bestBidPrice = getPrice(buffer.getInt(), bestBidDenominatorCode);
 					bestBidSize = (int) ByteBufferUtil.getUnsignedInt(buffer);
-					this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, offerPrice, offerSize, exchange, opraPacket.getTimestamp(), String.valueOf(indicator));
+					this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, offerPrice, offerSize, exchange, opraPacket.getTimestamp(),
+							String.valueOf(indicator));
 					break;
 				case 'O':
 					bestBidExchange = getExchange((char) buffer.get());
@@ -177,7 +179,8 @@ public class OpraNormalizer implements IMdNormalizer
 					bestOfferDenominatorCode = (char) buffer.get();
 					bestOfferPrice = getPrice(buffer.getInt(), bestOfferDenominatorCode);
 					bestOfferSize = (int) ByteBufferUtil.getUnsignedInt(buffer);
-					this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestOfferPrice, bestOfferSize, bestOfferExchange, opraPacket.getTimestamp(), String.valueOf(indicator));
+					this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestOfferPrice, bestOfferSize, bestOfferExchange, opraPacket.getTimestamp(),
+							String.valueOf(indicator));
 					break;
 				case 'P':
 					bestBidExchange = getExchange((char) buffer.get());
@@ -327,49 +330,37 @@ public class OpraNormalizer implements IMdNormalizer
 		switch (type)
 		{
 			case ' ':
+			case 'I':
+			case 'J':
+			case 'K':
+			case 'L':
+			case 'M':
+			case 'N':
+			case 'P':
+			case 'Q':
+			case 'S':
+			case 'X':
 				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LAST);
 			case 'A':
+			case 'C': // last should beset to print before previous
+			case 'E': // open should be set to next print
+			case 'G':
+			case 'O':
 				return MdEntity.setCondition(0, Sale.CONDITION_CODE_CANCEL, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME);
 			case 'B':
 				return MdEntity.setCondition(0, Sale.CONDITION_CODE_LATE, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH);
-			case 'C':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_CANCEL, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME); // last should beset to print before previous
 			case 'D':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_LATE, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LAST);
-			case 'E':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_CANCEL, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME); // open should be set to next print
+				return MdEntity.setCondition(0, Sale.CONDITION_CODE_LATE, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH,
+						Sale.CONDITION_CODE_LAST);
 			case 'F':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_OPEN, Sale.CONDITION_CODE_LATE, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH);
-			case 'G':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_CANCEL, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME);
+				return MdEntity.setCondition(0, Sale.CONDITION_CODE_OPEN, Sale.CONDITION_CODE_LATE, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW,
+						Sale.CONDITION_CODE_HIGH);
 			case 'H':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_OPEN, Sale.CONDITION_CODE_LATE, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LAST);
-			case 'I':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LAST);
-			case 'J':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LAST);
-			case 'K':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LAST);
-			case 'L':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LAST);
-			case 'M':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LAST);
-			case 'N':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LAST);
-			case 'O':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_CANCEL, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME);
-			case 'P':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LAST);
-			case 'Q':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LAST);
+				return MdEntity.setCondition(0, Sale.CONDITION_CODE_OPEN, Sale.CONDITION_CODE_LATE, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW,
+						Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LAST);
 			case 'R':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH);
-			case 'S':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LAST);
 			case 'T':
 				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH);
-			case 'X':
-				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LAST);
 			default:
 				return 0;
 		}
@@ -377,17 +368,13 @@ public class OpraNormalizer implements IMdNormalizer
 
 	private static Exchange getExchange(char participantId)
 	{
-		int index = participantId - 'A';
-		return EXCHANGES[index];
+		return EXCHANGES[participantId - 'A'];
 	}
 
 	static double getPrice(long value, char denominatorCode)
 	{
 		if (denominatorCode == 'I') return value;
-		int power = denominatorCode - 'A';
-		BigDecimal numerator = new BigDecimal(value);
-		BigDecimal denominator = new BigDecimal(POWERS[power]);
-		return numerator.divide(denominator).doubleValue();
+		return new BigDecimal(value).divide(new BigDecimal(POWERS[denominatorCode - 'A'])).doubleValue();
 	}
 
 	private static String createSymbol(String symbol, char expMonth, short expDay, short expYear, double strikePrice)

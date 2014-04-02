@@ -31,10 +31,7 @@ public class UtpUtils
 
 	public static double getPrice(long value, char denominatorCode)
 	{
-		int power = denominatorCode - 'B';
-		BigDecimal numerator = new BigDecimal(value);
-		BigDecimal denominator = new BigDecimal(POWERS[power]);
-		return numerator.divide(denominator).doubleValue();
+		return new BigDecimal(value).divide(new BigDecimal(POWERS[denominatorCode - 'B'])).doubleValue();
 	}
 
 	public static Exchange getExchange(char participantId)
@@ -47,8 +44,7 @@ public class UtpUtils
 	public static Exchange getExchange(char participantId, @SuppressWarnings("unused") String finraParticipantId)
 	{
 		Exchange exchange = getExchange(participantId);
-		if (exchange == Exchange.USEQ_FINRA_ADF) 
-			return Exchange.USEQ_FINRA_LAVAFLOW; // hacky .. will be fixed with JIRA CS-452
+		if (exchange == Exchange.USEQ_FINRA_ADF) return Exchange.USEQ_FINRA_LAVAFLOW; // hacky .. will be fixed with JIRA CS-452
 		return exchange;
 	}
 }

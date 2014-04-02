@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Logger;
@@ -499,8 +500,8 @@ public class BookQuoteCache implements IMdServiceCache
 		public List<BookQuote> getEntryList(Side side)
 		{
 			List<BookQuote> bookQuotes = new ArrayList<BookQuote>();
-			Set<Map.Entry<Double, BookQuote>> aggregatedOrders = (side == Side.BUY) ? this.bidAggregates.entrySet() : this.askAggregates.entrySet();
-			Iterator<Map.Entry<Double, BookQuote>> aggreagedOrdersIterator = aggregatedOrders.iterator();
+			Set<Entry<Double, BookQuote>> aggregatedOrders = (side == Side.BUY) ? this.bidAggregates.entrySet() : this.askAggregates.entrySet();
+			Iterator<Entry<Double, BookQuote>> aggreagedOrdersIterator = aggregatedOrders.iterator();
 			while (aggreagedOrdersIterator.hasNext())
 			{
 				bookQuotes.add(aggreagedOrdersIterator.next().getValue());

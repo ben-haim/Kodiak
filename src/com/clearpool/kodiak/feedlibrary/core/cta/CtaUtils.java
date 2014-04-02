@@ -39,10 +39,7 @@ public class CtaUtils
 	{
 		if (denominatorCode == '0') return 0;
 		if (denominatorCode == 'I') return value;
-		int power = denominatorCode - 'A';
-		BigDecimal numerator = new BigDecimal(value);
-		BigDecimal denominator = new BigDecimal(POWERS[power]);
-		return numerator.divide(denominator).doubleValue();
+		return new BigDecimal(value).divide(new BigDecimal(POWERS[denominatorCode - 'A'])).doubleValue();
 	}
 
 	public static Exchange getExchange(char participantId, String finraMarketMakerId)
@@ -53,7 +50,7 @@ public class CtaUtils
 		if (finraMarketMakerId != null && exchange == Exchange.USEQ_FINRA_ADF)
 		{
 			Exchange finraExchange = FINRA_EXCHANGES.get(finraMarketMakerId);
-			if(finraExchange != null)
+			if (finraExchange != null)
 			{
 				return finraExchange;
 			}

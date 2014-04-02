@@ -80,7 +80,7 @@ public class NasdaqNormalizer implements IMdNormalizer
 			long shares = ByteBufferUtil.getUnsignedInt(buffer);
 			String symbol = ByteBufferUtil.getString(buffer, 8).trim();
 			double price = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
-			//String displayName = (messageType == ADD_ORDER_WITH_MPID) ? ByteBufferUtil.getString(buffer, 4) : Exchange.USEQ_NASDAQ_OMX.getMicCode();
+			// String displayName = (messageType == ADD_ORDER_WITH_MPID) ? ByteBufferUtil.getString(buffer, 4) : Exchange.USEQ_NASDAQ_OMX.getMicCode();
 			this.bookCache.addOrder(symbol, orderReferenceNumber, side, (int) shares, price, Exchange.USEQ_NASDAQ_OMX.getMicCode(), timestamp);
 		}
 		else if (messageType == ORDER_EXECUTED)
@@ -124,7 +124,7 @@ public class NasdaqNormalizer implements IMdNormalizer
 		else if (messageType == TIMESTAMP_SECONDS)
 		{
 			long timestampSeconds = ByteBufferUtil.getUnsignedInt(buffer);
-			this.secondsSinceMidnight = this.midnight + timestampSeconds*1000;
+			this.secondsSinceMidnight = this.midnight + timestampSeconds * 1000;
 		}
 		else if (messageType == SYSTEM_EVENT)
 		{
@@ -167,7 +167,8 @@ public class NasdaqNormalizer implements IMdNormalizer
 			double currentReferencePrice = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			AuctionType auctionType = getAuctionType((char) buffer.get());
 			ByteBufferUtil.advancePosition(buffer, 1); // price variation indicator
-			this.imbalanceCache.updateImbalance(symbol, pairedShares, imbalanceShares, imbalanceSide, 0, currentReferencePrice, nearPrice, farPrice, 0, Exchange.USEQ_NASDAQ_OMX, auctionType, timestamp);
+			this.imbalanceCache.updateImbalance(symbol, pairedShares, imbalanceShares, imbalanceSide, 0, currentReferencePrice, nearPrice, farPrice, 0, Exchange.USEQ_NASDAQ_OMX,
+					auctionType, timestamp);
 		}
 
 		buffer.position(position + messageLength);
@@ -208,8 +209,6 @@ public class NasdaqNormalizer implements IMdNormalizer
 
 	private static double getPrice(long value)
 	{
-		BigDecimal numerator = new BigDecimal(value);
-		BigDecimal denominator = new BigDecimal(10000);
-		return numerator.divide(denominator).doubleValue();
+		return new BigDecimal(value).divide(new BigDecimal(10000)).doubleValue();
 	}
 }

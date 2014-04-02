@@ -156,8 +156,7 @@ public class ArcaXDPNormalizer implements IMdNormalizer
 		long sourceTimeNs = ByteBufferUtil.getUnsignedInt(bufferAfterMsgType);
 		ByteBufferUtil.advancePosition(bufferAfterMsgType, 8); // Skip SymbolIndex, SymbolSeqNum
 		String orderId = String.valueOf(ByteBufferUtil.getUnsignedInt(bufferAfterMsgType));
-		long timeStamp = this.secondsSinceMidnight * 1000000000 + sourceTimeNs;
-		this.bookCache.cancelOrder(orderId, timeStamp);
+		this.bookCache.cancelOrder(orderId, this.secondsSinceMidnight * 1000000000 + sourceTimeNs);
 	}
 
 	public void processMsgType103(ByteBuffer bufferAfterMsgType)
@@ -167,8 +166,7 @@ public class ArcaXDPNormalizer implements IMdNormalizer
 		String orderId = String.valueOf(ByteBufferUtil.getUnsignedInt(bufferAfterMsgType));
 		ByteBufferUtil.advancePosition(bufferAfterMsgType, 4); // Skip Price
 		long volume = ByteBufferUtil.getUnsignedInt(bufferAfterMsgType);
-		long timeStamp = this.secondsSinceMidnight * 1000000000 + sourceTimeNs;
-		this.bookCache.cancelOrder(orderId, (int) volume, timeStamp);
+		this.bookCache.cancelOrder(orderId, (int) volume, this.secondsSinceMidnight * 1000000000 + sourceTimeNs);
 	}
 
 	public void processMsgType105(ByteBuffer bufferAfterMsgType)
@@ -180,7 +178,6 @@ public class ArcaXDPNormalizer implements IMdNormalizer
 			ArcaSymbolRef arcaSymbolRef = this.symbolVec.get((int) symbolIndex);
 			if (arcaSymbolRef != null)
 			{
-				String symbol = arcaSymbolRef.getSymbol();
 				ByteBufferUtil.advancePosition(bufferAfterMsgType, 4); // Skip SymbolSeqNum
 				double referencePrice = ByteBufferUtil.getUnsignedInt(bufferAfterMsgType);
 				long pairedQty = ByteBufferUtil.getUnsignedInt(bufferAfterMsgType);
@@ -195,9 +192,8 @@ public class ArcaXDPNormalizer implements IMdNormalizer
 				double continuousBookClearingPrice = ByteBufferUtil.getUnsignedInt(bufferAfterMsgType);
 				double closingOnlyClearingPrice = ByteBufferUtil.getUnsignedInt(bufferAfterMsgType);
 				double sSRFilingPrice = ByteBufferUtil.getUnsignedInt(bufferAfterMsgType);
-				long timeStamp = this.secondsSinceMidnight * 1000000000 + sourceTimeNs;
-				this.imbalanceCache.updateImbalance(symbol, pairedQty, totalImbalanceQty, side, marketImbalanceQty, referencePrice, continuousBookClearingPrice,
-						closingOnlyClearingPrice, sSRFilingPrice, Exchange.USEQ_NYSE_ARCA_EXCHANGE, auctionType, timeStamp);
+				this.imbalanceCache.updateImbalance(arcaSymbolRef.getSymbol(), pairedQty, totalImbalanceQty, side, marketImbalanceQty, referencePrice, continuousBookClearingPrice,
+						closingOnlyClearingPrice, sSRFilingPrice, Exchange.USEQ_NYSE_ARCA_EXCHANGE, auctionType, this.secondsSinceMidnight * 1000000000 + sourceTimeNs);
 			}
 		}
 	}
@@ -217,8 +213,8 @@ public class ArcaXDPNormalizer implements IMdNormalizer
 				double price = ByteBufferUtil.getUnsignedInt(bufferAfterMsgType) / arcaSymbolRef.getPriceDivider();
 				long volume = ByteBufferUtil.getUnsignedInt(bufferAfterMsgType);
 				Side side = (char) bufferAfterMsgType.get() == SIDE_BUY ? Side.BUY : Side.SELL;
-				long timeStamp = this.secondsSinceMidnight * 1000000000 + sourceTimeNs;
-				this.bookCache.addOrder(symbol, orderId, side, (int) volume, price, Exchange.USEQ_NYSE_ARCA_EXCHANGE.getMicCode(), timeStamp);
+				this.bookCache.addOrder(symbol, orderId, side, (int) volume, price, Exchange.USEQ_NYSE_ARCA_EXCHANGE.getMicCode(), this.secondsSinceMidnight * 1000000000
+						+ sourceTimeNs);
 			}
 		}
 	}

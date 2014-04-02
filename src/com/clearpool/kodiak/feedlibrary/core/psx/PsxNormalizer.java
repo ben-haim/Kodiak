@@ -123,7 +123,7 @@ public class PsxNormalizer implements IMdNormalizer
 		else if (messageType == TIMESTAMP_SECONDS)
 		{
 			long timestampSeconds = ByteBufferUtil.getUnsignedInt(buffer);
-			this.secondsSinceMidnight = this.midnight + timestampSeconds*1000;
+			this.secondsSinceMidnight = this.midnight + timestampSeconds * 1000;
 		}
 		else if (messageType == SYSTEM_EVENT)
 		{
@@ -166,7 +166,8 @@ public class PsxNormalizer implements IMdNormalizer
 			double currentReferencePrice = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			AuctionType auctionType = getAuctionType((char) buffer.get());
 			ByteBufferUtil.advancePosition(buffer, 1); // price variation indicator
-			this.imbalanceCache.updateImbalance(symbol, pairedShares, imbalanceShares, imbalanceSide, 0, currentReferencePrice, nearPrice, farPrice, 0, Exchange.USEQ_NASDAQ_OMX_PHLX, auctionType, timestamp);
+			this.imbalanceCache.updateImbalance(symbol, pairedShares, imbalanceShares, imbalanceSide, 0, currentReferencePrice, nearPrice, farPrice, 0,
+					Exchange.USEQ_NASDAQ_OMX_PHLX, auctionType, timestamp);
 		}
 
 		buffer.position(position + messageLength);
@@ -207,8 +208,6 @@ public class PsxNormalizer implements IMdNormalizer
 
 	private static double getPrice(long value)
 	{
-		BigDecimal numerator = new BigDecimal(value);
-		BigDecimal denominator = new BigDecimal(10000);
-		return numerator.divide(denominator).doubleValue();
+		return new BigDecimal(value).divide(new BigDecimal(10000)).doubleValue();
 	}
 }

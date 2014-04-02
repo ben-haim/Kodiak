@@ -316,7 +316,8 @@ public class NasdaqMultithreadedNormalizer implements IMdNormalizer
 				@Override
 				public void run()
 				{
-					imbalanceCache.updateImbalance(symbol, pairedShares, imbalanceShares, imbalanceSide, 0, currentReferencePrice, nearPrice, farPrice, 0, Exchange.USEQ_NASDAQ_OMX, auctionType, timestamp);
+					imbalanceCache.updateImbalance(symbol, pairedShares, imbalanceShares, imbalanceSide, 0, currentReferencePrice, nearPrice, farPrice, 0,
+							Exchange.USEQ_NASDAQ_OMX, auctionType, timestamp);
 				}
 			});
 		}
@@ -326,8 +327,7 @@ public class NasdaqMultithreadedNormalizer implements IMdNormalizer
 
 	private static int getThreadIndex(String symbol)
 	{
-		int index = symbol.charAt(0) - 'A';
-		return index / LETTER_DIVISOR;
+		return symbol.charAt(0) - 'A' / LETTER_DIVISOR;
 	}
 
 	private long getTimestamp(long nanos)
@@ -365,8 +365,6 @@ public class NasdaqMultithreadedNormalizer implements IMdNormalizer
 
 	private static double getPrice(long value)
 	{
-		BigDecimal numerator = new BigDecimal(value);
-		BigDecimal denominator = new BigDecimal(10000);
-		return numerator.divide(denominator).doubleValue();
+		return new BigDecimal(value).divide(new BigDecimal(10000)).doubleValue();
 	}
 }
