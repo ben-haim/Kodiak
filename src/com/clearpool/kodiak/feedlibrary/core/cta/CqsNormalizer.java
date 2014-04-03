@@ -4,9 +4,12 @@ import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
 import java.util.Map.Entry;
+import java.util.TimerTask;
 import java.util.logging.Logger;
 
+import com.clearpool.commonserver.ProcessTimer;
 import com.clearpool.kodiak.feedlibrary.caches.BboQuoteCache;
 import com.clearpool.kodiak.feedlibrary.caches.IMarketSessionSettable;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
@@ -49,18 +52,16 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 	private static final char NBBO_SHORT = '6';
 	private static final int DEFAULT_LOT_SIZE = 100;
 
-	private static final long PRE_MARKET_TIME = getPreMarketTime();
-	private static final long OPEN_TIME = getOpenTime();
-	private static final long CLOSE_TIME = getCloseTime();
-	private static final long POST_MARKET_TIME = getPostMarketTime();
+	private static final long PRE_MARKET_OPEN_TIME = getPreMarketOpenTime();
+	private static final long MARKET_OPEN_TIME = getMarketOpenTime();
+	private static final long MARKET_CLOSE_TIME = getMarketCloseTime();
+	private static final long POST_MARKET_CLOSE_TIME = getPostMarketCloseTime();
+	private static final Timer TIMER = ProcessTimer.getProcessTimer();
 
 	private final NbboQuoteCache nbbos;
 	private final BboQuoteCache bbos;
-	private final StateCache states;
 	private final Map<String, Integer> lotSizes;
-
-	private boolean hasOpened;
-	private boolean hasClosed;
+	protected final StateCache states;
 
 	public CqsNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range)
 	{
@@ -68,8 +69,40 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		this.bbos = new BboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.BBO), MdFeed.CQS, range);
 		this.states = new StateCache((IMdStateListener) callbacks.get(MdServiceType.STATE), this, MdFeed.CQS, range);
 		this.lotSizes = getLotSizes();
-		this.hasOpened = false;
-		this.hasClosed = false;
+
+		long delay = PRE_MARKET_OPEN_TIME - System.currentTimeMillis();
+		if (delay > 0)
+		{
+			TIMER.schedule(new TimerTask() {
+				@Override
+				public void run()
+				{
+					CqsNormalizer.this.states.updateAllSymbols(MarketSession.PREMARKET, System.currentTimeMillis(), null);
+				}
+			}, delay);
+		}
+		delay = MARKET_CLOSE_TIME - System.currentTimeMillis();
+		if (delay > 0)
+		{
+			TIMER.schedule(new TimerTask() {
+				@Override
+				public void run()
+				{
+					CqsNormalizer.this.states.updateAllSymbols(MarketSession.POSTMARKET, System.currentTimeMillis(), null);
+				}
+			}, delay);
+		}
+		delay = POST_MARKET_CLOSE_TIME - System.currentTimeMillis();
+		if (delay > 0)
+		{
+			TIMER.schedule(new TimerTask() {
+				@Override
+				public void run()
+				{
+					CqsNormalizer.this.states.updateAllSymbols(MarketSession.CLOSED, System.currentTimeMillis(), null);
+				}
+			}, delay);
+		}
 	}
 
 	private static Map<String, Integer> getLotSizes()
@@ -87,44 +120,44 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		return map;
 	}
 
-	private static long getPreMarketTime()
+	private static long getPreMarketOpenTime()
 	{
-		Object preMarketTimeValue = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "PREMARKETTIME");
-		if (preMarketTimeValue == null) return MdDateUtil.createTime(new Date(), 4, 0, 0).getTime();
-		String[] preMarketTimeSplit = ((String) preMarketTimeValue).split(":");
-		Date premarkettime = MdDateUtil.createTime(new Date(), Integer.parseInt(preMarketTimeSplit[0]), Integer.parseInt(preMarketTimeSplit[1]), 0);
-		LOGGER.info("Premarkettime=" + premarkettime);
-		return premarkettime.getTime();
+		Object preMarketOpenTimeValue = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "PREMARKETOPENTIME");
+		if (preMarketOpenTimeValue == null) return MdDateUtil.createTime(new Date(), 4, 0, 0).getTime();
+		String[] preMarketOpenTimeSplit = ((String) preMarketOpenTimeValue).split(":");
+		Date premarketopentime = MdDateUtil.createTime(new Date(), Integer.parseInt(preMarketOpenTimeSplit[0]), Integer.parseInt(preMarketOpenTimeSplit[1]), 0);
+		LOGGER.info("Premarketopentime=" + premarketopentime);
+		return premarketopentime.getTime();
 	}
 
-	private static long getOpenTime()
+	private static long getMarketOpenTime()
 	{
-		Object openTimeValue = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "OPENTIME");
-		if (openTimeValue == null) return MdDateUtil.createTime(new Date(), 9, 30, 0).getTime();
-		String[] openTimeSplit = ((String) openTimeValue).split(":");
-		Date opentime = MdDateUtil.createTime(new Date(), Integer.parseInt(openTimeSplit[0]), Integer.parseInt(openTimeSplit[1]), 0);
-		LOGGER.info("Opentime=" + opentime);
-		return opentime.getTime();
+		Object marketOpenTimeValue = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "MARKETOPENTIME");
+		if (marketOpenTimeValue == null) return MdDateUtil.createTime(new Date(), 9, 30, 0).getTime();
+		String[] marketOpenTimeSplit = ((String) marketOpenTimeValue).split(":");
+		Date marketopentime = MdDateUtil.createTime(new Date(), Integer.parseInt(marketOpenTimeSplit[0]), Integer.parseInt(marketOpenTimeSplit[1]), 0);
+		LOGGER.info("Marketopentime=" + marketopentime);
+		return marketopentime.getTime();
 	}
 
-	private static long getCloseTime()
+	private static long getMarketCloseTime()
 	{
-		Object closeTimeValue = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "CLOSETIME");
-		if (closeTimeValue == null) return MdDateUtil.createTime(new Date(), 16, 0, 0).getTime();
-		String[] closeTimeSplit = ((String) closeTimeValue).split(":");
-		Date closetime = MdDateUtil.createTime(new Date(), Integer.parseInt(closeTimeSplit[0]), Integer.parseInt(closeTimeSplit[1]), 0);
-		LOGGER.info("Closetime=" + closetime);
-		return closetime.getTime();
+		Object marketCloseTimeValue = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "MARKETCLOSETIME");
+		if (marketCloseTimeValue == null) return MdDateUtil.createTime(new Date(), 16, 0, 0).getTime();
+		String[] marketCloseTimeSplit = ((String) marketCloseTimeValue).split(":");
+		Date marketclosetime = MdDateUtil.createTime(new Date(), Integer.parseInt(marketCloseTimeSplit[0]), Integer.parseInt(marketCloseTimeSplit[1]), 0);
+		LOGGER.info("Marketclosetime=" + marketclosetime);
+		return marketclosetime.getTime();
 	}
 
-	private static long getPostMarketTime()
+	private static long getPostMarketCloseTime()
 	{
-		Object postMarketTimeValue = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "POSTMARKETTIME");
-		if (postMarketTimeValue == null) return MdDateUtil.createTime(new Date(), 20, 0, 0).getTime();
-		String[] postMarketTimeSplit = ((String) postMarketTimeValue).split(":");
-		Date postmarkettime = MdDateUtil.createTime(new Date(), Integer.parseInt(postMarketTimeSplit[0]), Integer.parseInt(postMarketTimeSplit[1]), 0);
-		LOGGER.info("Postmarkettime=" + postmarkettime);
-		return postmarkettime.getTime();
+		Object postMarketCloseTimeValue = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "POSTMARKETCLOSETIME");
+		if (postMarketCloseTimeValue == null) return MdDateUtil.createTime(new Date(), 20, 0, 0).getTime();
+		String[] postMarketCloseTimeSplit = ((String) postMarketCloseTimeValue).split(":");
+		Date postmarketclosetime = MdDateUtil.createTime(new Date(), Integer.parseInt(postMarketCloseTimeSplit[0]), Integer.parseInt(postMarketCloseTimeSplit[1]), 0);
+		LOGGER.info("Postmarketclosetime=" + postmarketclosetime);
+		return postmarketclosetime.getTime();
 	}
 
 	@Override
@@ -141,6 +174,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		CtaPacket ctaPacket = (CtaPacket) packet;
 		char msgCategory = ctaPacket.getMessageCategory();
 		char msgType = ctaPacket.getMessageType();
+		char participantId = ctaPacket.getParticipantId();
 		long timestamp = ctaPacket.getTimestamp();
 		ByteBuffer buffer = ctaPacket.getBuffer();
 
@@ -176,13 +210,13 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 				ByteBufferUtil.advancePosition(buffer, 1); // reserved
 				char nbboIndicator = (char) buffer.get();
 				ByteBufferUtil.advancePosition(buffer, 1); // finra bbo indicator
-				Exchange exchange = CtaUtils.getExchange(ctaPacket.getParticipantId(), finraMarketMakerId);
-				boolean isPrimaryListing = primaryListing == ctaPacket.getParticipantId();
+				Exchange exchange = CtaUtils.getExchange(participantId, finraMarketMakerId);
+				boolean isPrimaryListing = primaryListing == participantId;
 
 				// Update lower and upper bands
 				if (quoteCondition == '0')
 				{
-					this.states.updateLowerAndUpperBands(symbol, bidPrice, askPrice, timestamp, true);
+					this.states.updateLowerAndUpperBands(symbol, primaryListing, bidPrice, askPrice, timestamp, true);
 				}
 				else
 				{
@@ -224,20 +258,9 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 
 				// Update state for symbol
 				MarketState previousState = this.states.getData(symbol);
-				this.states.updateState(symbol, null,
+				this.states.updateState(symbol, primaryListing, null,
 						getStateConditionCode(nbboLuldIndicator, shortSaleRestrictionIndicator, (previousState == null) ? 0 : previousState.getConditionCode()),
 						getTradingState(quoteCondition, isPrimaryListing), timestamp);
-
-				// Maybe change state for all symbols
-				if (!this.hasOpened && CqsNormalizer.OPEN_TIME <= timestamp && timestamp < CqsNormalizer.CLOSE_TIME)
-				{
-					this.hasOpened = true;
-				}
-				else if (!this.hasClosed && timestamp >= CqsNormalizer.CLOSE_TIME)
-				{
-					this.states.updateAllSymbols(MarketSession.POSTMARKET, timestamp, null);
-					this.hasClosed = true;
-				}
 			}
 		}
 		else if (msgCategory == CATEGORY_ADMINISTRATIVE)
@@ -450,15 +473,18 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 	}
 
 	@Override
-	public MarketSession getMarketSession(long timestamp)
+	public MarketSession getMarketSession(char primaryListing, long timestamp)
 	{
-		// Everything closes at default time
-		if (this.hasClosed) return MarketSession.CLOSED;
-		else if (this.hasOpened) return MarketSession.NORMAL;
-
-		if (CqsNormalizer.PRE_MARKET_TIME <= timestamp && timestamp < CqsNormalizer.OPEN_TIME) return MarketSession.PREMARKET;
-		if (CqsNormalizer.OPEN_TIME <= timestamp && timestamp < CqsNormalizer.CLOSE_TIME) return MarketSession.NORMAL;
-		if (CqsNormalizer.CLOSE_TIME <= timestamp && timestamp < CqsNormalizer.POST_MARKET_TIME) return MarketSession.POSTMARKET;
+		if (primaryListing == 'N')
+		{
+			if (CqsNormalizer.PRE_MARKET_OPEN_TIME <= timestamp && timestamp < CqsNormalizer.MARKET_CLOSE_TIME) return MarketSession.PREMARKET;
+		}
+		else
+		{
+			if (CqsNormalizer.PRE_MARKET_OPEN_TIME <= timestamp && timestamp < CqsNormalizer.MARKET_OPEN_TIME) return MarketSession.PREMARKET;
+			if (CqsNormalizer.MARKET_OPEN_TIME <= timestamp && timestamp < CqsNormalizer.MARKET_CLOSE_TIME) return MarketSession.NORMAL;
+		}
+		if (CqsNormalizer.MARKET_CLOSE_TIME <= timestamp && timestamp < CqsNormalizer.POST_MARKET_CLOSE_TIME) return MarketSession.POSTMARKET;
 		return MarketSession.CLOSED;
 	}
 }

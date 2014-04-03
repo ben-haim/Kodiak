@@ -38,13 +38,13 @@ public class StateCache implements IMdServiceCache
 		sendState(state, state.getTimestamp());
 	}
 
-	public void updateState(String symbol, MarketSession marketSession, int conditionCode, TradingState tradingState, long timestamp)
+	public void updateState(String symbol, char primaryListing, MarketSession marketSession, int conditionCode, TradingState tradingState, long timestamp)
 	{
 		boolean isNew = false;
 		MarketState state = this.states.get(symbol);
 		if (state == null)
 		{
-			state = createState(symbol, timestamp);
+			state = createState(symbol, primaryListing, timestamp);
 			this.states.put(symbol, state);
 			isNew = true;
 		}
@@ -74,13 +74,13 @@ public class StateCache implements IMdServiceCache
 		}
 	}
 
-	public void updateTradingState(String symbol, TradingState tradingState, long timestamp)
+	public void updateTradingState(String symbol, char primaryListing, TradingState tradingState, long timestamp)
 	{
 		boolean isNew = false;
 		MarketState state = this.states.get(symbol);
 		if (state == null)
 		{
-			state = createState(symbol, timestamp);
+			state = createState(symbol, primaryListing, timestamp);
 			this.states.put(symbol, state);
 			isNew = true;
 		}
@@ -98,13 +98,13 @@ public class StateCache implements IMdServiceCache
 		}
 	}
 
-	public void updateMarketSessionAndTradingState(String symbol, MarketSession marketSession, TradingState tradingState, long timestamp)
+	public void updateMarketSessionAndTradingState(String symbol, char primaryListing, MarketSession marketSession, TradingState tradingState, long timestamp)
 	{
 		boolean isNew = false;
 		MarketState state = this.states.get(symbol);
 		if (state == null)
 		{
-			state = createState(symbol, timestamp);
+			state = createState(symbol, primaryListing, timestamp);
 			this.states.put(symbol, state);
 			isNew = true;
 		}
@@ -127,13 +127,13 @@ public class StateCache implements IMdServiceCache
 		}
 	}
 
-	public void updateMarketSession(String symbol, MarketSession marketSession, long timestamp)
+	public void updateMarketSession(String symbol, char primaryListing, MarketSession marketSession, long timestamp)
 	{
 		boolean isNew = false;
 		MarketState state = this.states.get(symbol);
 		if (state == null)
 		{
-			state = createState(symbol, timestamp);
+			state = createState(symbol, primaryListing, timestamp);
 			this.states.put(symbol, state);
 			isNew = true;
 		}
@@ -151,13 +151,13 @@ public class StateCache implements IMdServiceCache
 		}
 	}
 
-	public void updateConditionCode(String symbol, int conditionCode, long timestamp)
+	public void updateConditionCode(String symbol, char primaryListing, int conditionCode, long timestamp)
 	{
 		boolean isNew = false;
 		MarketState state = this.states.get(symbol);
 		if (state == null)
 		{
-			state = createState(symbol, timestamp);
+			state = createState(symbol, primaryListing, timestamp);
 			this.states.put(symbol, state);
 			isNew = true;
 		}
@@ -175,13 +175,13 @@ public class StateCache implements IMdServiceCache
 		}
 	}
 
-	public void updateLowerAndUpperBands(String symbol, double lowerBand, double upperBand, long timestamp, boolean updateMarketSession)
+	public void updateLowerAndUpperBands(String symbol, char primaryListing, double lowerBand, double upperBand, long timestamp, boolean updateMarketSession)
 	{
 		boolean isNew = false;
 		MarketState state = this.states.get(symbol);
 		if (state == null)
 		{
-			state = createState(symbol, timestamp);
+			state = createState(symbol, primaryListing, timestamp);
 			this.states.put(symbol, state);
 			isNew = true;
 		}
@@ -246,14 +246,14 @@ public class StateCache implements IMdServiceCache
 		}
 	}
 
-	private MarketState createState(String symbol, long timestamp)
+	private MarketState createState(String symbol, char primaryListing, long timestamp)
 	{
 		MarketState state = new MarketState();
 		state.setServiceType(MdServiceType.STATE);
 		ISymbolConverter symbolConverter = SymbolConverterFactory.getConverterInstance(this.feedType);
 		if (symbolConverter != null) state.setSymbol(symbolConverter.convert(symbol));
 		else state.setSymbol(symbol);
-		state.setMarketSession(this.marketSessionSetter.getMarketSession(timestamp));
+		state.setMarketSession(this.marketSessionSetter.getMarketSession(primaryListing, timestamp));
 		state.setTradingState(TradingState.TRADING);
 		return state;
 	}

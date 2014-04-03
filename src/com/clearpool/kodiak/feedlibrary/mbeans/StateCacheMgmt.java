@@ -49,7 +49,7 @@ public class StateCacheMgmt extends AnnotatedMBean<StateCacheMgmtMBean> implemen
 	}
 
 	@Override
-	public String setMarketSession(String symbol, String marketSession)
+	public String setMarketSession(String symbol, char primaryListing, String marketSession)
 	{
 		if (marketSession == null) return "MarketSession value is null";
 		marketSession = marketSession.trim();
@@ -62,12 +62,12 @@ public class StateCacheMgmt extends AnnotatedMBean<StateCacheMgmtMBean> implemen
 		MarketSession previousSession = previousState.getMarketSession();
 		if (previousSession == session) return "MarketSession is already " + previousSession;
 
-		this.stateCache.updateMarketSession(symbol, session, System.currentTimeMillis());
+		this.stateCache.updateMarketSession(symbol, primaryListing, session, System.currentTimeMillis());
 		return "Updated MarketSession. Prev=" + previousSession + " New=" + session;
 	}
 
 	@Override
-	public String setTradingState(String symbol, String tradingState)
+	public String setTradingState(String symbol, char primaryListing, String tradingState)
 	{
 		if (tradingState == null) return "TradingState value is null";
 		tradingState = tradingState.trim();
@@ -80,12 +80,12 @@ public class StateCacheMgmt extends AnnotatedMBean<StateCacheMgmtMBean> implemen
 		TradingState previousTradingState = previousState.getTradingState();
 		if (previousTradingState == state) return "TradingState is already " + previousTradingState;
 
-		this.stateCache.updateTradingState(symbol, state, System.currentTimeMillis());
+		this.stateCache.updateTradingState(symbol, primaryListing, state, System.currentTimeMillis());
 		return "Updated TradingState. Prev=" + previousTradingState + " New=" + state;
 	}
 
 	@Override
-	public String setConditionCode(String symbol, String conditionCode)
+	public String setConditionCode(String symbol, char primaryListing, String conditionCode)
 	{
 		if (conditionCode == null) return "ConditionCode value is null";
 		conditionCode = conditionCode.trim();
@@ -97,7 +97,7 @@ public class StateCacheMgmt extends AnnotatedMBean<StateCacheMgmtMBean> implemen
 		int previousConditionCode = previousState.getConditionCode();
 		if (previousConditionCode == condition) return "ConditionCode is already " + previousConditionCode;
 
-		this.stateCache.updateConditionCode(symbol, condition, System.currentTimeMillis());
+		this.stateCache.updateConditionCode(symbol, primaryListing, condition, System.currentTimeMillis());
 		return "Updated ConditionCode. Prev=" + previousConditionCode + " New=" + condition;
 	}
 

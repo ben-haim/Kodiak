@@ -6,17 +6,20 @@ import com.clearpool.commonserver.mbean.ParameterDescription;
 public interface StateCacheMgmtMBean extends IMdServiceCacheMgmt
 {
 	@MBeanMethodDescription("Sets market session given symbol and market session")
-	public String setMarketSession(@ParameterDescription("symbol") String symbol, @ParameterDescription("marketSession") String marketSession);
+	public String setMarketSession(@ParameterDescription("symbol") String symbol, @ParameterDescription("primaryListing") char primaryListing,
+			@ParameterDescription("marketSession") String marketSession);
 
 	@MBeanMethodDescription("Sets trading state given symbol and trading state")
-	public String setTradingState(@ParameterDescription("symbol") String symbol, @ParameterDescription("tradingState") String tradingState);
+	public String setTradingState(@ParameterDescription("symbol") String symbol, @ParameterDescription("primaryListing") char primaryListing,
+			@ParameterDescription("tradingState") String tradingState);
 
 	@MBeanMethodDescription("Sets condition code given symbol, and conditionCode")
-	public String setConditionCode(@ParameterDescription("symbol") String symbol, @ParameterDescription("conditionCode") String conditionCode);
+	public String setConditionCode(@ParameterDescription("symbol") String symbol, @ParameterDescription("primaryListing") char primaryListing,
+			@ParameterDescription("conditionCode") String conditionCode);
 
 	@MBeanMethodDescription("Sets market session all symbols in cache")
 	public String setAllMarketSessions(@ParameterDescription("marketSession") String marketSession);
-	
+
 	@MBeanMethodDescription("Republish all data for all symbols in cache")
 	public String publishAllData();
 }
