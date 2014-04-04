@@ -12,7 +12,7 @@ import com.clearpool.common.util.DateUtil;
 import com.clearpool.kodiak.feedlibrary.caches.BookQuoteCache;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
 import com.clearpool.kodiak.feedlibrary.caches.ImbalanceCache;
-import com.clearpool.kodiak.feedlibrary.callbacks.IMdBookQuoteListner;
+import com.clearpool.kodiak.feedlibrary.callbacks.IMdBookQuoteListener;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdImbalanceListener;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdLibraryCallback;
 import com.clearpool.kodiak.feedlibrary.core.IMdNormalizer;
@@ -58,7 +58,7 @@ public class NasdaqMultithreadedNormalizer implements IMdNormalizer
 
 		for (int i = 0; i < NUMBER_OF_THREADS; i++)
 		{
-			this.bookCaches[i] = new BookQuoteCache((IMdBookQuoteListner) callbacks.get(MdServiceType.BOOK_XNAS), MdFeed.NASDAQ, MdServiceType.BOOK_XNAS, RANGES[i]);
+			this.bookCaches[i] = new BookQuoteCache((IMdBookQuoteListener) callbacks.get(MdServiceType.BOOK_XNAS), MdFeed.NASDAQ, MdServiceType.BOOK_XNAS, RANGES[i]);
 			this.imbalanceCaches[i] = new ImbalanceCache((IMdImbalanceListener) callbacks.get(MdServiceType.IMBALANCE_XNAS), MdFeed.NASDAQ, MdServiceType.IMBALANCE_XNAS, RANGES[i]);
 			this.executors[i] = Executors.newSingleThreadExecutor();
 		}

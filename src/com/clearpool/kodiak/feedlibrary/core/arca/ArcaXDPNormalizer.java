@@ -9,7 +9,7 @@ import com.clearpool.common.util.DateUtil;
 import com.clearpool.kodiak.feedlibrary.caches.BookQuoteCache;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
 import com.clearpool.kodiak.feedlibrary.caches.ImbalanceCache;
-import com.clearpool.kodiak.feedlibrary.callbacks.IMdBookQuoteListner;
+import com.clearpool.kodiak.feedlibrary.callbacks.IMdBookQuoteListener;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdImbalanceListener;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdLibraryCallback;
 import com.clearpool.kodiak.feedlibrary.core.IMdNormalizer;
@@ -37,7 +37,7 @@ public class ArcaXDPNormalizer implements IMdNormalizer
 
 	public ArcaXDPNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range)
 	{
-		this.bookCache = new BookQuoteCache((IMdBookQuoteListner) callbacks.get(MdServiceType.BOOK_ARCX), MdFeed.ARCA, MdServiceType.BOOK_ARCX, range);
+		this.bookCache = new BookQuoteCache((IMdBookQuoteListener) callbacks.get(MdServiceType.BOOK_ARCX), MdFeed.ARCA, MdServiceType.BOOK_ARCX, range);
 		this.imbalanceCache = new ImbalanceCache((IMdImbalanceListener) callbacks.get(MdServiceType.IMBALANCE_ARCX), MdFeed.ARCA, MdServiceType.IMBALANCE_ARCX, range);
 		this.symbolVec = new Vector<ArcaSymbolRef>();
 		this.midnight = DateUtil.TODAY_MIDNIGHT_EST.getTime();

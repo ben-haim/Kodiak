@@ -9,7 +9,7 @@ import com.clearpool.common.util.DateUtil;
 import com.clearpool.kodiak.feedlibrary.caches.BookQuoteCache;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
 import com.clearpool.kodiak.feedlibrary.caches.ImbalanceCache;
-import com.clearpool.kodiak.feedlibrary.callbacks.IMdBookQuoteListner;
+import com.clearpool.kodiak.feedlibrary.callbacks.IMdBookQuoteListener;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdImbalanceListener;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdLibraryCallback;
 import com.clearpool.kodiak.feedlibrary.core.IMdNormalizer;
@@ -44,7 +44,7 @@ public class BxNormalizer implements IMdNormalizer
 
 	public BxNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range)
 	{
-		this.bookCache = new BookQuoteCache((IMdBookQuoteListner) callbacks.get(MdServiceType.BOOK_XBOS), MdFeed.BX, MdServiceType.BOOK_XBOS, range);
+		this.bookCache = new BookQuoteCache((IMdBookQuoteListener) callbacks.get(MdServiceType.BOOK_XBOS), MdFeed.BX, MdServiceType.BOOK_XBOS, range);
 		this.imbalanceCache = new ImbalanceCache((IMdImbalanceListener) callbacks.get(MdServiceType.IMBALANCE_XBOS), MdFeed.BX, MdServiceType.IMBALANCE_XBOS, range);
 		this.midnight = DateUtil.TODAY_MIDNIGHT_EST.getTime();
 

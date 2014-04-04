@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.clearpool.kodiak.feedlibrary.callbacks.IMdBookQuoteListner;
+import com.clearpool.kodiak.feedlibrary.callbacks.IMdBookQuoteListener;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdImbalanceListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
 import com.clearpool.kodiak.feedlibrary.core.MdLibrary;
@@ -13,7 +13,7 @@ import com.clearpool.messageobjects.marketdata.BookQuote;
 import com.clearpool.messageobjects.marketdata.Imbalance;
 import com.clearpool.messageobjects.marketdata.MdServiceType;
 
-public class NasdaqTest implements IMdBookQuoteListner, IMdImbalanceListener
+public class NasdaqTest implements IMdBookQuoteListener, IMdImbalanceListener
 {
 	private static final Logger LOGGER = Logger.getLogger(NasdaqTest.class.getName());
 

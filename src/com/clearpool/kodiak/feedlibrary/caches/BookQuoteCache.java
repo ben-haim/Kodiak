@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 import com.clearpool.common.datastractures.Pair;
 import com.clearpool.common.marketdata.ReverseDoubleComparator;
 import com.clearpool.common.symbology.ISymbolConverter;
-import com.clearpool.kodiak.feedlibrary.callbacks.IMdBookQuoteListner;
+import com.clearpool.kodiak.feedlibrary.callbacks.IMdBookQuoteListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
 import com.clearpool.kodiak.feedlibrary.utils.symbolconverters.SymbolConverterFactory;
 import com.clearpool.messageobjects.marketdata.BookQuote;
@@ -27,14 +27,14 @@ public class BookQuoteCache implements IMdServiceCache
 	protected static final Logger LOGGER = Logger.getLogger(BookQuoteCache.class.getName());
 	protected static final int NUMBER_OF_LEVELS_TO_SEND = 5;
 
-	private final IMdBookQuoteListner bookListener;
+	private final IMdBookQuoteListener bookListener;
 	private final MdFeed feedType;
 	private final MdServiceType mdServiceType;
 	private final String range;
 	private final Map<String, BookOrder> orderIdToBookOrder;
 	private final Map<String, Book> symbolToBook;
 
-	public BookQuoteCache(IMdBookQuoteListner bookListener, MdFeed feedType, MdServiceType mdServiceType, String range)
+	public BookQuoteCache(IMdBookQuoteListener bookListener, MdFeed feedType, MdServiceType mdServiceType, String range)
 	{
 		this.bookListener = bookListener;
 		this.feedType = feedType;
