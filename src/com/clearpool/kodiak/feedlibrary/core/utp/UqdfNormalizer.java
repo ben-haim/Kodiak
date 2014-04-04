@@ -5,13 +5,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.clearpool.commonserver.ProcessTimer;
 import com.clearpool.kodiak.feedlibrary.caches.BboQuoteCache;
 import com.clearpool.kodiak.feedlibrary.caches.IMarketSessionSettable;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
@@ -58,13 +55,14 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 	private static final long MARKET_OPEN_TIME = getMarketOpenTime();
 	private static final long MARKET_CLOSE_TIME = getMarketCloseTime();
 	private static final long POST_MARKET_CLOSE_TIME = getPostMarketCloseTime();
-	private static final Timer TIMER = ProcessTimer.getProcessTimer();
 
 	private final NbboQuoteCache nbbos;
 	private final BboQuoteCache bbos;
 	private final Map<String, Integer> lotSizes;
 	private final Set<String> ipoSymbols;
 	protected final StateCache states;
+
+	private boolean isClosed = false;
 
 	public UqdfNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range)
 	{
@@ -73,18 +71,6 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 		this.states = new StateCache((IMdStateListener) callbacks.get(MdServiceType.STATE), this, MdFeed.UQDF, range);
 		this.lotSizes = getLotSizes();
 		this.ipoSymbols = new HashSet<>();
-
-		long delay = POST_MARKET_CLOSE_TIME - System.currentTimeMillis();
-		if (delay > 0)
-		{
-			TIMER.schedule(new TimerTask() {
-				@Override
-				public void run()
-				{
-					UqdfNormalizer.this.states.updateAllSymbols(MarketSession.CLOSED, System.currentTimeMillis(), null);
-				}
-			}, delay);
-		}
 	}
 
 	private static Map<String, Integer> getLotSizes()
@@ -374,6 +360,12 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 			{
 				LOGGER.info(processorName + " - Received Control Message Type=" + msgType);
 			}
+		}
+
+		if (!this.isClosed && UqdfNormalizer.POST_MARKET_CLOSE_TIME <= timestamp)
+		{
+			this.states.updateAllSymbols(MarketSession.CLOSED, timestamp, null);
+			this.isClosed = true;
 		}
 	}
 

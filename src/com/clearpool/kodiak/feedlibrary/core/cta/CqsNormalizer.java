@@ -4,12 +4,9 @@ import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
 import java.util.Map.Entry;
-import java.util.TimerTask;
 import java.util.logging.Logger;
 
-import com.clearpool.commonserver.ProcessTimer;
 import com.clearpool.kodiak.feedlibrary.caches.BboQuoteCache;
 import com.clearpool.kodiak.feedlibrary.caches.IMarketSessionSettable;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
@@ -56,12 +53,15 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 	private static final long MARKET_OPEN_TIME = getMarketOpenTime();
 	private static final long MARKET_CLOSE_TIME = getMarketCloseTime();
 	private static final long POST_MARKET_CLOSE_TIME = getPostMarketCloseTime();
-	private static final Timer TIMER = ProcessTimer.getProcessTimer();
 
 	private final NbboQuoteCache nbbos;
 	private final BboQuoteCache bbos;
 	private final Map<String, Integer> lotSizes;
 	protected final StateCache states;
+
+	private boolean isPreMarketSession = false;
+	private boolean isPostMarketSession = false;
+	private boolean isClosed = false;
 
 	public CqsNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range)
 	{
@@ -69,40 +69,6 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		this.bbos = new BboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.BBO), MdFeed.CQS, range);
 		this.states = new StateCache((IMdStateListener) callbacks.get(MdServiceType.STATE), this, MdFeed.CQS, range);
 		this.lotSizes = getLotSizes();
-
-		long delay = PRE_MARKET_OPEN_TIME - System.currentTimeMillis();
-		if (delay > 0)
-		{
-			TIMER.schedule(new TimerTask() {
-				@Override
-				public void run()
-				{
-					CqsNormalizer.this.states.updateAllSymbols(MarketSession.PREMARKET, System.currentTimeMillis(), null);
-				}
-			}, delay);
-		}
-		delay = MARKET_CLOSE_TIME - System.currentTimeMillis();
-		if (delay > 0)
-		{
-			TIMER.schedule(new TimerTask() {
-				@Override
-				public void run()
-				{
-					CqsNormalizer.this.states.updateAllSymbols(MarketSession.POSTMARKET, System.currentTimeMillis(), null);
-				}
-			}, delay);
-		}
-		delay = POST_MARKET_CLOSE_TIME - System.currentTimeMillis();
-		if (delay > 0)
-		{
-			TIMER.schedule(new TimerTask() {
-				@Override
-				public void run()
-				{
-					CqsNormalizer.this.states.updateAllSymbols(MarketSession.CLOSED, System.currentTimeMillis(), null);
-				}
-			}, delay);
-		}
 	}
 
 	private static Map<String, Integer> getLotSizes()
@@ -301,6 +267,22 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		else if (msgCategory == CATEGORY_CONTROL)
 		{
 			LOGGER.info(processorName + " - Received Control Message Type=" + msgType);
+		}
+
+		if (!this.isPreMarketSession && CqsNormalizer.PRE_MARKET_OPEN_TIME <= timestamp && timestamp < CqsNormalizer.MARKET_OPEN_TIME)
+		{
+			this.states.updateAllSymbols(MarketSession.PREMARKET, timestamp, null);
+			this.isPreMarketSession = true;
+		}
+		else if (!this.isPostMarketSession && CqsNormalizer.MARKET_CLOSE_TIME <= timestamp && timestamp < CqsNormalizer.POST_MARKET_CLOSE_TIME)
+		{
+			this.states.updateAllSymbols(MarketSession.POSTMARKET, timestamp, null);
+			this.isPostMarketSession = true;
+		}
+		else if (!this.isClosed && CqsNormalizer.POST_MARKET_CLOSE_TIME <= timestamp)
+		{
+			this.states.updateAllSymbols(MarketSession.CLOSED, timestamp, null);
+			this.isClosed = true;
 		}
 	}
 
