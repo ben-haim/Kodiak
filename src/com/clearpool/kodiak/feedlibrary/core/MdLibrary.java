@@ -50,20 +50,12 @@ public class MdLibrary
 			{
 				String line = this.lines[i];
 				int lineInt = Integer.parseInt(line);
-				String range = MdFeedProps.getProperty(this.feed.toString(), line, MdFeedProps.RANGE);
-				IMdNormalizer normalizer = createNormalizer(this.feed, range);
-				MdProcessor processor = new MdProcessor(this.feed, line, this.interfaceA, this.interfaceB, normalizer);
+				MdProcessor processor = new MdProcessor(this.feed, line, this.interfaceA, this.interfaceB, createNormalizer(this.feed,
+						MdFeedProps.getProperty(this.feed.toString(), line, MdFeedProps.RANGE)));
 				this.mdProcessors[i] = processor;
-				if (this.context.readFromSocket())
-				{
-					processor.registerWithSocketSelector(this.context.getSocketSelectorForLine(lineInt));
-				}
-				else
-				{
-					processor.registerWithFileSelector(this.readFromDir, this.context.getFileSelectorForLine(lineInt));
-				}
+				if (this.context.readFromSocket()) processor.registerWithSocketSelector(this.context.getSocketSelectorForLine(lineInt));
+				else processor.registerWithFileSelector(this.readFromDir, this.context.getFileSelectorForLine(lineInt));
 			}
-
 		}
 		catch (Exception e)
 		{
@@ -74,21 +66,11 @@ public class MdLibrary
 	// Helper
 	private IMdNormalizer createNormalizer(MdFeed normalizerFeed, String range)
 	{
-		Object object = instantiateClass(normalizerFeed.toString(), MdFeedProps.NORMALIZER, this.callbacks, range);
-		if (object == null) return null;
-		return (IMdNormalizer) object;
-	}
-
-	@SuppressWarnings("unchecked")
-	private static Object instantiateClass(String feed, String prop, Object constructorParameter1, String constructorParameter2)
-	{
-		String className = MdFeedProps.getProperty(feed, prop);
+		String className = MdFeedProps.getProperty(normalizerFeed.toString(), MdFeedProps.NORMALIZER);
 		if (className == null || className.isEmpty()) return null;
 		try
 		{
-			@SuppressWarnings("rawtypes")
-			Class classz = Class.forName(className);
-			return classz.getConstructor(Map.class, String.class).newInstance(constructorParameter1, constructorParameter2);
+			return (IMdNormalizer) Class.forName(className).getConstructor(Map.class, String.class).newInstance(this.callbacks, range);
 		}
 		catch (Exception e)
 		{
