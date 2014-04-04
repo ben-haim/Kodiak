@@ -56,8 +56,8 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 
 	private final NbboQuoteCache nbbos;
 	private final BboQuoteCache bbos;
+	private final StateCache states;
 	private final Map<String, Integer> lotSizes;
-	protected final StateCache states;
 
 	private boolean isPreMarketSession = false;
 	private boolean isPostMarketSession = false;

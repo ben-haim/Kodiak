@@ -58,9 +58,9 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 
 	private final NbboQuoteCache nbbos;
 	private final BboQuoteCache bbos;
+	private final StateCache states;
 	private final Map<String, Integer> lotSizes;
 	private final Set<String> ipoSymbols;
-	protected final StateCache states;
 
 	private boolean isClosed = false;
 
