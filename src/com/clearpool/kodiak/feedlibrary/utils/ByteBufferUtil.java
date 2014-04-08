@@ -44,4 +44,37 @@ public class ByteBufferUtil
 		}
 		return val;
 	}
+
+	public static void putChar(ByteBuffer buffer, char character)
+	{
+		buffer.put((byte) character);
+	}
+
+	/* Strings are left justified with 0x20 */
+	public static void putString(ByteBuffer buffer, String value, int length)
+	{
+		int numSpaces = length - value.length();
+		if (numSpaces >= 0)
+		{
+			byte[] bytes = value.getBytes();
+			buffer.put(bytes, 0, bytes.length);
+			for (int n = 0; n < numSpaces; n++)
+			{
+				putChar(buffer, ' ');
+			}
+		}
+	}
+
+	/* Numbers are right justified with 0x30 */
+	public static void putLong(ByteBuffer buffer, long value, int length)
+	{
+		byte[] bytes = new byte[length];
+		for (int n = 0; n < length; n++)
+		{
+			bytes[length - n - 1] = (byte) ('0' + (value % 10));
+			value = value / 10;
+		}
+		buffer.put(bytes);
+	}
+
 }
