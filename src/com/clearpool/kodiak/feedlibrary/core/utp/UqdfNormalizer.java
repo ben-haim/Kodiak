@@ -285,14 +285,14 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 
 				MarketState previousState = this.states.getData(symbol);
 				int conditionCode = (previousState == null) ? 0 : previousState.getConditionCode();
-				MdEntity.unsetCondition(conditionCode, MarketState.CONDITION_SHORT_SALE_RESTRICTION);
+				conditionCode = MdEntity.unsetCondition(conditionCode, MarketState.CONDITION_SHORT_SALE_RESTRICTION);
 				switch (regShoAction)
 				{
 					case '0':
 						break;
 					case '1':
 					case '2':
-						MdEntity.setCondition(conditionCode, MarketState.CONDITION_SHORT_SALE_RESTRICTION);
+						conditionCode = MdEntity.setCondition(conditionCode, MarketState.CONDITION_SHORT_SALE_RESTRICTION);
 						break;
 					default:
 						break;
@@ -423,10 +423,10 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 
 	private static int getStateConditionCode(char luldNbboIndicator, int conditionCode)
 	{
-		MdEntity.unsetCondition(conditionCode, MarketState.CONDITION_BID_NON_EXECUTABLE);
-		MdEntity.unsetCondition(conditionCode, MarketState.CONDITION_ASK_NON_EXECUTABLE);
-		MdEntity.unsetCondition(conditionCode, MarketState.CONDITION_BID_LIMIT_STATE);
-		MdEntity.unsetCondition(conditionCode, MarketState.CONDITION_ASK_LIMIT_STATE);
+		conditionCode = MdEntity.unsetCondition(conditionCode, MarketState.CONDITION_BID_NON_EXECUTABLE);
+		conditionCode = MdEntity.unsetCondition(conditionCode, MarketState.CONDITION_ASK_NON_EXECUTABLE);
+		conditionCode = MdEntity.unsetCondition(conditionCode, MarketState.CONDITION_BID_LIMIT_STATE);
+		conditionCode = MdEntity.unsetCondition(conditionCode, MarketState.CONDITION_ASK_LIMIT_STATE);
 		switch (luldNbboIndicator)
 		{
 			case ' ':

@@ -676,7 +676,7 @@ public class CqsNormalizerTest
 
 	private ByteBuffer createLocalIssueShortQuote()
 	{
-		ByteBuffer buffer = ByteBuffer.allocate(102);
+		ByteBuffer buffer = ByteBuffer.allocate(58);
 		populateHeader(buffer, 'L', 'D', 'E', ' ');
 		buffer.flip();
 		return buffer;
