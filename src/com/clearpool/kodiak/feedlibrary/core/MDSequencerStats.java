@@ -1,5 +1,7 @@
 package com.clearpool.kodiak.feedlibrary.core;
 
+import com.clearpool.common.util.DateUtil;
+
 public class MDSequencerStats
 {
 	private long totalDropCount;
@@ -47,15 +49,15 @@ public class MDSequencerStats
 		builder.append("PacketsProcessed=").append(this.intervalPacketProcessedCount).append("(").append(this.totalPacketProcessedCount).append(')');
 		builder.append("| MessagesProcessed=").append(this.intervalMessageProcessedCount).append("(").append(this.totalMessageProcessedCount).append(')');
 		builder.append("| Drops=").append(this.intervalDropCount).append("(").append(this.totalDropCount).append(')');
-		long totalProcessTimeSeconds = this.totalProcessTime / 1000000000;
-		long intervalProcessTimeSeconds = this.intervalProcessTime / 1000000000;
+		long totalProcessTimeSeconds = this.totalProcessTime / DateUtil.NANOS_PER_SECOND;
+		long intervalProcessTimeSeconds = this.intervalProcessTime / DateUtil.NANOS_PER_SECOND;
 		builder.append(" | TotalProcessTime(s)=").append(intervalProcessTimeSeconds).append("(").append(totalProcessTimeSeconds).append(')');
 		long packetsPerSecond = (totalProcessTimeSeconds == 0) ? 0 : this.totalPacketProcessedCount / totalProcessTimeSeconds;
 		long intervalPacketsPerSecond = (intervalProcessTimeSeconds == 0) ? 0 : this.intervalPacketProcessedCount / intervalProcessTimeSeconds;
 		builder.append(" | packets/s=").append(intervalPacketsPerSecond).append("(").append(packetsPerSecond).append(')');
-		long messagesPerSecond = (this.totalProcessTime == 0) ? 0 : this.totalMessageProcessedCount * 1000000 / this.totalProcessTime;
-		long intervalMessagesPerSecond = (this.intervalProcessTime == 0) ? 0 : this.intervalMessageProcessedCount * 1000000 / this.intervalProcessTime;
-		builder.append(" | messages/ms=").append(intervalMessagesPerSecond).append("(").append(messagesPerSecond).append(')');
+		long messagesPerMillisecond = (this.totalProcessTime == 0) ? 0 : this.totalMessageProcessedCount * DateUtil.NANOS_PER_MILLISECOND / this.totalProcessTime;
+		long intervalMessagesPerMillisecond = (this.intervalProcessTime == 0) ? 0 : this.intervalMessageProcessedCount * DateUtil.NANOS_PER_MILLISECOND / this.intervalProcessTime;
+		builder.append(" | messages/ms=").append(intervalMessagesPerMillisecond).append("(").append(messagesPerMillisecond).append(')');
 		resetInterval();
 		return builder.toString();
 	}

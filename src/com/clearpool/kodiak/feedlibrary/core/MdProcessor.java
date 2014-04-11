@@ -8,6 +8,11 @@ import java.nio.channels.DatagramChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.HdrHistogram.Histogram;
+import org.HdrHistogram.HistogramData;
+
+import com.clearpool.common.util.DateUtil;
+
 public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 {
 	private static final Logger LOGGER = Logger.getLogger(MdProcessor.class.getName());
@@ -22,6 +27,7 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 	private final String groupB;
 	private final MdSequencer sequencer;
 	private final IMdNormalizer normalizer;
+	private final Histogram procStats;
 
 	private DatagramChannel channelA;
 	private DatagramChannel channelB;
@@ -38,6 +44,7 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 		this.groupB = MdFeedProps.getProperty(feed.toString(), this.line, "B");
 		this.sequencer = new MdSequencer(this, this.processorName, false);
 		this.normalizer = normalizer;
+		this.procStats = new Histogram(DateUtil.NANOS_PER_MINUTE, 0);
 	}
 
 	// Called by MDLibrary during start sequence
@@ -76,17 +83,17 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 	@Override
 	public void onSelection(Object key, ByteBuffer buffer)
 	{
+		MdFeedPacket packet = MdFeedPacketFactory.createPacket(this.feed, System.nanoTime());
 		if (this.feed.containsMultiplePacketsInBlock())
 		{
 			while (buffer.remaining() > 1)
 			{
 				buffer.get(); // read SOH or US
-				MdFeedPacket packet = MdFeedPacketFactory.createPacket(this.feed);
 				int startPosition = buffer.position();
 				while (buffer.hasRemaining())
 				{
 					byte nextByte = buffer.get();
-					if(nextByte == 31 || nextByte == 3) break;
+					if (nextByte == 31 || nextByte == 3) break;
 				}
 				int separatorPosition = buffer.position();
 				byte[] bytes = new byte[(separatorPosition - 1) - startPosition];
@@ -100,7 +107,6 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 		}
 		else
 		{
-			MdFeedPacket packet = MdFeedPacketFactory.createPacket(this.feed);
 			packet.setBuffer(buffer);
 			packet.parseHeader();
 			this.sequencer.sequencePacket(key, packet);
@@ -116,6 +122,7 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 		{
 			handleEndOfTransmission();
 		}
+		this.procStats.recordValue(System.nanoTime() - packet.getSelectionTimeNanos());
 	}
 
 	private void handleEndOfTransmission()
@@ -150,5 +157,10 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 	public String getStatistics()
 	{
 		return this.sequencer.getStatistics();
+	}
+
+	public HistogramData getHistogramData()
+	{
+		return this.procStats.getHistogramData();
 	}
 }

@@ -1,6 +1,8 @@
 package com.clearpool.kodiak.feedlibrary.core;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MdLibraryContext
 {
@@ -8,11 +10,17 @@ public class MdLibraryContext
 	private final boolean readFromSocket;
 	private final int recvBufferSize;
 	private final boolean useQueuedSelector;
+	private final Thread[] selectorThreads;
+	private Timer timer;
 
 	private boolean publishing;
-	private Thread[] selectorThreads;
 
 	public MdLibraryContext(int selectorCount, boolean readFromSocket, int recvBufferSize, boolean publishing, boolean useQueuedSelector) throws IOException
+	{
+		this(selectorCount, readFromSocket, recvBufferSize, publishing, useQueuedSelector, new Timer("MDLibraryContext Timer", true));
+	}
+
+	public MdLibraryContext(int selectorCount, boolean readFromSocket, int recvBufferSize, boolean publishing, boolean useQueuedSelector, Timer timer) throws IOException
 	{
 		this.selectorCount = selectorCount;
 		this.readFromSocket = readFromSocket;
@@ -20,33 +28,17 @@ public class MdLibraryContext
 		this.useQueuedSelector = useQueuedSelector;
 
 		this.setPublishing(publishing);
-		init();
-	}
-
-	private void init() throws IOException
-	{
 		if (this.readFromSocket)
 		{
 			this.selectorThreads = new MdSocketSelector[this.selectorCount];
 			for (int i = 0; i < this.selectorThreads.length; i++)
 			{
-				MdSocketSelector mdSelector = null;
-				if (this.useQueuedSelector)
-				{
-					mdSelector = new MdQueuedSocketSelector(String.valueOf(i), this.recvBufferSize);
-				}
-				else
-				{
-					mdSelector = new MdSocketSelector(String.valueOf(i), this.recvBufferSize);
-				}
-				this.selectorThreads[i] = mdSelector;
+				this.selectorThreads[i] = this.useQueuedSelector ? new MdQueuedSocketSelector(String.valueOf(i), this.recvBufferSize) : new MdSocketSelector(String.valueOf(i),
+						this.recvBufferSize);
 			}
 		}
-		else
-		{
-			MdFileSelector fileSelector = new MdFileSelector();
-			this.selectorThreads = new Thread[] { fileSelector };
-		}
+		else this.selectorThreads = new Thread[] { new MdFileSelector() };
+		this.timer = timer;
 	}
 
 	public MdSocketSelector getSocketSelectorForLine(int line)
@@ -100,5 +92,11 @@ public class MdLibraryContext
 	public int getRecvBufferSize()
 	{
 		return this.recvBufferSize;
+	}
+
+	public void schedule(TimerTask task, long delay, long period)
+	{
+		if (this.timer == null) this.timer = new Timer("MDLibraryContext Timer", true);
+		this.timer.schedule(task, delay, period);
 	}
 }

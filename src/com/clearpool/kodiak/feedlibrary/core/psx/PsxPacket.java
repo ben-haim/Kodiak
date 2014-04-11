@@ -6,16 +6,16 @@ import com.clearpool.kodiak.feedlibrary.utils.ByteBufferUtil;
 public class PsxPacket extends MdFeedPacket
 {
 	private boolean isEndOfTransmission;
-	
-	public PsxPacket()
+
+	public PsxPacket(long selectionTimeNanos)
 	{
-		super(false);
+		super(false, selectionTimeNanos);
 	}
 
 	@Override
 	public void parseHeader()
 	{
-		ByteBufferUtil.advancePosition(this.buffer, 10); //skip session
+		ByteBufferUtil.advancePosition(this.buffer, 10); // skip session
 		this.sequenceNumber = this.buffer.getLong();
 		this.messageCount = ByteBufferUtil.getUnsignedShort(this.buffer);
 		this.isEndOfTransmission = false;
@@ -32,7 +32,7 @@ public class PsxPacket extends MdFeedPacket
 	{
 		return this.isEndOfTransmission;
 	}
-	
+
 	public void setEndOfTransmission(boolean isEndOfTransmission)
 	{
 		this.isEndOfTransmission = isEndOfTransmission;

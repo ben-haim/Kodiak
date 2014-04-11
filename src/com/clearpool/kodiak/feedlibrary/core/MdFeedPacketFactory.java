@@ -10,28 +10,26 @@ import com.clearpool.kodiak.feedlibrary.core.utp.UtpPacket;
 
 public class MdFeedPacketFactory
 {
-	public static MdFeedPacket createPacket(MdFeed feed)
+	public static MdFeedPacket createPacket(MdFeed feed, long selectionTimeNanos)
 	{
 		switch (feed)
 		{
 			case OPRA:
-				return new OpraPacket();
+				return new OpraPacket(selectionTimeNanos);
 			case CQS:
-				return new CtaPacket();
 			case CTS:
-				return new CtaPacket();
+				return new CtaPacket(selectionTimeNanos);
 			case UQDF:
-				return new UtpPacket();
 			case UTDF:
-				return new UtpPacket();
+				return new UtpPacket(selectionTimeNanos);
 			case NASDAQ:
-				return new NasdaqPacket();
+				return new NasdaqPacket(selectionTimeNanos);
 			case BX:
-				return new BxPacket();
+				return new BxPacket(selectionTimeNanos);
 			case PSX:
-				return new PsxPacket();
+				return new PsxPacket(selectionTimeNanos);
 			case ARCA:
-				return new ArcaPacket();
+				return new ArcaPacket(selectionTimeNanos);
 			default:
 				return null;
 		}

@@ -1067,7 +1067,7 @@ public class UqdfNormalizerTest
 
 	private static UtpPacket createUtpPacket(ByteBuffer buffer)
 	{
-		UtpPacket packet = new UtpPacket();
+		UtpPacket packet = new UtpPacket(System.nanoTime());
 		packet.setBuffer(buffer);
 		packet.parseHeader();
 		return packet;

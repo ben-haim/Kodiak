@@ -1,8 +1,8 @@
 package com.clearpool.kodiak.feedlibrary.core.opra;
 
+import com.clearpool.common.util.DateUtil;
 import com.clearpool.kodiak.feedlibrary.core.MdFeedPacket;
 import com.clearpool.kodiak.feedlibrary.utils.ByteBufferUtil;
-
 
 public class OpraPacket extends MdFeedPacket
 {
@@ -11,26 +11,26 @@ public class OpraPacket extends MdFeedPacket
 	private boolean isSequenceNumberReset;
 	private boolean isEndOfTransmission;
 
-	public OpraPacket()
+	public OpraPacket(long selectionTimeNanos)
 	{
-		super(true);
+		super(true, selectionTimeNanos);
 	}
 
 	@Override
 	public void parseHeader()
 	{
-		ByteBufferUtil.advancePosition(this.buffer, 6); //skip version + blockSize, data feed indicator, retransmission indicator, reserved field
+		ByteBufferUtil.advancePosition(this.buffer, 6); // skip version + blockSize, data feed indicator, retransmission indicator, reserved field
 		this.sequenceNumber = ByteBufferUtil.getUnsignedInt(this.buffer);
 		this.messageCount = ByteBufferUtil.getUnsignedByte(this.buffer);
 		readTimestamp();
-		ByteBufferUtil.advancePosition(this.buffer, 2); //skip checksum
-		if(this.messageCount == 1)
+		ByteBufferUtil.advancePosition(this.buffer, 2); // skip checksum
+		if (this.messageCount == 1)
 		{
 			int position = this.buffer.position();
-			ByteBufferUtil.advancePosition(this.buffer, 1); //skip participantId
-			char category = (char)this.buffer.get();
-			char type = (char)this.buffer.get();
-			ByteBufferUtil.advancePosition(this.buffer, 1); //skip indicator
+			ByteBufferUtil.advancePosition(this.buffer, 1); // skip participantId
+			char category = (char) this.buffer.get();
+			char type = (char) this.buffer.get();
+			ByteBufferUtil.advancePosition(this.buffer, 1); // skip indicator
 			this.isSequenceNumberReset = (category == 'H' && type == 'K');
 			this.isEndOfTransmission = (category == 'H' && type == 'J');
 			this.buffer.position(position);
@@ -41,13 +41,13 @@ public class OpraPacket extends MdFeedPacket
 			this.isEndOfTransmission = false;
 		}
 	}
-	
+
 	private void readTimestamp()
 	{
 		long secondsPart = ByteBufferUtil.getUnsignedInt(this.buffer);
 		long nanosPart = ByteBufferUtil.getUnsignedInt(this.buffer);
-		this.timestamp = secondsPart * 1000 + nanosPart/1000000;
-		this.nanos = nanosPart % 1000000;
+		this.timestamp = (secondsPart * DateUtil.MILLIS_PER_SECOND) + (nanosPart / DateUtil.NANOS_PER_MILLISECOND);
+		this.nanos = nanosPart % DateUtil.NANOS_PER_MILLISECOND;
 	}
 
 	public long getTimestamp()

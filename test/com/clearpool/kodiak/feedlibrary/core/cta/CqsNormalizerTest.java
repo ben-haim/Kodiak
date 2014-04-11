@@ -592,7 +592,7 @@ public class CqsNormalizerTest
 
 	private static CtaPacket createCtaPacket(ByteBuffer buffer)
 	{
-		CtaPacket packet = new CtaPacket();
+		CtaPacket packet = new CtaPacket(System.nanoTime());
 		packet.setBuffer(buffer);
 		packet.parseHeader();
 		return packet;

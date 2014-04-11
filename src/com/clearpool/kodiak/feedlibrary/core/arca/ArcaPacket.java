@@ -7,9 +7,9 @@ public class ArcaPacket extends MdFeedPacket
 {
 	private short deliveryFlag;
 
-	public ArcaPacket()
+	public ArcaPacket(long selectionTimeNanos)
 	{
-		super(false);
+		super(false, selectionTimeNanos);
 	}
 
 	@Override

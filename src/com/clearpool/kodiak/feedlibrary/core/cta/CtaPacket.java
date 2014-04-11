@@ -2,46 +2,46 @@ package com.clearpool.kodiak.feedlibrary.core.cta;
 
 import java.nio.ByteBuffer;
 
+import com.clearpool.common.util.DateUtil;
 import com.clearpool.kodiak.feedlibrary.core.MdFeedPacket;
 import com.clearpool.kodiak.feedlibrary.utils.ByteBufferUtil;
 import com.clearpool.kodiak.feedlibrary.utils.MdDateUtil;
 
-
 public class CtaPacket extends MdFeedPacket
-{	
+{
 	private static final long TODAY = MdDateUtil.TODAY_EST.getTime();
-	
+
 	private char messageCategory;
 	private char messageType;
 	private char messageNetwork;
 	private char participantId;
 	private long timestamp;
-	
-	public CtaPacket()
+
+	public CtaPacket(long selectionTimeNanos)
 	{
-		super(true);
+		super(true, selectionTimeNanos);
 	}
 
 	@Override
 	public void parseHeader()
 	{
-		this.messageCategory = (char)this.buffer.get();
-		this.messageType = (char)this.buffer.get();
-		this.messageNetwork = (char)this.buffer.get();
-		ByteBufferUtil.advancePosition(this.buffer, 5); //retrans requester, header id, reserved
+		this.messageCategory = (char) this.buffer.get();
+		this.messageType = (char) this.buffer.get();
+		this.messageNetwork = (char) this.buffer.get();
+		ByteBufferUtil.advancePosition(this.buffer, 5); // retrans requester, header id, reserved
 		this.sequenceNumber = ByteBufferUtil.readAsciiLong(this.buffer, 9);
-		this.participantId = (char)this.buffer.get();
+		this.participantId = (char) this.buffer.get();
 		this.timestamp = readTimestamp(this.buffer);
 		this.messageCount = 1;
 	}
-	
+
 	private static long readTimestamp(ByteBuffer buffer)
 	{
-		int hours =  buffer.get() - '0';
+		int hours = buffer.get() - '0';
 		int mins = buffer.get() - '0';
 		int seconds = buffer.get() - '0';
 		long millis = ByteBufferUtil.readAsciiLong(buffer, 3);
-		return TODAY + hours*3600000 + mins*60000 + seconds*1000 + millis;
+		return TODAY + (hours * DateUtil.MILLIS_PER_HOUR) + (mins * DateUtil.MILLIS_PER_MINUTE) + (seconds * DateUtil.MILLIS_PER_SECOND) + millis;
 	}
 
 	public char getMessageCategory()

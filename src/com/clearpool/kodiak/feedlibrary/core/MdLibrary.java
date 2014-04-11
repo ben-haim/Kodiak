@@ -2,7 +2,6 @@ package com.clearpool.kodiak.feedlibrary.core;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,7 +11,6 @@ import com.clearpool.messageobjects.marketdata.MdServiceType;
 public class MdLibrary
 {
 	private static final Logger LOGGER = Logger.getLogger(MdLibrary.class.getName());
-	private static final Timer TIMER = new Timer("MDLibrary Timer", true);
 
 	private final MdLibraryContext context;
 	private final MdFeed feed;
@@ -24,7 +22,7 @@ public class MdLibrary
 
 	private MdProcessor[] mdProcessors;
 
-	public MdLibrary(MdLibraryContext context, MdFeed feed, String[] lines, String interfaceA, String interfaceB, int statTime, String readFromDir)
+	public MdLibrary(MdLibraryContext context, MdFeed feed, String[] lines, String interfaceA, String interfaceB, long startTime, String readFromDir)
 	{
 		this.context = context;
 		this.feed = feed;
@@ -33,7 +31,7 @@ public class MdLibrary
 		this.interfaceB = interfaceB;
 		this.readFromDir = readFromDir;
 		this.callbacks = new HashMap<MdServiceType, IMdLibraryCallback>();
-		if (statTime > 0) TIMER.schedule(new MdLibraryStatisticsTask(this), statTime, statTime);
+		if (startTime > 0) this.context.schedule(new MdLibraryStatisticsTask(this), startTime, startTime);
 	}
 
 	public void registerService(MdServiceType serviceType, IMdLibraryCallback callback)

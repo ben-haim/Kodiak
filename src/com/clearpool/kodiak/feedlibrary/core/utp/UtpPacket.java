@@ -2,45 +2,45 @@ package com.clearpool.kodiak.feedlibrary.core.utp;
 
 import java.nio.ByteBuffer;
 
+import com.clearpool.common.util.DateUtil;
 import com.clearpool.kodiak.feedlibrary.core.MdFeedPacket;
 import com.clearpool.kodiak.feedlibrary.utils.ByteBufferUtil;
 import com.clearpool.kodiak.feedlibrary.utils.MdDateUtil;
 
-
 public class UtpPacket extends MdFeedPacket
 {
 	private static final long TODAY = MdDateUtil.TODAY_EST.getTime();
-	
+
 	private char messageCategory;
 	private char messageType;
 	private char participantId;
 	private long timestamp;
-	
-	public UtpPacket()
+
+	public UtpPacket(long selectionTimeNanos)
 	{
-		super(true);
+		super(true, selectionTimeNanos);
 	}
 
 	@Override
 	public void parseHeader()
 	{
-		this.messageCategory = (char)this.buffer.get();
-		this.messageType = (char)this.buffer.get();
-		ByteBufferUtil.advancePosition(this.buffer, 3); //session identifier, retrans requester
+		this.messageCategory = (char) this.buffer.get();
+		this.messageType = (char) this.buffer.get();
+		ByteBufferUtil.advancePosition(this.buffer, 3); // session identifier, retrans requester
 		this.sequenceNumber = ByteBufferUtil.readAsciiLong(this.buffer, 8);
-		this.participantId = (char)this.buffer.get();
+		this.participantId = (char) this.buffer.get();
 		this.timestamp = readTimestamp(this.buffer);
-		ByteBufferUtil.advancePosition(this.buffer, 1); //reserved
+		ByteBufferUtil.advancePosition(this.buffer, 1); // reserved
 		this.messageCount = 1;
 	}
 
 	private static long readTimestamp(ByteBuffer buffer)
 	{
-		int hours =  (int)ByteBufferUtil.readAsciiLong(buffer, 2);
-		int mins = (int)ByteBufferUtil.readAsciiLong(buffer, 2);
-		int seconds = (int)ByteBufferUtil.readAsciiLong(buffer, 2);
+		int hours = (int) ByteBufferUtil.readAsciiLong(buffer, 2);
+		int mins = (int) ByteBufferUtil.readAsciiLong(buffer, 2);
+		int seconds = (int) ByteBufferUtil.readAsciiLong(buffer, 2);
 		long millis = ByteBufferUtil.readAsciiLong(buffer, 3);
-		return TODAY + hours*3600000 + mins*60000 + seconds*1000 + millis;
+		return TODAY + (hours * DateUtil.MILLIS_PER_HOUR) + (mins * DateUtil.MILLIS_PER_MINUTE) + (seconds * DateUtil.MILLIS_PER_SECOND) + millis;
 	}
 
 	public char getMessageCategory()
@@ -52,7 +52,7 @@ public class UtpPacket extends MdFeedPacket
 	{
 		return this.messageType;
 	}
-	
+
 	public char getParticipantId()
 	{
 		return this.participantId;
