@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.HdrHistogram.Histogram;
-import org.HdrHistogram.HistogramData;
 
 import com.clearpool.common.util.DateUtil;
 
@@ -44,7 +43,7 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 		this.groupB = MdFeedProps.getProperty(feed.toString(), this.line, "B");
 		this.sequencer = new MdSequencer(this, this.processorName, false);
 		this.normalizer = normalizer;
-		this.procStats = new Histogram(DateUtil.NANOS_PER_MINUTE, 0);
+		this.procStats = new Histogram(DateUtil.NANOS_PER_MINUTE, 3);
 	}
 
 	// Called by MDLibrary during start sequence
@@ -159,8 +158,8 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 		return this.sequencer.getStatistics();
 	}
 
-	public HistogramData getHistogramData()
+	public Histogram getHistogram()
 	{
-		return this.procStats.getHistogramData();
+		return this.procStats;
 	}
 }
