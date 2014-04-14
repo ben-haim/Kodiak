@@ -38,36 +38,16 @@ public class MdLibraryStatisticsTask extends TimerTask
 					builder.append(" Stats=[").append(processor.getStatistics());
 					processor.getHistogram().copyInto(this.procStats);
 					HistogramData procData = this.procStats.getHistogramData();
-					builder.append("] Histogram=[Count=").append(procData.getTotalCount());
+					long count = procData.getTotalCount();
+					builder.append("] Histogram=[Count=").append(count);
 					builder.append(", Min=").append(procData.getMinValue());
 					builder.append(", Max=").append(procData.getMaxValue());
 					builder.append(", Mean=").append(procData.getMean());
-					builder.append(", Median=");
-					try
+					if (count > 0)
 					{
-						builder.append(procData.getValueAtPercentile(50));
-					}
-					catch (ArrayIndexOutOfBoundsException e)
-					{
-						builder.append("n/a");
-					}
-					builder.append(", 95%ile=");
-					try
-					{
-						builder.append(procData.getValueAtPercentile(95));
-					}
-					catch (ArrayIndexOutOfBoundsException e)
-					{
-						builder.append("n/a");
-					}
-					builder.append(", 99%ile=");
-					try
-					{
-						builder.append(procData.getValueAtPercentile(99));
-					}
-					catch (ArrayIndexOutOfBoundsException e)
-					{
-						builder.append("n/a");
+						builder.append(", Median=").append(procData.getValueAtPercentile(50));
+						builder.append(", 95%ile=").append(procData.getValueAtPercentile(95));
+						builder.append(", 99%ile=").append(procData.getValueAtPercentile(99));
 					}
 					builder.append("]");
 					LOGGER.info(builder.toString());
