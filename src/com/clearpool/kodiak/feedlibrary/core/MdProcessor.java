@@ -122,8 +122,8 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 			handleEndOfTransmission();
 		}
 		long latency = System.nanoTime() - packet.getSelectionTimeNanos();
-		if (latency > 0) this.procStats.recordValue(latency);
-		else LOGGER.log(Level.WARNING, "Skipping histogram update with reported latency of " + latency + " nanos");
+		if (latency <= 0 || latency > DateUtil.NANOS_PER_MINUTE) LOGGER.log(Level.WARNING, "Skipping histogram update with reported latency of " + latency + " nanos");
+		else this.procStats.recordValue(latency);
 	}
 
 	private void handleEndOfTransmission()

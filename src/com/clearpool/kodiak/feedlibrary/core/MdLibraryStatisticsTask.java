@@ -37,6 +37,7 @@ public class MdLibraryStatisticsTask extends TimerTask
 					builder.append(" Range=").append(processor.getRange());
 					builder.append(" Stats=[").append(processor.getStatistics());
 					processor.getHistogram().copyInto(this.procStats);
+					this.procStats.reestablishTotalCount();
 					HistogramData procData = this.procStats.getHistogramData();
 					long count = procData.getTotalCount();
 					builder.append("] Histogram=[Count=").append(count);
