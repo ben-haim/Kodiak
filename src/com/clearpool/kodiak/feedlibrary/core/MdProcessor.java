@@ -8,7 +8,8 @@ import java.nio.channels.DatagramChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.HdrHistogram.Histogram;
+import org.HdrHistogram.HistogramData;
+import org.HdrHistogram.SynchronizedHistogram;
 
 import com.clearpool.common.util.DateUtil;
 
@@ -26,7 +27,7 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 	private final String groupB;
 	private final MdSequencer sequencer;
 	private final IMdNormalizer normalizer;
-	private final Histogram procStats;
+	private final SynchronizedHistogram procStats;
 
 	private DatagramChannel channelA;
 	private DatagramChannel channelB;
@@ -43,7 +44,7 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 		this.groupB = MdFeedProps.getProperty(feed.toString(), this.line, "B");
 		this.sequencer = new MdSequencer(this, this.processorName, false);
 		this.normalizer = normalizer;
-		this.procStats = new Histogram(DateUtil.NANOS_PER_MINUTE, 3);
+		this.procStats = new SynchronizedHistogram(DateUtil.NANOS_PER_MINUTE, 3);
 	}
 
 	// Called by MDLibrary during start sequence
@@ -158,8 +159,8 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 		return this.sequencer.getStatistics();
 	}
 
-	public Histogram getHistogram()
+	public HistogramData getHistogramData()
 	{
-		return this.procStats;
+		return this.procStats.getHistogramData();
 	}
 }
