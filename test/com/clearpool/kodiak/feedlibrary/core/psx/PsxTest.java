@@ -1,6 +1,5 @@
 package com.clearpool.kodiak.feedlibrary.core.psx;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +16,7 @@ public class PsxTest implements IMdBookQuoteListener, IMdImbalanceListener
 {
 	private static final Logger LOGGER = Logger.getLogger(PsxTest.class.getName());
 
-	public PsxTest() throws IOException
+	public PsxTest() throws Exception
 	{
 		MdLibraryContext context = new MdLibraryContext(1, false, 0, true, false);
 		MdLibrary nasdaqLibrary = new MdLibrary(context, MdFeed.PSX, new String[] { "1" }, "127.0.0.1", "127.0.0.1", 5000, "C:\\nasdaq");

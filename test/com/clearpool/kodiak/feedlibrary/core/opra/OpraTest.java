@@ -1,6 +1,5 @@
 package com.clearpool.kodiak.feedlibrary.core.opra;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,9 +16,9 @@ public class OpraTest implements IMdQuoteListener, IMdSaleListener
 {
 	private static final Logger LOGGER = Logger.getLogger(OpraTest.class.getName());
 
-	public OpraTest() throws IOException
+	public OpraTest() throws Exception
 	{
-		MdLibraryContext context = new MdLibraryContext(1, false, 0, true, false);	
+		MdLibraryContext context = new MdLibraryContext(1, false, 0, true, false);
 		MdLibrary library = new MdLibrary(context, MdFeed.OPRA, new String[] { "3" }, "127.0.0.1", "127.0.0.1", 5000, "C:\\opra");
 		library.registerService(MdServiceType.NBBO, this);
 		library.registerService(MdServiceType.BBO, this);

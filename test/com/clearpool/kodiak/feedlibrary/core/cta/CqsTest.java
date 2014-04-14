@@ -1,6 +1,5 @@
 package com.clearpool.kodiak.feedlibrary.core.cta;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +16,7 @@ public class CqsTest implements IMdQuoteListener, IMdStateListener
 {
 	private static final Logger LOGGER = Logger.getLogger(CqsTest.class.getName());
 
-	public CqsTest() throws IOException
+	public CqsTest() throws Exception
 	{
 		MdLibraryContext context = new MdLibraryContext(1, false, 0, true, false);
 		MdLibrary cqsLibrary = new MdLibrary(context, MdFeed.CQS, new String[] { "1", "13" }, "127.0.0.1", "127.0.0.1", 5000, "C:\\cta");

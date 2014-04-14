@@ -160,6 +160,11 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 		return this.sequencer.getStatistics();
 	}
 
+	public String getProcessorName()
+	{
+		return this.processorName;
+	}
+
 	public Histogram getHistogram()
 	{
 		return this.procStats;

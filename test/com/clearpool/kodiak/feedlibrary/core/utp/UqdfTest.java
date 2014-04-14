@@ -1,6 +1,5 @@
 package com.clearpool.kodiak.feedlibrary.core.utp;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +16,7 @@ public class UqdfTest implements IMdQuoteListener, IMdStateListener
 {
 	private static final Logger LOGGER = Logger.getLogger(UqdfTest.class.getName());
 
-	public UqdfTest() throws IOException
+	public UqdfTest() throws Exception
 	{
 		MdLibraryContext context = new MdLibraryContext(1, false, 0, true, false);
 		MdLibrary uqdfLibrary = new MdLibrary(context, MdFeed.UQDF, new String[] { "1" }, "127.0.0.1", "127.0.0.1", 5000, "C:\\utp");

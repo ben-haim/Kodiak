@@ -22,7 +22,7 @@ public class MdLibrary
 
 	private MdProcessor[] mdProcessors;
 
-	public MdLibrary(MdLibraryContext context, MdFeed feed, String[] lines, String interfaceA, String interfaceB, long startTime, String readFromDir)
+	public MdLibrary(MdLibraryContext context, MdFeed feed, String[] lines, String interfaceA, String interfaceB, long startTime, String readFromDir) throws Exception
 	{
 		this.context = context;
 		this.feed = feed;

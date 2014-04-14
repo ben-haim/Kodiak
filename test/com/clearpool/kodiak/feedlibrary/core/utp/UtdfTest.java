@@ -1,6 +1,5 @@
 package com.clearpool.kodiak.feedlibrary.core.utp;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,7 +14,7 @@ public class UtdfTest implements IMdSaleListener
 {
 	private static final Logger LOGGER = Logger.getLogger(UqdfTest.class.getName());
 
-	public UtdfTest() throws IOException
+	public UtdfTest() throws Exception
 	{
 		MdLibraryContext context = new MdLibraryContext(1, false, 0, true, false);
 		MdLibrary utdfLibrary = new MdLibrary(context, MdFeed.UTDF, new String[] { "1" }, "127.0.0.1", "127.0.0.1", 5000, "C:\\utp");

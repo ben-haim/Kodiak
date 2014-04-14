@@ -1,6 +1,5 @@
 package com.clearpool.kodiak.feedlibrary.core.nasdaq;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +16,7 @@ public class NasdaqTest implements IMdBookQuoteListener, IMdImbalanceListener
 {
 	private static final Logger LOGGER = Logger.getLogger(NasdaqTest.class.getName());
 
-	public NasdaqTest() throws IOException
+	public NasdaqTest() throws Exception
 	{
 		MdLibraryContext context = new MdLibraryContext(1, false, 0, true, false);
 		MdLibrary nasdaqLibrary = new MdLibrary(context, MdFeed.NASDAQ, new String[] { "1" }, "127.0.0.1", "127.0.0.1", 5000, "C:\\nasdaq");
