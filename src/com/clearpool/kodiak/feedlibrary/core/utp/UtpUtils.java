@@ -1,12 +1,10 @@
 package com.clearpool.kodiak.feedlibrary.core.utp;
 
-import java.math.BigDecimal;
-
 import com.clearpool.messageobjects.marketdata.Exchange;
 
 public class UtpUtils
 {
-	private static final int[] POWERS = new int[] { 100, 1000, 10000 };
+	private static final double[] POWERS = new double[] { 1E2, 1E3, 1E4 };
 	private static final Exchange[] EXCHANGES = new Exchange[26];
 
 	static
@@ -31,7 +29,7 @@ public class UtpUtils
 
 	public static double getPrice(long value, char denominatorCode)
 	{
-		return new BigDecimal(value).divide(new BigDecimal(POWERS[denominatorCode - 'B'])).doubleValue();
+		return value / POWERS[denominatorCode - 'B'];
 	}
 
 	public static Exchange getExchange(char participantId)

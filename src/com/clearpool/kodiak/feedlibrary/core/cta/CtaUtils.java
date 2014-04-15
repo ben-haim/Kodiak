@@ -1,6 +1,5 @@
 package com.clearpool.kodiak.feedlibrary.core.cta;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +7,7 @@ import com.clearpool.messageobjects.marketdata.Exchange;
 
 public class CtaUtils
 {
-	private static final int[] POWERS = new int[] { 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000 };
+	private static final double[] POWERS = new double[] { 1E1, 1E2, 1E3, 1E4, 1E5, 1E6, 1E7, 1E8 };
 	private static final Exchange[] EXCHANGES = new Exchange[26];
 	private static final Map<String, Exchange> FINRA_EXCHANGES = new HashMap<>();
 
@@ -39,7 +38,7 @@ public class CtaUtils
 	{
 		if (denominatorCode == '0') return 0;
 		if (denominatorCode == 'I') return value;
-		return new BigDecimal(value).divide(new BigDecimal(POWERS[denominatorCode - 'A'])).doubleValue();
+		return value / POWERS[denominatorCode - 'A'];
 	}
 
 	public static Exchange getExchange(char participantId, String finraMarketMakerId)

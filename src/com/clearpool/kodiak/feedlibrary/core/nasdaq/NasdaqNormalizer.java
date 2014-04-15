@@ -1,6 +1,5 @@
 package com.clearpool.kodiak.feedlibrary.core.nasdaq;
 
-import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -209,6 +208,6 @@ public class NasdaqNormalizer implements IMdNormalizer
 
 	private static double getPrice(long value)
 	{
-		return new BigDecimal(value).divide(new BigDecimal(10000)).doubleValue();
+		return value / 1E4;
 	}
 }

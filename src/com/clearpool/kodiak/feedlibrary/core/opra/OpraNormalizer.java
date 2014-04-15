@@ -1,6 +1,5 @@
 package com.clearpool.kodiak.feedlibrary.core.opra;
 
-import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -35,7 +34,7 @@ public class OpraNormalizer implements IMdNormalizer
 	private static final char CATEGORY_EQUITY_AND_INDEX_EOD_SUMMARY = 'f';
 	private static final char CATEGORY_ADMINISTRATIVE = 'C';
 	private static final char CATEGORY_CONTROL = 'H';
-	private static final int[] POWERS = new int[] { 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000 };
+	private static final double[] POWERS = new double[] { 1E1, 1E2, 1E3, 1E4, 1E5, 1E6, 1E7, 1E8 };
 	private static final Exchange[] EXCHANGES = new Exchange[26];
 
 	private final NbboQuoteCache nbbos;
@@ -374,7 +373,7 @@ public class OpraNormalizer implements IMdNormalizer
 	static double getPrice(long value, char denominatorCode)
 	{
 		if (denominatorCode == 'I') return value;
-		return new BigDecimal(value).divide(new BigDecimal(POWERS[denominatorCode - 'A'])).doubleValue();
+		return value / POWERS[denominatorCode - 'A'];
 	}
 
 	private static String createSymbol(String symbol, char expMonth, short expDay, short expYear, double strikePrice)

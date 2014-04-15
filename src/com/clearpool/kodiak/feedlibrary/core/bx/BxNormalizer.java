@@ -1,6 +1,5 @@
 package com.clearpool.kodiak.feedlibrary.core.bx;
 
-import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -208,6 +207,6 @@ public class BxNormalizer implements IMdNormalizer
 
 	private static double getPrice(long value)
 	{
-		return new BigDecimal(value).divide(new BigDecimal(10000)).doubleValue();
+		return value / 1E4;
 	}
 }
