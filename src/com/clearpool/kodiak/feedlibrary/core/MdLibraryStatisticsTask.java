@@ -82,17 +82,17 @@ public class MdLibraryStatisticsTask extends TimerTask
 		long count = procData.getTotalCount();
 		builder.append("] Histogram=[Count=").append(count);
 		state.setHistogramEntryCount(procData.getTotalCount());
-		long minValue = procData.getMinValue();
-		builder.append(", Min=").append(minValue);
-		state.setMin(minValue);
-		long maxValue = procData.getMaxValue();
-		builder.append(", Max=").append(maxValue);
-		state.setMax(maxValue);
-		double meanValue = procData.getMean();
-		builder.append(", Mean=").append(meanValue);
-		state.setMean(meanValue);
 		if (count > 0)
 		{
+			long minValue = procData.getMinValue();
+			builder.append(", Min=").append(minValue);
+			state.setMin(minValue);
+			long maxValue = procData.getMaxValue();
+			builder.append(", Max=").append(maxValue);
+			state.setMax(maxValue);
+			double meanValue = procData.getMean();
+			builder.append(", Mean=").append(meanValue);
+			state.setMean(meanValue);
 			state.setStdDev(procData.getStdDeviation());
 			long medianValue = procData.getValueAtPercentile(50);
 			builder.append(", Median=").append(medianValue);
