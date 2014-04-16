@@ -81,6 +81,38 @@ public class UqdfNormalizerTest
 	}
 
 	@Test
+	public void testPreMarketAuction()
+	{
+		Map<MdServiceType, IMdLibraryCallback> callbacks = new HashMap<MdServiceType, IMdLibraryCallback>();
+		callbacks.put(MdServiceType.BBO, this.bboListener);
+		callbacks.put(MdServiceType.NBBO, this.nbboListener);
+		callbacks.put(MdServiceType.STATE, this.stateListener);
+		UqdfNormalizer n = new UqdfNormalizer(callbacks, "") {
+			@Override
+			public MarketSession getMarketSession(char primaryListing, long timestamp)
+			{
+				return MarketSession.CLOSED;
+			}
+		};
+
+		n.processMessage("TEST", createUtpPacket(createIssueSymbolDirectoryMessage("AAPL", 100)), false);
+		assertSizes(1, 0, 0);
+		assertState("AAPL", 2, MarketSession.PREMARKET, TradingState.TRADING, 0, 0);
+
+		n.processMessage("TEST", createUtpPacket(createCrossSROTradingActionMessage("AAPL", 'H')), false);
+		assertSizes(1, 0, 0);
+		assertState("AAPL", 2, MarketSession.PREMARKET, TradingState.HALTED, 0, 0);
+
+		n.processMessage("TEST", createUtpPacket(createCrossSROTradingActionMessage("AAPL", 'Q')), false);
+		assertSizes(1, 0, 0);
+		assertState("AAPL", 2, MarketSession.PREMARKET, TradingState.AUCTION, 0, 0);
+
+		n.processMessage("TEST", createUtpPacket(createCrossSROTradingActionMessage("AAPL", 'T')), false);
+		assertSizes(1, 0, 0);
+		assertState("AAPL", 2, MarketSession.PREMARKET, TradingState.TRADING, 0, 0);
+	}
+
+	@Test
 	public void testIssueSymbolDirectoryMessage()
 	{
 		this.normalizer.processMessage("TEST", createUtpPacket(createIssueSymbolDirectoryMessage("AAPL", 100)), false);
@@ -1317,5 +1349,4 @@ public class UqdfNormalizerTest
 
 		}
 	}
-
 }
