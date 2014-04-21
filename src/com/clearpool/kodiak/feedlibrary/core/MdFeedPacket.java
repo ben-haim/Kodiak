@@ -4,12 +4,12 @@ import java.nio.ByteBuffer;
 
 public abstract class MdFeedPacket implements Comparable<MdFeedPacket>
 {
-	protected final boolean isPacketIncrement;
+	private final boolean isPacketIncrement;
+	private final long selectionTimeNanos;
 
 	protected long sequenceNumber;
 	protected int messageCount;
 	protected ByteBuffer buffer;
-	protected long selectionTimeNanos;
 
 	public abstract void parseHeader();
 
