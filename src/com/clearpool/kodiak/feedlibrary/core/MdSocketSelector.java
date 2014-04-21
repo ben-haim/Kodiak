@@ -31,7 +31,7 @@ public class MdSocketSelector extends Thread
 		this.recvBufferSize = recvBufferSize;
 		this.selector = Selector.open();
 		this.udpBuffer = ByteBuffer.allocateDirect(1500);
-		this.setName("SelectorThread=" + name);
+		this.setName("MdSocketSelector-" + name);
 	}
 
 	@Override
