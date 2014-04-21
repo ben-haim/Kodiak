@@ -5,11 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.HdrHistogram.Histogram;
 
+import com.clearpool.common.datastractures.Pair;
 import com.clearpool.common.util.DateUtil;
 
 public class MdProcessor implements ISelectable, ISequenceMessageReceivable
@@ -49,16 +51,16 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 	// Called by MDLibrary during start sequence
 	public void registerWithSocketSelector(MdSocketSelector mdSelector)
 	{
-		Object[] registrationA = registerSocketChannel(this.groupA, this.interfaceIpA, mdSelector);
-		Object[] registrationB = registerSocketChannel(this.groupB, this.interfaceIpB, mdSelector);
-		this.sequencer.setSelectionKeyA(registrationA[0]);
-		this.sequencer.setSelectionKeyB(registrationB[0]);
-		this.channelA = (DatagramChannel) registrationA[1];
-		this.channelB = (DatagramChannel) registrationB[1];
+		Pair<SelectionKey, DatagramChannel> registrationA = registerSocketChannel(this.groupA, this.interfaceIpA, mdSelector);
+		Pair<SelectionKey, DatagramChannel> registrationB = registerSocketChannel(this.groupB, this.interfaceIpB, mdSelector);
+		this.sequencer.setSelectionKeyA(registrationA.getA());
+		this.sequencer.setSelectionKeyB(registrationB.getA());
+		this.channelA = registrationA.getB();
+		this.channelB = registrationB.getB();
 	}
 
 	// Helper
-	private Object[] registerSocketChannel(String group, String interfaceIp, MdSocketSelector mdSelector)
+	private Pair<SelectionKey, DatagramChannel> registerSocketChannel(String group, String interfaceIp, MdSocketSelector mdSelector)
 	{
 		String[] groupSplit = group.split(":");
 		String ip = groupSplit[0];

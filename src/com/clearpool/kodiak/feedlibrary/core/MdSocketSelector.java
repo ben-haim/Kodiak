@@ -16,6 +16,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.clearpool.common.datastractures.Pair;
+
 public class MdSocketSelector extends Thread
 {
 	private static final Logger LOGGER = Logger.getLogger(MdSocketSelector.class.getName());
@@ -96,7 +98,7 @@ public class MdSocketSelector extends Thread
 		return this.selector;
 	}
 
-	public Object[] registerMulticastChannel(String ip, int port, String interfaceIp, Object attachment)
+	public Pair<SelectionKey, DatagramChannel> registerMulticastChannel(String ip, int port, String interfaceIp, Object attachment)
 	{
 		try
 		{
@@ -117,7 +119,7 @@ public class MdSocketSelector extends Thread
 			Object recvBuf = channel.getOption(StandardSocketOptions.SO_RCVBUF);
 			LOGGER.info("Joined channel[" + address + ":" + port + ",SO_REUSEADDR=" + reuse + ",IP_MULTICAST_IF=" + intf + ",SO_RCVBUF=" + recvBuf + "]");
 
-			return new Object[] { key, channel };
+			return new Pair<SelectionKey, DatagramChannel>(key, channel);
 		}
 		catch (Exception e)
 		{
