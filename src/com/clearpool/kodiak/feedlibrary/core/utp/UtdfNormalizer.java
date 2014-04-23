@@ -130,7 +130,7 @@ public class UtdfNormalizer implements IMdNormalizer
 			if (msgType == TYPE_SHORT_TRADE || msgType == TYPE_LONG_TRADE)
 			{
 				boolean isLong = msgType == TYPE_LONG_TRADE;
-				String symbol = ByteBufferUtil.getString(buffer, isLong ? 11 : 5).trim();
+				String symbol = ByteBufferUtil.getString(buffer, isLong ? 11 : 5);
 				if (isLong) ByteBufferUtil.advancePosition(buffer, 1); // trade through exempt flag
 				String saleCondition = ByteBufferUtil.getString(buffer, isLong ? 4 : 1);
 				if (isLong) ByteBufferUtil.advancePosition(buffer, 2); // seller's sale days
@@ -146,7 +146,7 @@ public class UtdfNormalizer implements IMdNormalizer
 			else if (msgType == TYPE_CORRECTION)
 			{
 				long originalSequenceNumber = ByteBufferUtil.readAsciiLong(buffer, 8);
-				String symbol = ByteBufferUtil.getString(buffer, 11).trim();
+				String symbol = ByteBufferUtil.getString(buffer, 11);
 				ByteBufferUtil.advancePosition(buffer, 1); // trade through exmept flag
 				String originalSaleCondition = ByteBufferUtil.getString(buffer, 4);
 				ByteBufferUtil.advancePosition(buffer, 2); // seller's sale days
@@ -181,7 +181,7 @@ public class UtdfNormalizer implements IMdNormalizer
 			else if (msgType == TYPE_CANCEL_ERROR)
 			{
 				long originalSequenceNumber = ByteBufferUtil.readAsciiLong(buffer, 8);
-				String symbol = ByteBufferUtil.getString(buffer, 11).trim();
+				String symbol = ByteBufferUtil.getString(buffer, 11);
 				ByteBufferUtil.advancePosition(buffer, 2); // function, trade through exmept flag
 				String originalSaleCondition = ByteBufferUtil.getString(buffer, 4);
 				ByteBufferUtil.advancePosition(buffer, 2); // seller's sale days
@@ -210,7 +210,7 @@ public class UtdfNormalizer implements IMdNormalizer
 		{
 			if (msgType == TYPE_ADMIN_MESSAGE)
 			{
-				String message = ByteBufferUtil.getString(buffer, buffer.remaining()).trim();
+				String message = ByteBufferUtil.getString(buffer, buffer.remaining());
 				LOGGER.info(processorName + " - Received Admin Message - " + message);
 				if (message.startsWith("IPO PRICE AT"))
 				{
@@ -222,7 +222,7 @@ public class UtdfNormalizer implements IMdNormalizer
 			}
 			else if (msgType == TYPE_CLOSING_TRADE_SUMMARY_REPORT)
 			{
-				String symbol = ByteBufferUtil.getString(buffer, 11).trim();
+				String symbol = ByteBufferUtil.getString(buffer, 11);
 				char highPriceDenominator = (char) buffer.get();
 				double highPrice = UtpUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 10), highPriceDenominator);
 				char lowPriceDenominator = (char) buffer.get();

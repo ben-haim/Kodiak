@@ -100,7 +100,7 @@ public class NasdaqMultithreadedNormalizer implements IMdNormalizer
 			final String orderReferenceNumber = String.valueOf(buffer.getLong());
 			final Side side = (buffer.get() == 'B') ? Side.BUY : Side.SELL;
 			final long shares = ByteBufferUtil.getUnsignedInt(buffer);
-			final String symbol = ByteBufferUtil.getString(buffer, 8).trim();
+			final String symbol = ByteBufferUtil.getString(buffer, 8);
 			final double price = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			// String displayName = (messageType == ADD_ORDER_WITH_MPID) ? ByteBufferUtil.getString(buffer, 4) : Exchange.USEQ_NASDAQ_OMX.getMicCode();
 
@@ -300,7 +300,7 @@ public class NasdaqMultithreadedNormalizer implements IMdNormalizer
 			final long pairedShares = buffer.getLong();
 			final long imbalanceShares = buffer.getLong();
 			final Side imbalanceSide = getImbalanceSide((char) buffer.get());
-			final String symbol = ByteBufferUtil.getString(buffer, 8).trim();
+			final String symbol = ByteBufferUtil.getString(buffer, 8);
 			final double farPrice = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			final double nearPrice = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			final double currentReferencePrice = getPrice(ByteBufferUtil.getUnsignedInt(buffer));

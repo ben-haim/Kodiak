@@ -37,7 +37,7 @@ public class NbboQuoteCache implements IMdServiceCache
 	}
 
 	public void updateBidAndOffer(String symbol, double bidPrice, int bidSize, Exchange bidExchange, double askPrice, int askSize, Exchange askExchange, long timestamp,
-			String condition)
+			char condition)
 	{
 		Quote quote = this.quotes.get(symbol);
 		if (quote == null)
@@ -58,7 +58,7 @@ public class NbboQuoteCache implements IMdServiceCache
 		sendQuote(quote);
 	}
 
-	public void updateBid(String symbol, double bidPrice, int bidSize, Exchange bidExchange, long timestamp, String condition)
+	public void updateBid(String symbol, double bidPrice, int bidSize, Exchange bidExchange, long timestamp, char condition)
 	{
 		Quote quote = this.quotes.get(symbol);
 		if (quote == null)
@@ -76,7 +76,7 @@ public class NbboQuoteCache implements IMdServiceCache
 		sendQuote(quote);
 	}
 
-	public void updateOffer(String symbol, double askPrice, int askSize, Exchange askExchange, long timestamp, String condition)
+	public void updateOffer(String symbol, double askPrice, int askSize, Exchange askExchange, long timestamp, char condition)
 	{
 		Quote quote = this.quotes.get(symbol);
 		if (quote == null)

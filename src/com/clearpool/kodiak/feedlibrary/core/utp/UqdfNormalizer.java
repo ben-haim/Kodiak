@@ -146,7 +146,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 		if (msgCategory == CATEGORY_QUOTE)
 		{
 			boolean isLong = msgType == TYPE_LONG_QUOTE;
-			String symbol = ByteBufferUtil.getString(buffer, isLong ? 11 : 5).trim();
+			String symbol = ByteBufferUtil.getString(buffer, isLong ? 11 : 5);
 			int lotSize = getLotSize(symbol);
 			ByteBufferUtil.advancePosition(buffer, 2); // reserved, sipGeenratedUpdated
 			char quoteCondition = (char) buffer.get();
@@ -182,7 +182,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 				case '0':
 					break;
 				case '1':
-					this.nbbos.updateBidAndOffer(symbol, 0, 0, null, 0, 0, null, timestamp, String.valueOf(quoteCondition));
+					this.nbbos.updateBidAndOffer(symbol, 0, 0, null, 0, 0, null, timestamp, quoteCondition);
 					break;
 				case '2':
 					ByteBufferUtil.advancePosition(buffer, 1); // nbbo quote condition
@@ -195,8 +195,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 					bestAskPriceDenominator = (char) buffer.get();
 					bestAskPrice = UtpUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 6), bestAskPriceDenominator);
 					bestAskSize = lotSize * (int) ByteBufferUtil.readAsciiLong(buffer, 2);
-					this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestAskPrice, bestAskSize, bestAskExchange, timestamp,
-							String.valueOf(quoteCondition));
+					this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestAskPrice, bestAskSize, bestAskExchange, timestamp, quoteCondition);
 					break;
 				case '3':
 					ByteBufferUtil.advancePosition(buffer, 1); // nbbo quote condition
@@ -210,11 +209,10 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 					bestAskPrice = UtpUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 10), bestAskPriceDenominator);
 					bestAskSize = lotSize * (int) ByteBufferUtil.readAsciiLong(buffer, 7);
 					ByteBufferUtil.advancePosition(buffer, 3); // currency
-					this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestAskPrice, bestAskSize, bestAskExchange, timestamp,
-							String.valueOf(quoteCondition));
+					this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestAskPrice, bestAskSize, bestAskExchange, timestamp, quoteCondition);
 					break;
 				case '4':
-					this.nbbos.updateBidAndOffer(symbol, bidPrice, bidSize, exchange, askPrice, askSize, exchange, timestamp, String.valueOf(quoteCondition));
+					this.nbbos.updateBidAndOffer(symbol, bidPrice, bidSize, exchange, askPrice, askSize, exchange, timestamp, quoteCondition);
 					break;
 				default:
 					break;
@@ -229,7 +227,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 		{
 			if (msgType == TYPE_ADMIN_MESSAGE)
 			{
-				String message = ByteBufferUtil.getString(buffer, buffer.remaining()).trim();
+				String message = ByteBufferUtil.getString(buffer, buffer.remaining());
 				LOGGER.info(processorName + " - Received Admin Message - " + message);
 				if (message.startsWith("IPO PRICE AT"))
 				{
@@ -239,7 +237,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 			}
 			else if (msgType == TYPE_CROSS_SRO_TRADING_ACTION_MESSAGE)
 			{
-				String symbol = ByteBufferUtil.getString(buffer, 11).trim();
+				String symbol = ByteBufferUtil.getString(buffer, 11);
 				char action = (char) buffer.get();
 				ByteBufferUtil.advancePosition(buffer, 13); // action date/time, reason
 
@@ -271,7 +269,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 			}
 			else if (msgType == TYPE_ISSUE_SYMBOL_DIRECTORY_MESSAGE)
 			{
-				String symbol = ByteBufferUtil.getString(buffer, 11).trim();
+				String symbol = ByteBufferUtil.getString(buffer, 11);
 				ByteBufferUtil.advancePosition(buffer, 45); // Old issue symbol, Issue Name, Issue Type, Market Category, Authenticity, SSTI
 				int roundLotSize = (int) ByteBufferUtil.readAsciiLong(buffer, 5);
 				ByteBufferUtil.advancePosition(buffer, 1); // Financial status indicator
@@ -280,7 +278,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 			}
 			else if (msgType == TYPE_REG_SHO_SSPTR_INDICATOR)
 			{
-				String symbol = ByteBufferUtil.getString(buffer, 11).trim();
+				String symbol = ByteBufferUtil.getString(buffer, 11);
 				char regShoAction = (char) buffer.get();
 
 				MarketState previousState = this.states.getData(symbol);
@@ -301,7 +299,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 			}
 			else if (msgType == TYPE_LULD_PRICE_BAND_MESSAGE)
 			{
-				String symbol = ByteBufferUtil.getString(buffer, 11).trim();
+				String symbol = ByteBufferUtil.getString(buffer, 11);
 				ByteBufferUtil.advancePosition(buffer, 10); // luldBandIndicator, luldEffectiveTime
 				char limitDownPriceDenominator = (char) buffer.get();
 				double lowerBand = UtpUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 10), limitDownPriceDenominator);

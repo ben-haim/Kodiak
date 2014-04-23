@@ -150,7 +150,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 			if (msgType == TYPE_SHORT_QUOTE || msgType == TYPE_LONG_QUOTE)
 			{
 				boolean isLong = msgType == TYPE_LONG_QUOTE;
-				String symbol = ByteBufferUtil.getString(buffer, isLong ? 11 : 3).trim();
+				String symbol = ByteBufferUtil.getString(buffer, isLong ? 11 : 3);
 				int lotSize = getLotSize(symbol);
 				if (isLong) ByteBufferUtil.advancePosition(buffer, 2); // suffix, test message indicator
 				char primaryListing = isLong ? (char) buffer.get() : ((ctaPacket.getMessageNetwork() == 'E') ? 'N' : 'A');
@@ -168,7 +168,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 				char askPriceDenominatorIndicator = (char) buffer.get();
 				double askPrice = CtaUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, isLong ? 12 : 8), askPriceDenominatorIndicator);
 				int askSize = lotSize * (int) ByteBufferUtil.readAsciiLong(buffer, isLong ? 7 : 3);
-				String finraMarketMakerId = isLong ? ByteBufferUtil.getString(buffer, 4).trim() : null;
+				String finraMarketMakerId = isLong ? ByteBufferUtil.getString(buffer, 4) : null;
 				if (isLong) ByteBufferUtil.advancePosition(buffer, 1); // reserved
 				char nbboLuldIndicator = isLong ? (char) buffer.get() : ' ';
 				if (isLong) ByteBufferUtil.advancePosition(buffer, 1); // finra bbo luld indicator
@@ -199,26 +199,25 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 						char bestBidPriceDenominatorIndicator = (char) buffer.get();
 						double bestBidPrice = CtaUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, isNbboLong ? 12 : 8), bestBidPriceDenominatorIndicator);
 						int bestBidSize = lotSize * (int) ByteBufferUtil.readAsciiLong(buffer, isNbboLong ? 7 : 3);
-						String finraBestBidMarketMaker = isNbboLong ? ByteBufferUtil.getString(buffer, 4).trim() : null;
+						String finraBestBidMarketMaker = isNbboLong ? ByteBufferUtil.getString(buffer, 4) : null;
 						Exchange bestBidExchange = CtaUtils.getExchange(bestBidParticipantId, finraBestBidMarketMaker);
 						ByteBufferUtil.advancePosition(buffer, isNbboLong ? 3 : 1); // reserved
 						char bestAskParticipantId = (char) buffer.get();
 						char bestAskPriceDenominatorIndicator = (char) buffer.get();
 						double bestAskPrice = CtaUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, isNbboLong ? 12 : 8), bestAskPriceDenominatorIndicator);
 						int bestAskSize = lotSize * (int) ByteBufferUtil.readAsciiLong(buffer, isNbboLong ? 7 : 3);
-						String finraBestAskMarketMaker = isNbboLong ? ByteBufferUtil.getString(buffer, 4).trim() : null;
+						String finraBestAskMarketMaker = isNbboLong ? ByteBufferUtil.getString(buffer, 4) : null;
 						Exchange bestAskExchange = CtaUtils.getExchange(bestAskParticipantId, finraBestAskMarketMaker);
 						ByteBufferUtil.advancePosition(buffer, isNbboLong ? 3 : 1); // reserved
-						this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestAskPrice, bestAskSize, bestAskExchange, timestamp,
-								String.valueOf(quoteCondition));
+						this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestAskPrice, bestAskSize, bestAskExchange, timestamp, quoteCondition);
 					}
 					else if (nbboIndicator == NBBO_CONTAINED)
 					{
-						this.nbbos.updateBidAndOffer(symbol, bidPrice, bidSize, exchange, askPrice, askSize, exchange, timestamp, String.valueOf(quoteCondition));
+						this.nbbos.updateBidAndOffer(symbol, bidPrice, bidSize, exchange, askPrice, askSize, exchange, timestamp, quoteCondition);
 					}
 					else if (nbboIndicator == NBBO_NONE)
 					{
-						this.nbbos.updateBidAndOffer(symbol, 0, 0, null, 0, 0, null, timestamp, String.valueOf(quoteCondition));
+						this.nbbos.updateBidAndOffer(symbol, 0, 0, null, 0, 0, null, timestamp, quoteCondition);
 					}
 				}
 
@@ -231,7 +230,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		}
 		else if (msgCategory == CATEGORY_ADMINISTRATIVE)
 		{
-			String message = ByteBufferUtil.getString(buffer, buffer.remaining()).trim();
+			String message = ByteBufferUtil.getString(buffer, buffer.remaining());
 			if (message.startsWith("ALERT ALERT ALERT"))
 			{
 				LOGGER.info(processorName + " - Exception - Received Admin Message - " + message);

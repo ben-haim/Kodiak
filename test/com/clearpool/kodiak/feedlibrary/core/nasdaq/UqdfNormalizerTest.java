@@ -188,83 +188,83 @@ public class UqdfNormalizerTest
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, 'F', ' ', ' ', '0', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 2, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		char[] quoteConditions = { 'I', 'L', 'N', 'U', 'X', 'Z' };
 		for (char c : quoteConditions)
 		{
 			this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, c, ' ', ' ', '0', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 			assertSizes(0, 1, 0);
-			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 		}
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'B', ' ', '0', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 0);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'A', ' ', '0', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 0);
-		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'C', ' ', '0', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 0);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'A', '0', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 0);
-		assertBBO("AAPL", 2050, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2050, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'B', '0', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 0);
-		assertBBO("AAPL", 4098, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 4098, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'C', '0', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 0);
-		assertBBO("AAPL", 6146, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 6146, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '0', 'A', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '0', 'B', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 4098, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '0', 'C', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 8194, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '0', 'D', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 12290, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '0', 'E', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 16386, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '0', 'F', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 32770, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '0', 'G', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 24578, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '0', 'H', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 36866, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '0', 'I', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 49154, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 	}
 
 	@Test
@@ -273,100 +273,100 @@ public class UqdfNormalizerTest
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, 'F', ' ', ' ', '1', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 2, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, "F");
+		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, 'F');
 
 		char[] quoteConditions = { 'I', 'L', 'N', 'U', 'X', 'Z' };
 		for (char c : quoteConditions)
 		{
 			this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, c, ' ', ' ', '1', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 			assertSizes(0, 1, 1);
-			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-			assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, String.valueOf(c));
+			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+			assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, c);
 		}
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'B', ' ', '1', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'A', ' ', '1', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'C', ' ', '1', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'A', '1', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 2050, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2050, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'B', '1', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 4098, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 4098, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'C', '1', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 6146, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 6146, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '1', 'A', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '1', 'B', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 4098, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '1', 'C', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 8194, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '1', 'D', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 12290, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '1', 'E', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 16386, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '1', 'F', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 32770, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '1', 'G', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 24578, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '1', 'H', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 36866, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '1', 'I', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 49154, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 	}
 
 	@Test
@@ -375,100 +375,100 @@ public class UqdfNormalizerTest
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, 'F', ' ', ' ', '2', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 2, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, "F");
+		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, 'F');
 
 		char[] quoteConditions = { 'I', 'L', 'N', 'U', 'X', 'Z' };
 		for (char c : quoteConditions)
 		{
 			this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, c, ' ', ' ', '2', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 			assertSizes(0, 1, 1);
-			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-			assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, String.valueOf(c));
+			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+			assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, c);
 		}
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'B', ' ', '2', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'A', ' ', '2', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'C', ' ', '2', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'A', '2', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 2050, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2050, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'B', '2', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 4098, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 4098, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'C', '2', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 6146, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 6146, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '2', 'A', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '2', 'B', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 4098, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '2', 'C', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 8194, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '2', 'D', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 12290, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '2', 'E', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 16386, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '2', 'F', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 32770, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '2', 'G', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 24578, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '2', 'H', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 36866, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '2', 'I', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 49154, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 	}
 
 	@Test
@@ -477,100 +477,100 @@ public class UqdfNormalizerTest
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, 'F', ' ', ' ', '3', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 2, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, "F");
+		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, 'F');
 
 		char[] quoteConditions = { 'I', 'L', 'N', 'U', 'X', 'Z' };
 		for (char c : quoteConditions)
 		{
 			this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, c, ' ', ' ', '3', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 			assertSizes(0, 1, 1);
-			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-			assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, String.valueOf(c));
+			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+			assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, c);
 		}
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'B', ' ', '3', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'A', ' ', '3', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'C', ' ', '3', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'A', '3', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 2050, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2050, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'B', '3', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 4098, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 4098, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'C', '3', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 6146, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 6146, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '3', 'A', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '3', 'B', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 4098, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '3', 'C', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 8194, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '3', 'D', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 12290, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '3', 'E', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 16386, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '3', 'F', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 32770, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '3', 'G', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 24578, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '3', 'H', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 36866, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '3', 'I', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 49154, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 	}
 
 	@Test
@@ -579,100 +579,100 @@ public class UqdfNormalizerTest
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, 'F', ' ', ' ', '4', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 2, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, "F");
+		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, 'F');
 
 		char[] quoteConditions = { 'I', 'L', 'N', 'U', 'X', 'Z' };
 		for (char c : quoteConditions)
 		{
 			this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, c, ' ', ' ', '4', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 			assertSizes(0, 1, 1);
-			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-			assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, String.valueOf(c));
+			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+			assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, c);
 		}
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'B', ' ', '4', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'A', ' ', '4', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', 'C', ' ', '4', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'A', '4', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 2050, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2050, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'B', '4', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 4098, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 4098, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', 'C', '4', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 6146, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 6146, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '4', 'A', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '4', 'B', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 4098, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '4', 'C', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 8194, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '4', 'D', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 12290, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '4', 'E', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 16386, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '4', 'F', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 32770, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '4', 'G', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 24578, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '4', 'H', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 36866, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createLongQuote("AAPL", 401, 403, 1, 4, ' ', ' ', ' ', '4', 'I', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 49154, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 	}
 
 	@Test
@@ -681,71 +681,71 @@ public class UqdfNormalizerTest
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, 'F', ' ', '0', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 2, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		char[] quoteConditions = { 'I', 'L', 'N', 'U', 'X', 'Z' };
 		for (char c : quoteConditions)
 		{
 			this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, c, ' ', '0', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 			assertSizes(0, 1, 0);
-			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 		}
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'B', '0', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 0);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'A', '0', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 0);
-		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'C', '0', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 0);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '0', 'A', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '0', 'B', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 4098, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '0', 'C', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 8194, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '0', 'D', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 12290, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '0', 'E', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 16386, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '0', 'F', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 32770, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '0', 'G', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 24578, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '0', 'H', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 36866, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '0', 'I', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 0);
 		assertState("AAPL", 49154, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
 	}
 
 	@Test
@@ -754,85 +754,85 @@ public class UqdfNormalizerTest
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, 'F', ' ', '1', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 2, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, "F");
+		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, 'F');
 
 		char[] quoteConditions = { 'I', 'L', 'N', 'U', 'X', 'Z' };
 		for (char c : quoteConditions)
 		{
 			this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, c, ' ', '1', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 			assertSizes(0, 1, 1);
-			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-			assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, String.valueOf(c));
+			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+			assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, c);
 		}
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'B', '1', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'A', '1', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'C', '1', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '1', 'A', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '1', 'B', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 4098, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '1', 'C', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 8194, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '1', 'D', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 12290, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '1', 'E', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 16386, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '1', 'F', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 32770, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '1', 'G', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 24578, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '1', 'H', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 36866, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '1', 'I', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 49154, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 0, 0, 0, 0, null, null, ' ');
 	}
 
 	@Test
@@ -841,85 +841,85 @@ public class UqdfNormalizerTest
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, 'F', ' ', '2', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 2, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, "F");
+		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, 'F');
 
 		char[] quoteConditions = { 'I', 'L', 'N', 'U', 'X', 'Z' };
 		for (char c : quoteConditions)
 		{
 			this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, c, ' ', '2', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 			assertSizes(0, 1, 1);
-			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-			assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, String.valueOf(c));
+			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+			assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, c);
 		}
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'B', '2', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'A', '2', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'C', '2', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '2', 'A', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '2', 'B', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 4098, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '2', 'C', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 8194, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '2', 'D', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 12290, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '2', 'E', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 16386, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '2', 'F', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 32770, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '2', 'G', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 24578, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '2', 'H', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 36866, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '2', 'I', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 49154, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 	}
 
@@ -929,85 +929,85 @@ public class UqdfNormalizerTest
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, 'F', ' ', '3', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 2, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, "F");
+		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, 'F');
 
 		char[] quoteConditions = { 'I', 'L', 'N', 'U', 'X', 'Z' };
 		for (char c : quoteConditions)
 		{
 			this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, c, ' ', '3', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 			assertSizes(0, 1, 1);
-			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-			assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, String.valueOf(c));
+			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+			assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, c);
 		}
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'B', '3', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'A', '3', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'C', '3', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '3', 'A', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '3', 'B', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 4098, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '3', 'C', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 8194, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '3', 'D', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 12290, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '3', 'E', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 16386, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '3', 'F', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 32770, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '3', 'G', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 24578, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '3', 'H', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 36866, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '3', 'I', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 49154, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401.01, 402.99, 200, 300, Exchange.USEQ_BATS_Y_EXCHANGE, Exchange.USEQ_BATS_Y_EXCHANGE, ' ');
 	}
 
 	@Test
@@ -1016,85 +1016,85 @@ public class UqdfNormalizerTest
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, 'F', ' ', '4', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 2, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, "F");
+		assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, 'F');
 
 		char[] quoteConditions = { 'I', 'L', 'N', 'U', 'X', 'Z' };
 		for (char c : quoteConditions)
 		{
 			this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, c, ' ', '4', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 			assertSizes(0, 1, 1);
-			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-			assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, String.valueOf(c));
+			assertBBO("AAPL", 8194, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+			assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, c);
 		}
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'B', '4', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'A', '4', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 16386, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', 'C', '4', ' ', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 32770, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '4', 'A', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(0, 1, 1);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '4', 'B', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 4098, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '4', 'C', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 8194, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '4', 'D', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 12290, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '4', 'E', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 16386, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '4', 'F', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 32770, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '4', 'G', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 24578, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '4', 'H', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 36866, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 
 		this.normalizer.processMessage("TEST", createUtpPacket(createShortQuote("AAPL", 401, 403, 1, 4, ' ', ' ', '4', 'I', 401.01, 402.99, 2, 3, 'Y')), false);
 		assertSizes(1, 1, 1);
 		assertState("AAPL", 49154, MarketSession.NORMAL, TradingState.TRADING, 0, 0);
-		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, null);
-		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, " ");
+		assertBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, '\u0000');
+		assertNBBO("AAPL", 2, 401, 403, 100, 400, Exchange.USEQ_NASDAQ_OMX, Exchange.USEQ_NASDAQ_OMX, ' ');
 	}
 
 	private static UtpPacket createUtpPacket(ByteBuffer buffer)
@@ -1124,16 +1124,14 @@ public class UqdfNormalizerTest
 		assertEquals(nbboSize, this.nbboListener.size());
 	}
 
-	private void assertBBO(String symbol, int conditionCode, double bidPrice, double askPrice, int bidSize, int askSize, Exchange bidExchange, Exchange askExchange,
-			String condition)
+	private void assertBBO(String symbol, int conditionCode, double bidPrice, double askPrice, int bidSize, int askSize, Exchange bidExchange, Exchange askExchange, char condition)
 	{
 		Quote quote = this.bboListener.getQuote();
 		assertEquals(MdServiceType.BBO, quote.getServiceType());
 		assertQuoteFields(quote, symbol, conditionCode, bidPrice, askPrice, bidSize, askSize, bidExchange, askExchange, condition);
 	}
 
-	private void assertNBBO(String symbol, int conditionCode, double bidPrice, double askPrice, int bidSize, int askSize, Exchange bidExchange, Exchange askExchange,
-			String condition)
+	private void assertNBBO(String symbol, int conditionCode, double bidPrice, double askPrice, int bidSize, int askSize, Exchange bidExchange, Exchange askExchange, char condition)
 	{
 		Quote quote = this.nbboListener.getQuote();
 		assertEquals(MdServiceType.NBBO, quote.getServiceType());
@@ -1141,7 +1139,7 @@ public class UqdfNormalizerTest
 	}
 
 	private static void assertQuoteFields(Quote quote, String symbol, int conditionCode, double bidPrice, double askPrice, int bidSize, int askSize, Exchange bidExchange,
-			Exchange askExchange, String condition)
+			Exchange askExchange, char condition)
 	{
 		assertEquals(symbol, quote.getSymbol());
 		assertEquals(conditionCode, quote.getConditionCode());

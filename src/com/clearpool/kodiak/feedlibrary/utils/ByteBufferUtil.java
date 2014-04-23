@@ -31,7 +31,7 @@ public class ByteBufferUtil
 		{
 			bytes[i] = buffer.get();
 		}
-		return new String(bytes);
+		return new String(bytes).trim().intern();
 	}
 
 	public static long readAsciiLong(ByteBuffer buffer, int length)

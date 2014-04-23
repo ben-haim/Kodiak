@@ -77,7 +77,7 @@ public class NasdaqNormalizer implements IMdNormalizer
 			String orderReferenceNumber = String.valueOf(buffer.getLong());
 			Side side = (buffer.get() == 'B') ? Side.BUY : Side.SELL;
 			long shares = ByteBufferUtil.getUnsignedInt(buffer);
-			String symbol = ByteBufferUtil.getString(buffer, 8).trim();
+			String symbol = ByteBufferUtil.getString(buffer, 8);
 			double price = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			// String displayName = (messageType == ADD_ORDER_WITH_MPID) ? ByteBufferUtil.getString(buffer, 4) : Exchange.USEQ_NASDAQ_OMX.getMicCode();
 			this.bookCache.addOrder(symbol, orderReferenceNumber, side, (int) shares, price, Exchange.USEQ_NASDAQ_OMX.getMicCode(), timestamp);
@@ -160,7 +160,7 @@ public class NasdaqNormalizer implements IMdNormalizer
 			long pairedShares = buffer.getLong();
 			long imbalanceShares = buffer.getLong();
 			Side imbalanceSide = getImbalanceSide((char) buffer.get());
-			String symbol = ByteBufferUtil.getString(buffer, 8).trim();
+			String symbol = ByteBufferUtil.getString(buffer, 8);
 			double farPrice = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			double nearPrice = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			double currentReferencePrice = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
