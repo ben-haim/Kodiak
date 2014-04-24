@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 
 public class ByteBufferUtil
 {
+	private static final byte SPACE = 32;
+
 	public static void advancePosition(ByteBuffer buffer, int count)
 	{
 		buffer.position(buffer.position() + count);
@@ -24,13 +26,16 @@ public class ByteBufferUtil
 		return buffer.getInt() & 0xFFFFFFFF;
 	}
 
-	public static String getString(ByteBuffer buffer, int length)
+	public static String getString(ByteBuffer buffer, byte[] bytes)
+	{
+		buffer.get(bytes);
+		return new String(bytes).trim().intern();
+	}
+
+	public static String getUnboundedString(ByteBuffer buffer, int length)
 	{
 		byte[] bytes = new byte[length];
-		for (int i = 0; i < length; i++)
-		{
-			bytes[i] = buffer.get();
-		}
+		buffer.get(bytes);
 		return new String(bytes).trim().intern();
 	}
 
@@ -56,11 +61,11 @@ public class ByteBufferUtil
 		int numSpaces = length - value.length();
 		if (numSpaces >= 0)
 		{
-			byte[] bytes = value.getBytes();
-			buffer.put(bytes, 0, bytes.length);
+			byte[] newBytes = value.getBytes();
+			buffer.put(newBytes, 0, newBytes.length);
 			for (int n = 0; n < numSpaces; n++)
 			{
-				putChar(buffer, ' ');
+				buffer.put(SPACE);
 			}
 		}
 	}
@@ -68,13 +73,13 @@ public class ByteBufferUtil
 	/* Numbers are right justified with 0x30 */
 	public static void putLong(ByteBuffer buffer, long value, int length)
 	{
-		byte[] bytes = new byte[length];
+		byte[] newBytes = new byte[length];
 		for (int n = 0; n < length; n++)
 		{
-			bytes[length - n - 1] = (byte) ('0' + (value % 10));
+			newBytes[length - n - 1] = (byte) ('0' + (value % 10));
 			value = value / 10;
 		}
-		buffer.put(bytes);
+		buffer.put(newBytes);
 	}
 
 }

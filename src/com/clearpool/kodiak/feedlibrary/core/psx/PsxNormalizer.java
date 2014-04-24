@@ -37,6 +37,7 @@ public class PsxNormalizer implements IMdNormalizer
 
 	private final BookQuoteCache bookCache;
 	private final ImbalanceCache imbalanceCache;
+	private final byte[] tmpBuffer;
 	private final long midnight;
 
 	private long secondsSinceMidnight;
@@ -45,6 +46,7 @@ public class PsxNormalizer implements IMdNormalizer
 	{
 		this.bookCache = new BookQuoteCache((IMdBookQuoteListener) callbacks.get(MdServiceType.BOOK_XPSX), MdFeed.PSX, MdServiceType.BOOK_XPSX, range);
 		this.imbalanceCache = new ImbalanceCache((IMdImbalanceListener) callbacks.get(MdServiceType.IMBALANCE_XPSX), MdFeed.PSX, MdServiceType.IMBALANCE_XPSX, range);
+		this.tmpBuffer = new byte[8];
 		this.midnight = DateUtil.TODAY_MIDNIGHT_EST.getTime();
 
 		this.secondsSinceMidnight = 0;
@@ -77,7 +79,7 @@ public class PsxNormalizer implements IMdNormalizer
 			String orderReferenceNumber = String.valueOf(buffer.getLong());
 			Side side = (buffer.get() == 'B') ? Side.BUY : Side.SELL;
 			long shares = ByteBufferUtil.getUnsignedInt(buffer);
-			String symbol = ByteBufferUtil.getString(buffer, 8);
+			String symbol = ByteBufferUtil.getString(buffer, this.tmpBuffer);
 			double price = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			this.bookCache.addOrder(symbol, orderReferenceNumber, side, (int) shares, price, Exchange.USEQ_NASDAQ_OMX_PHLX.getMicCode(), timestamp);
 		}
@@ -159,7 +161,7 @@ public class PsxNormalizer implements IMdNormalizer
 			long pairedShares = buffer.getLong();
 			long imbalanceShares = buffer.getLong();
 			Side imbalanceSide = getImbalanceSide((char) buffer.get());
-			String symbol = ByteBufferUtil.getString(buffer, 8);
+			String symbol = ByteBufferUtil.getString(buffer, this.tmpBuffer);
 			double farPrice = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			double nearPrice = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			double currentReferencePrice = getPrice(ByteBufferUtil.getUnsignedInt(buffer));

@@ -57,6 +57,9 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 	private final NbboQuoteCache nbbos;
 	private final BboQuoteCache bbos;
 	private final StateCache states;
+	private final byte[] tmpBuffer3;
+	private final byte[] tmpBuffer4;
+	private final byte[] tmpBuffer11;
 	private final Map<String, Integer> lotSizes;
 
 	private boolean isPreMarketSession = false;
@@ -68,6 +71,9 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		this.nbbos = new NbboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.NBBO), MdFeed.CQS, range);
 		this.bbos = new BboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.BBO), MdFeed.CQS, range);
 		this.states = new StateCache((IMdStateListener) callbacks.get(MdServiceType.STATE), this, MdFeed.CQS, range);
+		this.tmpBuffer3 = new byte[3];
+		this.tmpBuffer4 = new byte[4];
+		this.tmpBuffer11 = new byte[11];
 		this.lotSizes = getLotSizes();
 	}
 
@@ -150,7 +156,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 			if (msgType == TYPE_SHORT_QUOTE || msgType == TYPE_LONG_QUOTE)
 			{
 				boolean isLong = msgType == TYPE_LONG_QUOTE;
-				String symbol = ByteBufferUtil.getString(buffer, isLong ? 11 : 3);
+				String symbol = ByteBufferUtil.getString(buffer, isLong ? this.tmpBuffer11 : this.tmpBuffer3);
 				int lotSize = getLotSize(symbol);
 				if (isLong) ByteBufferUtil.advancePosition(buffer, 2); // suffix, test message indicator
 				char primaryListing = isLong ? (char) buffer.get() : ((ctaPacket.getMessageNetwork() == 'E') ? 'N' : 'A');
@@ -168,7 +174,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 				char askPriceDenominatorIndicator = (char) buffer.get();
 				double askPrice = CtaUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, isLong ? 12 : 8), askPriceDenominatorIndicator);
 				int askSize = lotSize * (int) ByteBufferUtil.readAsciiLong(buffer, isLong ? 7 : 3);
-				String finraMarketMakerId = isLong ? ByteBufferUtil.getString(buffer, 4) : null;
+				String finraMarketMakerId = isLong ? ByteBufferUtil.getString(buffer, this.tmpBuffer4) : null;
 				if (isLong) ByteBufferUtil.advancePosition(buffer, 1); // reserved
 				char nbboLuldIndicator = isLong ? (char) buffer.get() : ' ';
 				if (isLong) ByteBufferUtil.advancePosition(buffer, 1); // finra bbo luld indicator
@@ -199,14 +205,14 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 						char bestBidPriceDenominatorIndicator = (char) buffer.get();
 						double bestBidPrice = CtaUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, isNbboLong ? 12 : 8), bestBidPriceDenominatorIndicator);
 						int bestBidSize = lotSize * (int) ByteBufferUtil.readAsciiLong(buffer, isNbboLong ? 7 : 3);
-						String finraBestBidMarketMaker = isNbboLong ? ByteBufferUtil.getString(buffer, 4) : null;
+						String finraBestBidMarketMaker = isNbboLong ? ByteBufferUtil.getString(buffer, this.tmpBuffer4) : null;
 						Exchange bestBidExchange = CtaUtils.getExchange(bestBidParticipantId, finraBestBidMarketMaker);
 						ByteBufferUtil.advancePosition(buffer, isNbboLong ? 3 : 1); // reserved
 						char bestAskParticipantId = (char) buffer.get();
 						char bestAskPriceDenominatorIndicator = (char) buffer.get();
 						double bestAskPrice = CtaUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, isNbboLong ? 12 : 8), bestAskPriceDenominatorIndicator);
 						int bestAskSize = lotSize * (int) ByteBufferUtil.readAsciiLong(buffer, isNbboLong ? 7 : 3);
-						String finraBestAskMarketMaker = isNbboLong ? ByteBufferUtil.getString(buffer, 4) : null;
+						String finraBestAskMarketMaker = isNbboLong ? ByteBufferUtil.getString(buffer, this.tmpBuffer4) : null;
 						Exchange bestAskExchange = CtaUtils.getExchange(bestAskParticipantId, finraBestAskMarketMaker);
 						ByteBufferUtil.advancePosition(buffer, isNbboLong ? 3 : 1); // reserved
 						this.nbbos.updateBidAndOffer(symbol, bestBidPrice, bestBidSize, bestBidExchange, bestAskPrice, bestAskSize, bestAskExchange, timestamp, quoteCondition);
@@ -230,7 +236,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		}
 		else if (msgCategory == CATEGORY_ADMINISTRATIVE)
 		{
-			String message = ByteBufferUtil.getString(buffer, buffer.remaining());
+			String message = ByteBufferUtil.getUnboundedString(buffer, buffer.remaining());
 			if (message.startsWith("ALERT ALERT ALERT"))
 			{
 				LOGGER.info(processorName + " - Exception - Received Admin Message - " + message);

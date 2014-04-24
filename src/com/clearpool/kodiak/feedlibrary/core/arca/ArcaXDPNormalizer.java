@@ -30,6 +30,7 @@ public class ArcaXDPNormalizer implements IMdNormalizer
 
 	private final BookQuoteCache bookCache;
 	private final ImbalanceCache imbalanceCache;
+	private final byte[] tmpBuffer;
 	private final Vector<ArcaSymbolRef> symbolVec;
 	private final long midnight;
 
@@ -39,6 +40,7 @@ public class ArcaXDPNormalizer implements IMdNormalizer
 	{
 		this.bookCache = new BookQuoteCache((IMdBookQuoteListener) callbacks.get(MdServiceType.BOOK_ARCX), MdFeed.ARCA, MdServiceType.BOOK_ARCX, range);
 		this.imbalanceCache = new ImbalanceCache((IMdImbalanceListener) callbacks.get(MdServiceType.IMBALANCE_ARCX), MdFeed.ARCA, MdServiceType.IMBALANCE_ARCX, range);
+		this.tmpBuffer = new byte[11];
 		this.symbolVec = new Vector<ArcaSymbolRef>();
 		this.midnight = DateUtil.TODAY_MIDNIGHT_EST.getTime();
 
@@ -98,7 +100,7 @@ public class ArcaXDPNormalizer implements IMdNormalizer
 	public void processMsgType3(ByteBuffer bufferAfterMsgType)
 	{
 		long symbolIndex = ByteBufferUtil.getUnsignedInt(bufferAfterMsgType);
-		String symbol = ByteBufferUtil.getString(bufferAfterMsgType, 11);
+		String symbol = ByteBufferUtil.getString(bufferAfterMsgType, this.tmpBuffer);
 		ByteBufferUtil.advancePosition(bufferAfterMsgType, 5);
 		double priceDivider = Math.pow(10, ByteBufferUtil.getUnsignedByte(bufferAfterMsgType));
 		if (symbolIndex >= this.symbolVec.size())

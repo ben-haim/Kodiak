@@ -40,12 +40,16 @@ public class OpraNormalizer implements IMdNormalizer
 	private final NbboQuoteCache nbbos;
 	private final BboQuoteCache bbos;
 	private final SaleCache sales;
+	private final byte[] tmpBuffer4;
+	private final byte[] tmpBuffer5;
 
 	public OpraNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range)
 	{
 		this.nbbos = new NbboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.NBBO), MdFeed.OPRA, range);
 		this.bbos = new BboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.BBO), MdFeed.OPRA, range);
 		this.sales = new SaleCache((IMdSaleListener) callbacks.get(MdServiceType.SALE), MdFeed.OPRA, range, true);
+		this.tmpBuffer4 = new byte[4];
+		this.tmpBuffer5 = new byte[5];
 	}
 
 	@Override
@@ -75,7 +79,7 @@ public class OpraNormalizer implements IMdNormalizer
 		if (category == CATEGORY_SHORT_EQUITY_AND_INDEX_QUOTE || category == CATEGORY_LONG_EQUITY_AND_INDEX_QUOTE)
 		{
 			boolean isLong = category == CATEGORY_LONG_EQUITY_AND_INDEX_QUOTE;
-			String symbol = ByteBufferUtil.getString(buffer, isLong ? 5 : 4);
+			String symbol = ByteBufferUtil.getString(buffer, isLong ? this.tmpBuffer5 : this.tmpBuffer4);
 			if (isLong) ByteBufferUtil.advancePosition(buffer, 1); // reserved
 			char expMonth = (char) buffer.get();
 			short expDay = ByteBufferUtil.getUnsignedByte(buffer);
@@ -192,7 +196,7 @@ public class OpraNormalizer implements IMdNormalizer
 		}
 		else if (category == CATEGORY_EQUITY_INDEX_LAST_SALE)
 		{
-			String symbol = ByteBufferUtil.getString(buffer, 5);
+			String symbol = ByteBufferUtil.getString(buffer, this.tmpBuffer5);
 			ByteBufferUtil.advancePosition(buffer, 1); // reserved
 			char expMonth = (char) buffer.get();
 			short expDay = ByteBufferUtil.getUnsignedByte(buffer);
@@ -209,7 +213,7 @@ public class OpraNormalizer implements IMdNormalizer
 		}
 		else if (category == CATEGORY_OPEN_INTEREST)
 		{
-			String symbol = ByteBufferUtil.getString(buffer, 5);
+			String symbol = ByteBufferUtil.getString(buffer, this.tmpBuffer5);
 			ByteBufferUtil.advancePosition(buffer, 1); // reserved
 			char expMonth = (char) buffer.get();
 			short expDay = ByteBufferUtil.getUnsignedByte(buffer);
@@ -222,7 +226,7 @@ public class OpraNormalizer implements IMdNormalizer
 		}
 		else if (category == CATEGORY_EQUITY_AND_INDEX_EOD_SUMMARY)
 		{
-			String symbol = ByteBufferUtil.getString(buffer, 5);
+			String symbol = ByteBufferUtil.getString(buffer, this.tmpBuffer5);
 			ByteBufferUtil.advancePosition(buffer, 1); // reserved
 			char expMonth = (char) buffer.get();
 			short expDay = ByteBufferUtil.getUnsignedByte(buffer);
@@ -242,7 +246,7 @@ public class OpraNormalizer implements IMdNormalizer
 		}
 		else if (category == CATEGORY_ADMINISTRATIVE)
 		{
-			String message = ByteBufferUtil.getString(buffer, length);
+			String message = ByteBufferUtil.getUnboundedString(buffer, length);
 			if (message.startsWith("ALERT ALERT ALERT"))
 			{
 				LOGGER.info(processorName + " - Exception - Received Admin Message - " + message);
@@ -254,7 +258,7 @@ public class OpraNormalizer implements IMdNormalizer
 		}
 		else if (category == CATEGORY_CONTROL)
 		{
-			String message = ByteBufferUtil.getString(buffer, length);
+			String message = ByteBufferUtil.getUnboundedString(buffer, length);
 			LOGGER.info("Received Contrl Message - Category=" + category + " Type=" + type + " - message=" + message);
 		}
 		buffer.position(endPosition);

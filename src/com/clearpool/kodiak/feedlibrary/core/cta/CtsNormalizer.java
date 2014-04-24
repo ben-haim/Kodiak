@@ -34,10 +34,16 @@ public class CtsNormalizer implements IMdNormalizer
 	private static final char TYPE_ADMIN_UNFORMATTED_TEXT = 'H';
 
 	private final SaleCache sales;
+	private final byte[] tmpBuffer3;
+	private final byte[] tmpBuffer4;
+	private final byte[] tmpBuffer11;
 
 	public CtsNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range)
 	{
 		this.sales = new SaleCache((IMdSaleListener) callbacks.get(MdServiceType.SALE), MdFeed.CTS, range, false);
+		this.tmpBuffer3 = new byte[3];
+		this.tmpBuffer4 = new byte[4];
+		this.tmpBuffer11 = new byte[11];
 	}
 
 	@Override
@@ -64,12 +70,12 @@ public class CtsNormalizer implements IMdNormalizer
 			if (msgType == TYPE_SHORT_TRADE || msgType == TYPE_LONG_TRADE)
 			{
 				boolean isLong = msgType == TYPE_LONG_TRADE;
-				String symbol = ByteBufferUtil.getString(buffer, isLong ? 11 : 3);
+				String symbol = ByteBufferUtil.getString(buffer, isLong ? this.tmpBuffer11 : this.tmpBuffer3);
 				if (isLong) ByteBufferUtil.advancePosition(buffer, 3); // suffix, test message indicator, trade reporting facility
 				char primaryListing = isLong ? (char) buffer.get() : ((ctaPacket.getMessageNetwork() == 'A') ? 'N' : 'A');
 				primaryListing = (primaryListing == ' ') ? ((ctaPacket.getMessageNetwork() == 'A') ? 'N' : 'A') : primaryListing;
 				if (isLong) ByteBufferUtil.advancePosition(buffer, 10); // reserved, financial status, currency, held trade indicator, instrument type, seller's sale days
-				String saleConditions = ByteBufferUtil.getString(buffer, isLong ? 4 : 1);
+				String saleConditions = isLong ? ByteBufferUtil.getString(buffer, this.tmpBuffer4) : String.valueOf((char) buffer.get());
 
 				char priceDenominatorIndicator;
 				long tradePrice;
@@ -97,16 +103,16 @@ public class CtsNormalizer implements IMdNormalizer
 				ByteBufferUtil.advancePosition(buffer, 5); // reserved
 				char primaryListing = (char) buffer.get();
 				ByteBufferUtil.advancePosition(buffer, 1); // trade reporting facility
-				String symbol = ByteBufferUtil.getString(buffer, 11);
+				String symbol = ByteBufferUtil.getString(buffer, this.tmpBuffer11);
 				ByteBufferUtil.advancePosition(buffer, 6); // temporary suffix, financial status, currency, instrument type,
 				long sequenceNumber = ByteBufferUtil.readAsciiLong(buffer, 9);
 				ByteBufferUtil.advancePosition(buffer, 4); // reserved, seller's sale days
-				String originalSaleCondition = ByteBufferUtil.getString(buffer, 4);
+				String originalSaleCondition = ByteBufferUtil.getString(buffer, this.tmpBuffer4);
 				char originalPriceDenominatorIndicator = (char) buffer.get();
 				double originalPrice = CtaUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 12), originalPriceDenominatorIndicator);
 				int originalTradeVolume = (int) ByteBufferUtil.readAsciiLong(buffer, 9);
 				ByteBufferUtil.advancePosition(buffer, 14); // trade through exempt indicator, ssr indicator, reserved, seller's sale days
-				String correctedSaleCondition = ByteBufferUtil.getString(buffer, 4);
+				String correctedSaleCondition = ByteBufferUtil.getString(buffer, this.tmpBuffer4);
 				char correctedPriceDenominatorIndicator = (char) buffer.get();
 				double correctedPrice = CtaUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 12), correctedPriceDenominatorIndicator);
 				int correctedTradeVolume = (int) ByteBufferUtil.readAsciiLong(buffer, 9);
@@ -137,11 +143,11 @@ public class CtsNormalizer implements IMdNormalizer
 				ByteBufferUtil.advancePosition(buffer, 5); // reserved
 				char primaryListing = (char) buffer.get();
 				ByteBufferUtil.advancePosition(buffer, 1); // trade reporting facility
-				String symbol = ByteBufferUtil.getString(buffer, 11);
+				String symbol = ByteBufferUtil.getString(buffer, this.tmpBuffer11);
 				ByteBufferUtil.advancePosition(buffer, 7); // temporary suffix, financial status, currency, instrument type, cancel/error action
 				long sequenceNumber = ByteBufferUtil.readAsciiLong(buffer, 9);
 				ByteBufferUtil.advancePosition(buffer, 3); // seller's sale days
-				String originalSaleCondition = ByteBufferUtil.getString(buffer, 4);
+				String originalSaleCondition = ByteBufferUtil.getString(buffer, this.tmpBuffer4);
 				char originalPriceDenominatorIndicator = (char) buffer.get();
 				double originalPrice = CtaUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 12), originalPriceDenominatorIndicator);
 				int originalTradeVolume = (int) ByteBufferUtil.readAsciiLong(buffer, 9);
@@ -168,7 +174,7 @@ public class CtsNormalizer implements IMdNormalizer
 			}
 			else if (msgType == TYPE_CONSOLIDATED_END_OF_DAY_SUMMARY)
 			{
-				String symbol = ByteBufferUtil.getString(buffer, 11);
+				String symbol = ByteBufferUtil.getString(buffer, this.tmpBuffer11);
 				ByteBufferUtil.advancePosition(buffer, 17); // temporary suffix, financial status, currency, instrument type, ssr, reserved
 				Exchange exchange = CtaUtils.getExchange((char) buffer.get(), null);
 				char closePriceDenominatorIndicator = (char) buffer.get();
@@ -185,7 +191,7 @@ public class CtsNormalizer implements IMdNormalizer
 			}
 			else if (msgType == TYPE_START_OF_DAY_SUMMARY)
 			{
-				String symbol = ByteBufferUtil.getString(buffer, 11);
+				String symbol = ByteBufferUtil.getString(buffer, this.tmpBuffer11);
 				ByteBufferUtil.advancePosition(buffer, 17); // temporary suffix, financial status, currency, instrument type, ssr, reserved
 				Exchange exchange = CtaUtils.getExchange((char) buffer.get(), null);
 				char previousClosePriceDenominatorIndicator = (char) buffer.get();
@@ -201,7 +207,7 @@ public class CtsNormalizer implements IMdNormalizer
 		{
 			if (msgType == TYPE_ADMIN_UNFORMATTED_TEXT)
 			{
-				String message = ByteBufferUtil.getString(buffer, buffer.remaining());
+				String message = ByteBufferUtil.getUnboundedString(buffer, buffer.remaining());
 				if (message.startsWith("ALERT ALERT ALERT"))
 				{
 					LOGGER.info(processorName + " - Exception - Received Admin Message - " + message);

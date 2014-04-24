@@ -44,6 +44,7 @@ public class NasdaqMultithreadedNormalizer implements IMdNormalizer
 	private final BookQuoteCache[] bookCaches;
 	private final ImbalanceCache[] imbalanceCaches;
 	private final ExecutorService[] executors;
+	private final byte[] tmpBuffer;
 	final Map<String, Integer> orderIdToIndex;
 	private final long midnight;
 
@@ -54,6 +55,7 @@ public class NasdaqMultithreadedNormalizer implements IMdNormalizer
 		this.bookCaches = new BookQuoteCache[NUMBER_OF_THREADS];
 		this.imbalanceCaches = new ImbalanceCache[NUMBER_OF_THREADS];
 		this.executors = new ExecutorService[NUMBER_OF_THREADS];
+		this.tmpBuffer = new byte[8];
 
 		for (int i = 0; i < NUMBER_OF_THREADS; i++)
 		{
@@ -100,7 +102,7 @@ public class NasdaqMultithreadedNormalizer implements IMdNormalizer
 			final String orderReferenceNumber = String.valueOf(buffer.getLong());
 			final Side side = (buffer.get() == 'B') ? Side.BUY : Side.SELL;
 			final long shares = ByteBufferUtil.getUnsignedInt(buffer);
-			final String symbol = ByteBufferUtil.getString(buffer, 8);
+			final String symbol = ByteBufferUtil.getString(buffer, this.tmpBuffer);
 			final double price = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			// String displayName = (messageType == ADD_ORDER_WITH_MPID) ? ByteBufferUtil.getString(buffer, 4) : Exchange.USEQ_NASDAQ_OMX.getMicCode();
 
@@ -300,7 +302,7 @@ public class NasdaqMultithreadedNormalizer implements IMdNormalizer
 			final long pairedShares = buffer.getLong();
 			final long imbalanceShares = buffer.getLong();
 			final Side imbalanceSide = getImbalanceSide((char) buffer.get());
-			final String symbol = ByteBufferUtil.getString(buffer, 8);
+			final String symbol = ByteBufferUtil.getString(buffer, this.tmpBuffer);
 			final double farPrice = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			final double nearPrice = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			final double currentReferencePrice = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
