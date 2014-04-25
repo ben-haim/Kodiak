@@ -12,7 +12,6 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,8 +44,7 @@ public class MdSocketSelector extends Thread
 				int selectedKeyCount = this.selector.select();
 				if (selectedKeyCount > 0)
 				{
-					Set<SelectionKey> selectedKeys = this.selector.selectedKeys();
-					Iterator<SelectionKey> selectionKeyIterator = selectedKeys.iterator();
+					Iterator<SelectionKey> selectionKeyIterator = this.selector.selectedKeys().iterator();
 					while (selectionKeyIterator.hasNext())
 					{
 						SelectionKey selectedKey = selectionKeyIterator.next();
@@ -78,8 +76,7 @@ public class MdSocketSelector extends Thread
 					this.udpBuffer.clear();
 					((DatagramChannel) selectedKey.channel()).receive(this.udpBuffer);
 					this.udpBuffer.flip();
-					ISelectable attachment = (ISelectable) selectedKey.attachment();
-					attachment.onSelection(selectedKey, this.udpBuffer);
+					((ISelectable) selectedKey.attachment()).onSelection(selectedKey, this.udpBuffer);
 				}
 				catch (Exception e)
 				{
@@ -98,7 +95,7 @@ public class MdSocketSelector extends Thread
 		return this.selector;
 	}
 
-	public Pair<SelectionKey, DatagramChannel> registerMulticastChannel(String ip, int port, String interfaceIp, Object attachment)
+	public Pair<SelectionKey, DatagramChannel> registerMulticastChannel(String ip, int port, String interfaceIp, ISelectable attachment)
 	{
 		try
 		{
