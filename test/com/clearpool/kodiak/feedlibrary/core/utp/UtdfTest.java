@@ -3,6 +3,7 @@ package com.clearpool.kodiak.feedlibrary.core.utp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdSaleListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
 import com.clearpool.kodiak.feedlibrary.core.MdLibrary;
@@ -16,7 +17,7 @@ public class UtdfTest implements IMdSaleListener
 
 	public UtdfTest() throws Exception
 	{
-		MdLibraryContext context = new MdLibraryContext(1, false, 0, true, false);
+		MdLibraryContext context = new MdLibraryContext(false, 1, false, 0, true);
 		MdLibrary utdfLibrary = new MdLibrary(context, MdFeed.UTDF, new String[] { "1" }, "127.0.0.1", "127.0.0.1", 5000, "C:\\utp");
 		utdfLibrary.registerService(MdServiceType.SALE, this);
 		utdfLibrary.initProcessors();
@@ -24,7 +25,7 @@ public class UtdfTest implements IMdSaleListener
 	}
 
 	@Override
-	public void saleReceived(Sale sale)
+	public void saleReceived(Sale sale, IMulticastAdapter multicastAdapter)
 	{
 		System.out.println(MdServiceType.SALE + " " + sale);
 	}

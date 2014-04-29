@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.caches.BboQuoteCache;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
 import com.clearpool.kodiak.feedlibrary.caches.NbboQuoteCache;
@@ -43,11 +44,11 @@ public class OpraNormalizer implements IMdNormalizer
 	private final byte[] tmpBuffer4;
 	private final byte[] tmpBuffer5;
 
-	public OpraNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range)
+	public OpraNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, IMulticastAdapter multicastAdapter)
 	{
-		this.nbbos = new NbboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.NBBO), MdFeed.OPRA, range);
-		this.bbos = new BboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.BBO), MdFeed.OPRA, range);
-		this.sales = new SaleCache((IMdSaleListener) callbacks.get(MdServiceType.SALE), MdFeed.OPRA, range, true);
+		this.nbbos = new NbboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.NBBO), MdFeed.OPRA, range, multicastAdapter);
+		this.bbos = new BboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.BBO), MdFeed.OPRA, range, multicastAdapter);
+		this.sales = new SaleCache((IMdSaleListener) callbacks.get(MdServiceType.SALE), MdFeed.OPRA, range, null, true);
 		this.tmpBuffer4 = new byte[4];
 		this.tmpBuffer5 = new byte[5];
 	}

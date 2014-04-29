@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.clearpool.common.symbology.ISymbolConverter;
+import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdStateListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
 import com.clearpool.kodiak.feedlibrary.utils.symbolconverters.SymbolConverterFactory;
@@ -18,17 +19,19 @@ import com.clearpool.messageobjects.marketdata.TradingState;
 public class StateCache implements IMdServiceCache
 {
 	private final IMdStateListener stateListener;
+	private final IMarketSessionSettable marketSessionSetter;
 	private final MdFeed feedType;
 	private final String range;
+	private final IMulticastAdapter multicastAdapter;
 	private final Map<String, MarketState> states;
-	private final IMarketSessionSettable marketSessionSetter;
 
-	public StateCache(IMdStateListener iMdStateListener, IMarketSessionSettable marketSessionSetter, MdFeed feedType, String range)
+	public StateCache(IMdStateListener iMdStateListener, IMarketSessionSettable marketSessionSetter, MdFeed feedType, String range, IMulticastAdapter multicastAdapter)
 	{
 		this.stateListener = iMdStateListener;
 		this.marketSessionSetter = marketSessionSetter;
 		this.feedType = feedType;
 		this.range = range;
+		this.multicastAdapter = multicastAdapter;
 		this.states = new HashMap<>();
 	}
 
@@ -242,7 +245,7 @@ public class StateCache implements IMdServiceCache
 		if (this.stateListener != null)
 		{
 			state = state.clone();
-			this.stateListener.stateReceived(state);
+			this.stateListener.stateReceived(state, this.multicastAdapter);
 		}
 	}
 
@@ -290,7 +293,7 @@ public class StateCache implements IMdServiceCache
 			if (this.stateListener != null)
 			{
 				state = state.clone();
-				this.stateListener.stateReceived(state);
+				this.stateListener.stateReceived(state, this.multicastAdapter);
 			}
 		}
 		return this.states.keySet();

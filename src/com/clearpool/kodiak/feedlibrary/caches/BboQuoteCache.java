@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.clearpool.common.symbology.ISymbolConverter;
+import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdQuoteListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
 import com.clearpool.kodiak.feedlibrary.utils.symbolconverters.SymbolConverterFactory;
@@ -18,14 +19,16 @@ public class BboQuoteCache implements IMdServiceCache
 	private final IMdQuoteListener quoteListener;
 	private final MdFeed feedType;
 	private final String range;
+	private final IMulticastAdapter multicastAdapter;
 	private final MdServiceType mdServiceType;
 	private final Map<String, Map<Exchange, Quote>> quotes;
 
-	public BboQuoteCache(IMdQuoteListener quoteListener, MdFeed feedType, String range)
+	public BboQuoteCache(IMdQuoteListener quoteListener, MdFeed feedType, String range, IMulticastAdapter multicastAdapter)
 	{
 		this.quoteListener = quoteListener;
 		this.feedType = feedType;
 		this.range = range;
+		this.multicastAdapter = multicastAdapter;
 		this.mdServiceType = MdServiceType.BBO;
 		this.quotes = new HashMap<>();
 	}
@@ -66,7 +69,7 @@ public class BboQuoteCache implements IMdServiceCache
 		if (this.quoteListener != null)
 		{
 			quote = quote.clone();
-			this.quoteListener.quoteReceived(quote);
+			this.quoteListener.quoteReceived(quote, this.multicastAdapter);
 		}
 	}
 
@@ -120,7 +123,7 @@ public class BboQuoteCache implements IMdServiceCache
 					if (this.quoteListener != null)
 					{
 						quote = quote.clone();
-						this.quoteListener.quoteReceived(quote);
+						this.quoteListener.quoteReceived(quote, this.multicastAdapter);
 					}
 				}
 			}

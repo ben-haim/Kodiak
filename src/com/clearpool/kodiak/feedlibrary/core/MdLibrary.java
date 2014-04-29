@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdLibraryCallback;
 import com.clearpool.messageobjects.marketdata.MdServiceType;
 
@@ -18,9 +19,8 @@ public class MdLibrary
 	private final String interfaceA;
 	private final String interfaceB;
 	private final String readFromDir;
+	private final MdProcessor[] mdProcessors;
 	private final Map<MdServiceType, IMdLibraryCallback> callbacks;
-
-	private MdProcessor[] mdProcessors;
 
 	public MdLibrary(MdLibraryContext context, MdFeed feed, String[] lines, String interfaceA, String interfaceB, long startTime, String readFromDir) throws Exception
 	{
@@ -30,6 +30,7 @@ public class MdLibrary
 		this.interfaceA = interfaceA;
 		this.interfaceB = interfaceB;
 		this.readFromDir = readFromDir;
+		this.mdProcessors = new MdProcessor[this.lines.length];
 		this.callbacks = new HashMap<MdServiceType, IMdLibraryCallback>();
 		if (startTime > 0) this.context.schedule(new MdLibraryStatisticsTask(this), startTime, startTime);
 	}
@@ -43,13 +44,12 @@ public class MdLibrary
 	{
 		try
 		{
-			this.mdProcessors = new MdProcessor[this.lines.length];
 			for (int i = 0; i < this.lines.length; i++)
 			{
 				String line = this.lines[i];
 				int lineInt = Integer.parseInt(line);
 				MdProcessor processor = new MdProcessor(this.feed, line, this.interfaceA, this.interfaceB, createNormalizer(this.feed,
-						MdFeedProps.getProperty(this.feed.toString(), line, MdFeedProps.RANGE)));
+						MdFeedProps.getProperty(this.feed.toString(), line, MdFeedProps.RANGE), this.context.getMulticastAdapterForLine(lineInt)));
 				this.mdProcessors[i] = processor;
 				if (this.context.readFromSocket()) processor.registerWithSocketSelector(this.context.getSocketSelectorForLine(lineInt));
 				else processor.registerWithFileSelector(this.readFromDir, this.context.getFileSelectorForLine(lineInt));
@@ -62,13 +62,13 @@ public class MdLibrary
 	}
 
 	// Helper
-	private IMdNormalizer createNormalizer(MdFeed normalizerFeed, String range)
+	private IMdNormalizer createNormalizer(MdFeed normalizerFeed, String range, IMulticastAdapter multicastAdapter)
 	{
 		String className = MdFeedProps.getProperty(normalizerFeed.toString(), MdFeedProps.NORMALIZER);
 		if (className == null || className.isEmpty()) return null;
 		try
 		{
-			return (IMdNormalizer) Class.forName(className).getConstructor(Map.class, String.class).newInstance(this.callbacks, range);
+			return (IMdNormalizer) Class.forName(className).getConstructor(Map.class, String.class, IMulticastAdapter.class).newInstance(this.callbacks, range, multicastAdapter);
 		}
 		catch (Exception e)
 		{

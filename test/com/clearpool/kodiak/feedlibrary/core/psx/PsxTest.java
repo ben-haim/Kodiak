@@ -3,6 +3,7 @@ package com.clearpool.kodiak.feedlibrary.core.psx;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdBookQuoteListener;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdImbalanceListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
@@ -18,7 +19,7 @@ public class PsxTest implements IMdBookQuoteListener, IMdImbalanceListener
 
 	public PsxTest() throws Exception
 	{
-		MdLibraryContext context = new MdLibraryContext(1, false, 0, true, false);
+		MdLibraryContext context = new MdLibraryContext(false, 1, false, 0, true);
 		MdLibrary nasdaqLibrary = new MdLibrary(context, MdFeed.PSX, new String[] { "1" }, "127.0.0.1", "127.0.0.1", 5000, "C:\\nasdaq");
 		nasdaqLibrary.registerService(MdServiceType.BOOK_XPSX, this);
 		nasdaqLibrary.registerService(MdServiceType.IMBALANCE_XPSX, this);
@@ -27,13 +28,13 @@ public class PsxTest implements IMdBookQuoteListener, IMdImbalanceListener
 	}
 
 	@Override
-	public void bookQuoteReceived(BookQuote bookQuote)
+	public void bookQuoteReceived(BookQuote bookQuote, IMulticastAdapter multicastAdapter)
 	{
 		System.out.println(bookQuote);
 	}
 
 	@Override
-	public void imbalanceReceived(Imbalance imbalance)
+	public void imbalanceReceived(Imbalance imbalance, IMulticastAdapter multicastAdapter)
 	{
 		System.out.println(imbalance);
 	}

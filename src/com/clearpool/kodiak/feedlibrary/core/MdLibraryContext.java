@@ -1,49 +1,60 @@
 package com.clearpool.kodiak.feedlibrary.core;
 
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.clearpool.commonserver.adapter.IMulticastAdapter;
+import com.clearpool.commonserver.adapter.MulticastAdapter;
+import com.clearpool.commonserver.adapter.proto.panda.ProtoPandaAdapter;
+import com.clearpool.commonserver.db.IDBAdapter;
+
 public class MdLibraryContext
 {
-	private final int selectorCount;
 	private final boolean readFromSocket;
 	private final int recvBufferSize;
-	private final boolean useQueuedSelector;
 	private final Thread[] selectorThreads;
+	private final IMulticastAdapter[] multicastAdapters;
 	private Timer timer;
 
 	private boolean publishing;
 
-	public MdLibraryContext(int selectorCount, boolean readFromSocket, int recvBufferSize, boolean publishing, boolean useQueuedSelector) throws IOException
+	public MdLibraryContext(boolean readFromSocket, int selectorCount, boolean useQueuedSelector, int recvBufferSize, boolean publishing) throws Exception
 	{
-		this(selectorCount, readFromSocket, recvBufferSize, publishing, useQueuedSelector, new Timer("MDLibraryContext Timer", true));
+		this(readFromSocket, selectorCount, useQueuedSelector, recvBufferSize, publishing, "", 0, null, new Timer("MDLibraryContext Timer", true));
 	}
 
-	public MdLibraryContext(int selectorCount, boolean readFromSocket, int recvBufferSize, boolean publishing, boolean useQueuedSelector, Timer timer) throws IOException
+	public MdLibraryContext(boolean readFromSocket, int selectorCount, boolean useQueuedSelector, int recvBufferSize, boolean publishing, String networkInterface, int cacheSize,
+			IDBAdapter configDbAdapter, Timer timer) throws Exception
 	{
-		this.selectorCount = selectorCount;
 		this.readFromSocket = readFromSocket;
 		this.recvBufferSize = recvBufferSize;
-		this.useQueuedSelector = useQueuedSelector;
-
-		this.setPublishing(publishing);
 		if (this.readFromSocket)
 		{
-			this.selectorThreads = new MdSocketSelector[this.selectorCount];
+			this.selectorThreads = new MdSocketSelector[selectorCount];
 			for (int i = 0; i < this.selectorThreads.length; i++)
 			{
-				this.selectorThreads[i] = this.useQueuedSelector ? new MdQueuedSocketSelector(String.valueOf(i), this.recvBufferSize) : new MdSocketSelector(String.valueOf(i),
+				this.selectorThreads[i] = useQueuedSelector ? new MdQueuedSocketSelector(String.valueOf(i), this.recvBufferSize) : new MdSocketSelector(String.valueOf(i),
 						this.recvBufferSize);
 			}
 		}
 		else this.selectorThreads = new Thread[] { new MdFileSelector() };
+		this.multicastAdapters = new MulticastAdapter[selectorCount];
+		for (int i = 0; i < this.multicastAdapters.length; i++)
+		{
+			this.multicastAdapters[i] = new MulticastAdapter(new ProtoPandaAdapter(networkInterface, this.recvBufferSize, cacheSize), configDbAdapter);
+		}
+		this.publishing = publishing;
 		this.timer = timer;
 	}
 
 	public MdSocketSelector getSocketSelectorForLine(int line)
 	{
 		return (this.readFromSocket) ? (MdSocketSelector) (this.selectorThreads[line % this.selectorThreads.length]) : null;
+	}
+
+	public IMulticastAdapter getMulticastAdapterForLine(int line)
+	{
+		return this.multicastAdapters[line % this.multicastAdapters.length];
 	}
 
 	public MdFileSelector getFileSelectorForLine(int line)
@@ -57,15 +68,6 @@ public class MdLibraryContext
 		for (int i = 0; i < this.selectorThreads.length; i++)
 		{
 			this.selectorThreads[i].start();
-		}
-	}
-
-	public void stop()
-	{
-		// Stop Selectors
-		for (int i = 0; i < this.selectorThreads.length; i++)
-		{
-			this.selectorThreads[i].interrupt();
 		}
 	}
 

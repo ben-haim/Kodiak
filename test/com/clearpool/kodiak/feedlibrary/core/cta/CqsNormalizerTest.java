@@ -35,7 +35,7 @@ public class CqsNormalizerTest
 		callbacks.put(MdServiceType.BBO, this.bboListener);
 		callbacks.put(MdServiceType.NBBO, this.nbboListener);
 		callbacks.put(MdServiceType.STATE, this.stateListener);
-		this.normalizer = new CqsNormalizer(callbacks, "") {
+		this.normalizer = new CqsNormalizer(callbacks, "", null) {
 			@Override
 			public MarketSession getMarketSession(char primaryListing, long timestamp)
 			{

@@ -3,6 +3,7 @@ package com.clearpool.kodiak.feedlibrary.core.opra;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdQuoteListener;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdSaleListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
@@ -18,7 +19,7 @@ public class OpraTest implements IMdQuoteListener, IMdSaleListener
 
 	public OpraTest() throws Exception
 	{
-		MdLibraryContext context = new MdLibraryContext(1, false, 0, true, false);
+		MdLibraryContext context = new MdLibraryContext(false, 1, false, 0, true);
 		MdLibrary library = new MdLibrary(context, MdFeed.OPRA, new String[] { "3" }, "127.0.0.1", "127.0.0.1", 5000, "C:\\opra");
 		library.registerService(MdServiceType.NBBO, this);
 		library.registerService(MdServiceType.BBO, this);
@@ -41,13 +42,13 @@ public class OpraTest implements IMdQuoteListener, IMdSaleListener
 	}
 
 	@Override
-	public void saleReceived(Sale sale)
+	public void saleReceived(Sale sale, IMulticastAdapter multicastAdapter)
 	{
 		System.out.println(MdServiceType.SALE + " " + sale);
 	}
 
 	@Override
-	public void quoteReceived(Quote quote)
+	public void quoteReceived(Quote quote, IMulticastAdapter multicastAdapter)
 	{
 		System.out.println(quote.getServiceType() + " " + quote);
 	}

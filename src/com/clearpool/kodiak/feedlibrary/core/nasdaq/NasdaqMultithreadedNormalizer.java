@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import com.clearpool.common.util.DateUtil;
+import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.caches.BookQuoteCache;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
 import com.clearpool.kodiak.feedlibrary.caches.ImbalanceCache;
@@ -50,7 +51,7 @@ public class NasdaqMultithreadedNormalizer implements IMdNormalizer
 
 	private long secondsSinceMidnight;
 
-	public NasdaqMultithreadedNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, @SuppressWarnings("unused") String range)
+	public NasdaqMultithreadedNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, @SuppressWarnings("unused") String range, IMulticastAdapter multicastAdapter)
 	{
 		this.bookCaches = new BookQuoteCache[NUMBER_OF_THREADS];
 		this.imbalanceCaches = new ImbalanceCache[NUMBER_OF_THREADS];
@@ -59,8 +60,10 @@ public class NasdaqMultithreadedNormalizer implements IMdNormalizer
 
 		for (int i = 0; i < NUMBER_OF_THREADS; i++)
 		{
-			this.bookCaches[i] = new BookQuoteCache((IMdBookQuoteListener) callbacks.get(MdServiceType.BOOK_XNAS), MdFeed.NASDAQ, MdServiceType.BOOK_XNAS, RANGES[i]);
-			this.imbalanceCaches[i] = new ImbalanceCache((IMdImbalanceListener) callbacks.get(MdServiceType.IMBALANCE_XNAS), MdFeed.NASDAQ, MdServiceType.IMBALANCE_XNAS, RANGES[i]);
+			this.bookCaches[i] = new BookQuoteCache((IMdBookQuoteListener) callbacks.get(MdServiceType.BOOK_XNAS), MdFeed.NASDAQ, MdServiceType.BOOK_XNAS, RANGES[i],
+					multicastAdapter);
+			this.imbalanceCaches[i] = new ImbalanceCache((IMdImbalanceListener) callbacks.get(MdServiceType.IMBALANCE_XNAS), MdFeed.NASDAQ, MdServiceType.IMBALANCE_XNAS,
+					RANGES[i], multicastAdapter);
 			this.executors[i] = Executors.newSingleThreadExecutor();
 		}
 		this.orderIdToIndex = new ConcurrentHashMap<String, Integer>();

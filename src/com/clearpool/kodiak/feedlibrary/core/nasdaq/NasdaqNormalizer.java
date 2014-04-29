@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.clearpool.common.util.DateUtil;
+import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.caches.BookQuoteCache;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
 import com.clearpool.kodiak.feedlibrary.caches.ImbalanceCache;
@@ -42,10 +43,11 @@ public class NasdaqNormalizer implements IMdNormalizer
 
 	private long secondsSinceMidnight;
 
-	public NasdaqNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range)
+	public NasdaqNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, IMulticastAdapter multicastAdapter)
 	{
-		this.bookCache = new BookQuoteCache((IMdBookQuoteListener) callbacks.get(MdServiceType.BOOK_XNAS), MdFeed.NASDAQ, MdServiceType.BOOK_XNAS, range);
-		this.imbalanceCache = new ImbalanceCache((IMdImbalanceListener) callbacks.get(MdServiceType.IMBALANCE_XNAS), MdFeed.NASDAQ, MdServiceType.IMBALANCE_XNAS, range);
+		this.bookCache = new BookQuoteCache((IMdBookQuoteListener) callbacks.get(MdServiceType.BOOK_XNAS), MdFeed.NASDAQ, MdServiceType.BOOK_XNAS, range, multicastAdapter);
+		this.imbalanceCache = new ImbalanceCache((IMdImbalanceListener) callbacks.get(MdServiceType.IMBALANCE_XNAS), MdFeed.NASDAQ, MdServiceType.IMBALANCE_XNAS, range,
+				multicastAdapter);
 		this.tmpBuffer = new byte[8];
 		this.midnight = DateUtil.TODAY_MIDNIGHT_EST.getTime();
 

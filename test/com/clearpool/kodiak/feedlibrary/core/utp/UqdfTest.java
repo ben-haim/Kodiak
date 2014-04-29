@@ -3,6 +3,7 @@ package com.clearpool.kodiak.feedlibrary.core.utp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdQuoteListener;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdStateListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
@@ -18,7 +19,7 @@ public class UqdfTest implements IMdQuoteListener, IMdStateListener
 
 	public UqdfTest() throws Exception
 	{
-		MdLibraryContext context = new MdLibraryContext(1, false, 0, true, false);
+		MdLibraryContext context = new MdLibraryContext(false, 1, false, 0, true);
 		MdLibrary uqdfLibrary = new MdLibrary(context, MdFeed.UQDF, new String[] { "1" }, "127.0.0.1", "127.0.0.1", 5000, "C:\\utp");
 		uqdfLibrary.registerService(MdServiceType.NBBO, this);
 		uqdfLibrary.registerService(MdServiceType.BBO, this);
@@ -28,13 +29,13 @@ public class UqdfTest implements IMdQuoteListener, IMdStateListener
 	}
 
 	@Override
-	public void quoteReceived(Quote quote)
+	public void quoteReceived(Quote quote, IMulticastAdapter multicastAdapter)
 	{
 		System.out.println(quote.getServiceType() + " " + quote);
 	}
 
 	@Override
-	public void stateReceived(MarketState state)
+	public void stateReceived(MarketState state, IMulticastAdapter multicastAdapter)
 	{
 		System.out.println(MdServiceType.STATE + " " + state);
 	}

@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.clearpool.common.util.DateUtil;
+import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
 import com.clearpool.kodiak.feedlibrary.caches.SaleCache;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdLibraryCallback;
@@ -52,10 +53,10 @@ public class UtdfNormalizer implements IMdNormalizer
 	private boolean receivedEndOfLastSaleEligibleControlMessage;
 	private BufferedWriter closePriceWriter;
 
-	public UtdfNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range)
+	public UtdfNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, IMulticastAdapter multicastAdapter)
 	{
 		this.range = range;
-		this.sales = new SaleCache((IMdSaleListener) callbacks.get(MdServiceType.SALE), MdFeed.UTDF, range, false);
+		this.sales = new SaleCache((IMdSaleListener) callbacks.get(MdServiceType.SALE), MdFeed.UTDF, range, multicastAdapter, false);
 		this.tmpBuffer4 = new byte[4];
 		this.tmpBuffer5 = new byte[5];
 		this.tmpBuffer11 = new byte[11];

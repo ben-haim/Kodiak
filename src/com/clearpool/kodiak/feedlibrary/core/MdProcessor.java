@@ -51,7 +51,7 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 	// Called by MDLibrary during start sequence
 	public void registerWithSocketSelector(MdSocketSelector mdSelector)
 	{
-		Pair<SelectionKey, DatagramChannel> registrationA = registerSocketChannel(this.groupA, this.interfaceIpA, mdSelector);
+		Pair<SelectionKey, DatagramChannel> registrationA = registerSocketChannel(mdSelector, this.groupA, this.interfaceIpA);
 		if (registrationA != null)
 		{
 			this.sequencer.setSelectionKeyA(registrationA.getA());
@@ -61,7 +61,7 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 		{
 			LOGGER.log(Level.SEVERE, "Unable to join multicast channel " + this.groupA + "on interface " + this.interfaceIpA);
 		}
-		Pair<SelectionKey, DatagramChannel> registrationB = registerSocketChannel(this.groupB, this.interfaceIpB, mdSelector);
+		Pair<SelectionKey, DatagramChannel> registrationB = registerSocketChannel(mdSelector, this.groupB, this.interfaceIpB);
 		if (registrationB != null)
 		{
 			this.sequencer.setSelectionKeyB(registrationB.getA());
@@ -74,7 +74,7 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 	}
 
 	// Helper
-	private Pair<SelectionKey, DatagramChannel> registerSocketChannel(String group, String interfaceIp, MdSocketSelector mdSelector)
+	private Pair<SelectionKey, DatagramChannel> registerSocketChannel(MdSocketSelector mdSelector, String group, String interfaceIp)
 	{
 		String[] groupSplit = group.split(":");
 		String ip = groupSplit[0];
