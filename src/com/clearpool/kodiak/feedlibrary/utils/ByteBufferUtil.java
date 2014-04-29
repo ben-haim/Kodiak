@@ -29,14 +29,14 @@ public class ByteBufferUtil
 	public static String getString(ByteBuffer buffer, byte[] bytes)
 	{
 		buffer.get(bytes);
-		return new String(bytes).trim().intern();
+		return new String(bytes).trim();
 	}
 
 	public static String getUnboundedString(ByteBuffer buffer, int length)
 	{
 		byte[] bytes = new byte[length];
 		buffer.get(bytes);
-		return new String(bytes).trim().intern();
+		return new String(bytes).trim();
 	}
 
 	public static long readAsciiLong(ByteBuffer buffer, int length)
