@@ -52,11 +52,25 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 	public void registerWithSocketSelector(MdSocketSelector mdSelector)
 	{
 		Pair<SelectionKey, DatagramChannel> registrationA = registerSocketChannel(this.groupA, this.interfaceIpA, mdSelector);
+		if (registrationA != null)
+		{
+			this.sequencer.setSelectionKeyA(registrationA.getA());
+			this.channelA = registrationA.getB();
+		}
+		else
+		{
+			LOGGER.log(Level.SEVERE, "Unable to join multicast channel " + this.groupA + "on interface " + this.interfaceIpA);
+		}
 		Pair<SelectionKey, DatagramChannel> registrationB = registerSocketChannel(this.groupB, this.interfaceIpB, mdSelector);
-		this.sequencer.setSelectionKeyA(registrationA.getA());
-		this.sequencer.setSelectionKeyB(registrationB.getA());
-		this.channelA = registrationA.getB();
-		this.channelB = registrationB.getB();
+		if (registrationB != null)
+		{
+			this.sequencer.setSelectionKeyB(registrationB.getA());
+			this.channelB = registrationB.getB();
+		}
+		else
+		{
+			LOGGER.log(Level.SEVERE, "Unable to join multicast channel " + this.groupB + "on interface " + this.interfaceIpB);
+		}
 	}
 
 	// Helper
