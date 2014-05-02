@@ -237,7 +237,14 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 				if (message.startsWith("IPO PRICE AT"))
 				{
 					String[] spaceSplit = message.split(" ");
-					this.ipoSymbols.add(spaceSplit[4]);
+					String symbol = spaceSplit[4];
+					if (this.ipoSymbols.add(symbol))
+					{
+						MarketState previousState = this.states.getData(symbol);
+						int conditionCode = (previousState == null) ? 0 : previousState.getConditionCode();
+						conditionCode = MdEntity.setCondition(conditionCode, MarketState.CONDITION_NEW_ISSUE);
+						this.states.updateConditionCode(symbol, participantId, conditionCode, timestamp);
+					}
 				}
 			}
 			else if (msgType == TYPE_CROSS_SRO_TRADING_ACTION_MESSAGE)
