@@ -285,7 +285,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 				int roundLotSize = (int) ByteBufferUtil.readAsciiLong(buffer, 5);
 				ByteBufferUtil.advancePosition(buffer, 1); // Financial status indicator
 				this.lotSizes.put(symbol, Integer.valueOf(roundLotSize));
-				this.states.updateMarketSessionAndTradingState(symbol, participantId, MarketSession.PREMARKET, TradingState.TRADING, timestamp);
+				this.states.updateMarketSession(symbol, participantId, MarketSession.PREMARKET, timestamp);
 			}
 			else if (msgType == TYPE_REG_SHO_SSPTR_INDICATOR)
 			{
