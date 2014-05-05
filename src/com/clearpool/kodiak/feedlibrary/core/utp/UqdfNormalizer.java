@@ -241,9 +241,8 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 					if (this.ipoSymbols.add(symbol))
 					{
 						MarketState previousState = this.states.getData(symbol);
-						int conditionCode = (previousState == null) ? 0 : previousState.getConditionCode();
-						conditionCode = MdEntity.setCondition(conditionCode, MarketState.CONDITION_NEW_ISSUE);
-						this.states.updateConditionCode(symbol, participantId, conditionCode, timestamp);
+						this.states.updateConditionCode(symbol, participantId,
+								MdEntity.setCondition((previousState == null) ? 0 : previousState.getConditionCode(), MarketState.CONDITION_NEW_ISSUE), timestamp);
 					}
 				}
 			}
