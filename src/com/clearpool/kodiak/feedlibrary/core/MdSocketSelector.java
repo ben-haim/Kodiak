@@ -90,11 +90,6 @@ public class MdSocketSelector extends Thread
 		}
 	}
 
-	public Selector getSelector()
-	{
-		return this.selector;
-	}
-
 	public Pair<SelectionKey, DatagramChannel> registerMulticastChannel(String ip, int port, String interfaceIp, ISelectable attachment)
 	{
 		try
