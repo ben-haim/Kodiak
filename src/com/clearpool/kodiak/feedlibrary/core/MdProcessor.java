@@ -78,7 +78,7 @@ public class MdProcessor implements ISelectable, ISequenceMessageReceivable
 	{
 		String[] groupSplit = group.split(":");
 		String ip = groupSplit[0];
-		int port = Integer.valueOf(groupSplit[1]).intValue();
+		int port = Integer.parseInt(groupSplit[1]);
 		return mdSelector.registerMulticastChannel(ip, port, interfaceIp, this);
 	}
 

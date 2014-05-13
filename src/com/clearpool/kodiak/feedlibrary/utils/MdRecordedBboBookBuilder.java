@@ -26,12 +26,12 @@ public class MdRecordedBboBookBuilder
 		while ((line = reader.readLine()) != null)
 		{
 			String[] fields = line.split(String.valueOf("\\" + MdEntity.DELIMITER));
-			Date time = new Date(Long.valueOf(fields[4]).longValue());
-			double bidPrice = Double.valueOf(fields[5]).doubleValue();
-			int bidSize = Integer.valueOf(fields[6]).intValue();
+			Date time = new Date(Long.parseLong(fields[4]));
+			double bidPrice = Double.parseDouble(fields[5]);
+			int bidSize = Integer.parseInt(fields[6]);
 			String bidExchange = fields[7];
-			double askPrice = Double.valueOf(fields[8]).doubleValue();
-			int askSize = Integer.valueOf(fields[9]).intValue();
+			double askPrice = Double.parseDouble(fields[8]);
+			int askSize = Integer.parseInt(fields[9]);
 			String askExchange = fields[10];
 
 			Quote quote = new Quote();

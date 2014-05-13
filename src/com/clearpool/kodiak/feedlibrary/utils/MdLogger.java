@@ -69,7 +69,7 @@ public class MdLogger
 				String group = MdFeedProps.getProperty(feed, line, isPrimary ? "A" : "B");
 				String[] groupSplit = group.split(":");
 				String ip = groupSplit[0];
-				int port = Integer.valueOf(groupSplit[1]).intValue();
+				int port = Integer.parseInt(groupSplit[1]);
 				String fileName = logDirectory + File.separator + feed + "#" + line;
 				MDLoggerProcessor processor = new MDLoggerProcessor(fileName);
 				this.processors.add(processor);

@@ -223,7 +223,7 @@ public class UtdfNormalizer implements IMdNormalizer
 				{
 					String[] spaceSplit = message.split(" ");
 					String priceString = spaceSplit[5];
-					this.sales.setLatestClosePrice(spaceSplit[4], Exchange.USEQ_SIP, Integer.valueOf(priceString.substring(0, priceString.indexOf("."))).intValue() / 100d,
+					this.sales.setLatestClosePrice(spaceSplit[4], Exchange.USEQ_SIP, Integer.parseInt(priceString.substring(0, priceString.indexOf("."))) / 100d,
 							timestamp, "SDS");
 				}
 			}
