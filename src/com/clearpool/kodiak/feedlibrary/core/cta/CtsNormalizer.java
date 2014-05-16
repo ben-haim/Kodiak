@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
 import com.clearpool.kodiak.feedlibrary.caches.SaleCache;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdLibraryCallback;
@@ -39,9 +38,9 @@ public class CtsNormalizer implements IMdNormalizer
 	private final byte[] tmpBuffer4;
 	private final byte[] tmpBuffer11;
 
-	public CtsNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, IMulticastAdapter multicastAdapter)
+	public CtsNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, int channel)
 	{
-		this.sales = new SaleCache((IMdSaleListener) callbacks.get(MdServiceType.SALE), MdFeed.CTS, range, multicastAdapter, false);
+		this.sales = new SaleCache((IMdSaleListener) callbacks.get(MdServiceType.SALE), MdFeed.CTS, range, channel, false);
 		this.tmpBuffer3 = new byte[3];
 		this.tmpBuffer4 = new byte[4];
 		this.tmpBuffer11 = new byte[11];

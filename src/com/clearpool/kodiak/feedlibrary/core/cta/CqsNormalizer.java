@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.caches.BboQuoteCache;
 import com.clearpool.kodiak.feedlibrary.caches.IMarketSessionSettable;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
@@ -67,11 +66,11 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 	private boolean isPostMarketSession = false;
 	private boolean isClosed = false;
 
-	public CqsNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, IMulticastAdapter multicastAdapter)
+	public CqsNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, int channel)
 	{
-		this.nbbos = new NbboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.NBBO), MdFeed.CQS, range, multicastAdapter);
-		this.bbos = new BboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.BBO), MdFeed.CQS, range, multicastAdapter);
-		this.states = new StateCache((IMdStateListener) callbacks.get(MdServiceType.STATE), this, MdFeed.CQS, range, multicastAdapter);
+		this.nbbos = new NbboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.NBBO), MdFeed.CQS, range, channel);
+		this.bbos = new BboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.BBO), MdFeed.CQS, range, channel);
+		this.states = new StateCache((IMdStateListener) callbacks.get(MdServiceType.STATE), this, MdFeed.CQS, range, channel);
 		this.tmpBuffer3 = new byte[3];
 		this.tmpBuffer4 = new byte[4];
 		this.tmpBuffer11 = new byte[11];

@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import com.clearpool.common.datastractures.Pair;
 import com.clearpool.common.marketdata.ReverseDoubleComparator;
 import com.clearpool.common.symbology.ISymbolConverter;
-import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdBookQuoteListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
 import com.clearpool.kodiak.feedlibrary.utils.symbolconverters.SymbolConverterFactory;
@@ -32,17 +31,17 @@ public class BookQuoteCache implements IMdServiceCache
 	private final MdFeed feedType;
 	private final MdServiceType mdServiceType;
 	private final String range;
-	private final IMulticastAdapter multicastAdapter;
+	private final int channel;
 	private final Map<String, BookOrder> orderIdToBookOrder;
 	private final Map<String, Book> symbolToBook;
 
-	public BookQuoteCache(IMdBookQuoteListener bookListener, MdFeed feedType, MdServiceType mdServiceType, String range, IMulticastAdapter multicastAdapter)
+	public BookQuoteCache(IMdBookQuoteListener bookListener, MdFeed feedType, MdServiceType mdServiceType, String range, int channel)
 	{
 		this.bookListener = bookListener;
 		this.feedType = feedType;
 		this.mdServiceType = mdServiceType;
 		this.range = range;
-		this.multicastAdapter = multicastAdapter;
+		this.channel = channel;
 		this.orderIdToBookOrder = new HashMap<String, BookOrder>();
 		this.symbolToBook = new HashMap<String, Book>();
 	}
@@ -146,7 +145,7 @@ public class BookQuoteCache implements IMdServiceCache
 		if (this.bookListener != null)
 		{
 			BookQuote clonedBookQuote = bookQuote.clone();
-			this.bookListener.bookQuoteReceived(clonedBookQuote, this.multicastAdapter);
+			this.bookListener.bookQuoteReceived(clonedBookQuote, this.channel);
 		}
 	}
 

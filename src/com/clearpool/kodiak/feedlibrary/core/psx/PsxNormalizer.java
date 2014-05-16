@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.clearpool.common.util.DateUtil;
-import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.caches.BookQuoteCache;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
 import com.clearpool.kodiak.feedlibrary.caches.ImbalanceCache;
@@ -43,11 +42,10 @@ public class PsxNormalizer implements IMdNormalizer
 
 	private long secondsSinceMidnight;
 
-	public PsxNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, IMulticastAdapter multicastAdapter)
+	public PsxNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, int channel)
 	{
-		this.bookCache = new BookQuoteCache((IMdBookQuoteListener) callbacks.get(MdServiceType.BOOK_XPSX), MdFeed.PSX, MdServiceType.BOOK_XPSX, range, multicastAdapter);
-		this.imbalanceCache = new ImbalanceCache((IMdImbalanceListener) callbacks.get(MdServiceType.IMBALANCE_XPSX), MdFeed.PSX, MdServiceType.IMBALANCE_XPSX, range,
-				multicastAdapter);
+		this.bookCache = new BookQuoteCache((IMdBookQuoteListener) callbacks.get(MdServiceType.BOOK_XPSX), MdFeed.PSX, MdServiceType.BOOK_XPSX, range, channel);
+		this.imbalanceCache = new ImbalanceCache((IMdImbalanceListener) callbacks.get(MdServiceType.IMBALANCE_XPSX), MdFeed.PSX, MdServiceType.IMBALANCE_XPSX, range, channel);
 		this.tmpBuffer = new byte[8];
 		this.midnight = DateUtil.TODAY_MIDNIGHT_EST.getTime();
 

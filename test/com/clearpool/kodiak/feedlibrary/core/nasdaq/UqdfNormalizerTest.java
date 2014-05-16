@@ -37,7 +37,7 @@ public class UqdfNormalizerTest
 		callbacks.put(MdServiceType.BBO, this.bboListener);
 		callbacks.put(MdServiceType.NBBO, this.nbboListener);
 		callbacks.put(MdServiceType.STATE, this.stateListener);
-		this.normalizer = new UqdfNormalizer(callbacks, "", null) {
+		this.normalizer = new UqdfNormalizer(callbacks, "", 0) {
 			@Override
 			public MarketSession getMarketSession(char primaryListing, long timestamp)
 			{
@@ -87,7 +87,7 @@ public class UqdfNormalizerTest
 		callbacks.put(MdServiceType.BBO, this.bboListener);
 		callbacks.put(MdServiceType.NBBO, this.nbboListener);
 		callbacks.put(MdServiceType.STATE, this.stateListener);
-		UqdfNormalizer n = new UqdfNormalizer(callbacks, "", null) {
+		UqdfNormalizer n = new UqdfNormalizer(callbacks, "", 0) {
 			@Override
 			public MarketSession getMarketSession(char primaryListing, long timestamp)
 			{

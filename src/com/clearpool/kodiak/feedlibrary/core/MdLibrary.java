@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdLibraryCallback;
 import com.clearpool.messageobjects.marketdata.MdServiceType;
 
@@ -49,7 +48,7 @@ public class MdLibrary
 				String line = this.lines[i];
 				int lineInt = Integer.parseInt(line);
 				MdProcessor processor = new MdProcessor(this.feed, line, this.interfaceA, this.interfaceB, createNormalizer(this.feed,
-						MdFeedProps.getProperty(this.feed.toString(), line, MdFeedProps.RANGE), this.context.getMulticastAdapterForLine(lineInt)));
+						MdFeedProps.getProperty(this.feed.toString(), line, MdFeedProps.RANGE), lineInt));
 				this.mdProcessors[i] = processor;
 				if (this.context.readFromSocket()) processor.registerWithSocketSelector(this.context.getSocketSelectorForLine(lineInt));
 				else processor.registerWithFileSelector(this.readFromDir, this.context.getFileSelectorForLine(lineInt));
@@ -62,13 +61,13 @@ public class MdLibrary
 	}
 
 	// Helper
-	private IMdNormalizer createNormalizer(MdFeed normalizerFeed, String range, IMulticastAdapter multicastAdapter)
+	private IMdNormalizer createNormalizer(MdFeed normalizerFeed, String range, int channel)
 	{
 		String className = MdFeedProps.getProperty(normalizerFeed.toString(), MdFeedProps.NORMALIZER);
 		if (className == null || className.isEmpty()) return null;
 		try
 		{
-			return (IMdNormalizer) Class.forName(className).getConstructor(Map.class, String.class, IMulticastAdapter.class).newInstance(this.callbacks, range, multicastAdapter);
+			return (IMdNormalizer) Class.forName(className).getConstructor(Map.class, String.class, int.class).newInstance(this.callbacks, range, Integer.valueOf(channel));
 		}
 		catch (Exception e)
 		{

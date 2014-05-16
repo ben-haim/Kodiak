@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.clearpool.common.symbology.ISymbolConverter;
-import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdStateListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
 import com.clearpool.kodiak.feedlibrary.utils.symbolconverters.SymbolConverterFactory;
@@ -22,16 +21,16 @@ public class StateCache implements IMdServiceCache
 	private final IMarketSessionSettable marketSessionSetter;
 	private final MdFeed feedType;
 	private final String range;
-	private final IMulticastAdapter multicastAdapter;
+	private final int channel;
 	private final Map<String, MarketState> states;
 
-	public StateCache(IMdStateListener iMdStateListener, IMarketSessionSettable marketSessionSetter, MdFeed feedType, String range, IMulticastAdapter multicastAdapter)
+	public StateCache(IMdStateListener iMdStateListener, IMarketSessionSettable marketSessionSetter, MdFeed feedType, String range, int channel)
 	{
 		this.stateListener = iMdStateListener;
 		this.marketSessionSetter = marketSessionSetter;
 		this.feedType = feedType;
 		this.range = range;
-		this.multicastAdapter = multicastAdapter;
+		this.channel = channel;
 		this.states = new HashMap<>();
 	}
 
@@ -245,7 +244,7 @@ public class StateCache implements IMdServiceCache
 		if (this.stateListener != null)
 		{
 			state = state.clone();
-			this.stateListener.stateReceived(state, this.multicastAdapter);
+			this.stateListener.stateReceived(state, this.channel);
 		}
 	}
 
@@ -293,7 +292,7 @@ public class StateCache implements IMdServiceCache
 			if (this.stateListener != null)
 			{
 				state = state.clone();
-				this.stateListener.stateReceived(state, this.multicastAdapter);
+				this.stateListener.stateReceived(state, this.channel);
 			}
 		}
 		return this.states.keySet();

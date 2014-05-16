@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.clearpool.common.symbology.ISymbolConverter;
-import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdSaleListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
 import com.clearpool.kodiak.feedlibrary.utils.symbolconverters.SymbolConverterFactory;
@@ -23,16 +22,16 @@ public class SaleCache implements IMdServiceCache
 	private final IMdSaleListener saleListener;
 	private final MdFeed feedType;
 	private final String range;
-	private final IMulticastAdapter multicastAdapter;
+	private final int channel;
 	private final boolean isFirstOpen;
 	private final Map<String, Sale> sales;
 
-	public SaleCache(IMdSaleListener saleListener, MdFeed feedType, String range, IMulticastAdapter multicastAdapter, boolean isFirstOpen)
+	public SaleCache(IMdSaleListener saleListener, MdFeed feedType, String range, int channel, boolean isFirstOpen)
 	{
 		this.saleListener = saleListener;
 		this.feedType = feedType;
 		this.range = range;
-		this.multicastAdapter = multicastAdapter;
+		this.channel = channel;
 		this.isFirstOpen = isFirstOpen;
 		this.sales = new HashMap<>();
 	}
@@ -391,7 +390,7 @@ public class SaleCache implements IMdServiceCache
 		if (this.saleListener != null)
 		{
 			sale = sale.clone();
-			this.saleListener.saleReceived(sale, this.multicastAdapter);
+			this.saleListener.saleReceived(sale, this.channel);
 		}
 	}
 
@@ -458,7 +457,7 @@ public class SaleCache implements IMdServiceCache
 			if (this.saleListener != null)
 			{
 				sale = sale.clone();
-				this.saleListener.saleReceived(sale, this.multicastAdapter);
+				this.saleListener.saleReceived(sale, this.channel);
 			}
 		}
 		return this.sales.keySet();

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.clearpool.common.symbology.ISymbolConverter;
-import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdImbalanceListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
 import com.clearpool.kodiak.feedlibrary.utils.symbolconverters.SymbolConverterFactory;
@@ -22,16 +21,16 @@ public class ImbalanceCache implements IMdServiceCache
 	private final MdFeed feedType;
 	private final MdServiceType mdServiceType;
 	private final String range;
-	private final IMulticastAdapter multicastAdapter;
+	private final int channel;
 	private final Map<String, Imbalance> imbalances;
 
-	public ImbalanceCache(IMdImbalanceListener imbalanceListener, MdFeed feedType, MdServiceType mdServiceType, String range, IMulticastAdapter multicastAdapter)
+	public ImbalanceCache(IMdImbalanceListener imbalanceListener, MdFeed feedType, MdServiceType mdServiceType, String range, int channel)
 	{
 		this.imbalanceListener = imbalanceListener;
 		this.feedType = feedType;
 		this.mdServiceType = mdServiceType;
 		this.range = range;
-		this.multicastAdapter = multicastAdapter;
+		this.channel = channel;
 		this.imbalances = new HashMap<String, Imbalance>();
 	}
 
@@ -77,7 +76,7 @@ public class ImbalanceCache implements IMdServiceCache
 		if (this.imbalanceListener != null)
 		{
 			imbalance = imbalance.clone();
-			this.imbalanceListener.imbalanceReceived(imbalance, this.multicastAdapter);
+			this.imbalanceListener.imbalanceReceived(imbalance, this.channel);
 		}
 	}
 
@@ -123,7 +122,7 @@ public class ImbalanceCache implements IMdServiceCache
 			if (this.imbalanceListener != null)
 			{
 				imbalance = imbalance.clone();
-				this.imbalanceListener.imbalanceReceived(imbalance, this.multicastAdapter);
+				this.imbalanceListener.imbalanceReceived(imbalance, this.channel);
 			}
 		}
 		return this.imbalances.keySet();

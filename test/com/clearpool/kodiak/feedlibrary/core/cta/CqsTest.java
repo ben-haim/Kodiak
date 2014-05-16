@@ -3,7 +3,6 @@ package com.clearpool.kodiak.feedlibrary.core.cta;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdQuoteListener;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdStateListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
@@ -20,7 +19,7 @@ public class CqsTest implements IMdQuoteListener, IMdStateListener
 	public CqsTest() throws Exception
 	{
 		MdLibraryContext context = new MdLibraryContext(false, 1, false, 0, true);
-		MdLibrary cqsLibrary = new MdLibrary(context, MdFeed.CQS, new String[] { "1", "13" }, "127.0.0.1", "127.0.0.1", 5000, "C:\\cta");
+		MdLibrary cqsLibrary = new MdLibrary(context, MdFeed.CQS, new String[] { "1", "13" }, "127.0.0.1", "127.0.0.1", 0, "C:\\cta");
 		cqsLibrary.registerService(MdServiceType.NBBO, this);
 		cqsLibrary.registerService(MdServiceType.BBO, this);
 		cqsLibrary.registerService(MdServiceType.STATE, this);
@@ -29,13 +28,13 @@ public class CqsTest implements IMdQuoteListener, IMdStateListener
 	}
 
 	@Override
-	public void quoteReceived(Quote quote, IMulticastAdapter multicastAdapter)
+	public void quoteReceived(Quote quote, int channel)
 	{
 		System.out.println(quote.getServiceType() + " " + quote);
 	}
 
 	@Override
-	public void stateReceived(MarketState state, IMulticastAdapter multicastAdapter)
+	public void stateReceived(MarketState state, int channel)
 	{
 		System.out.println(MdServiceType.STATE + " " + state);
 	}

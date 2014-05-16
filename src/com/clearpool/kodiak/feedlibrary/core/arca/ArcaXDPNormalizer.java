@@ -6,7 +6,6 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import com.clearpool.common.util.DateUtil;
-import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.caches.BookQuoteCache;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
 import com.clearpool.kodiak.feedlibrary.caches.ImbalanceCache;
@@ -37,11 +36,10 @@ public class ArcaXDPNormalizer implements IMdNormalizer
 
 	private long secondsSinceMidnight;
 
-	public ArcaXDPNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, IMulticastAdapter multicastAdapter)
+	public ArcaXDPNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, int channel)
 	{
-		this.bookCache = new BookQuoteCache((IMdBookQuoteListener) callbacks.get(MdServiceType.BOOK_ARCX), MdFeed.ARCA, MdServiceType.BOOK_ARCX, range, multicastAdapter);
-		this.imbalanceCache = new ImbalanceCache((IMdImbalanceListener) callbacks.get(MdServiceType.IMBALANCE_ARCX), MdFeed.ARCA, MdServiceType.IMBALANCE_ARCX, range,
-				multicastAdapter);
+		this.bookCache = new BookQuoteCache((IMdBookQuoteListener) callbacks.get(MdServiceType.BOOK_ARCX), MdFeed.ARCA, MdServiceType.BOOK_ARCX, range, channel);
+		this.imbalanceCache = new ImbalanceCache((IMdImbalanceListener) callbacks.get(MdServiceType.IMBALANCE_ARCX), MdFeed.ARCA, MdServiceType.IMBALANCE_ARCX, range, channel);
 		this.tmpBuffer = new byte[11];
 		this.symbolVec = new Vector<ArcaSymbolRef>();
 		this.midnight = DateUtil.TODAY_MIDNIGHT_EST.getTime();

@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.clearpool.common.util.DateUtil;
-import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
 import com.clearpool.kodiak.feedlibrary.caches.SaleCache;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdLibraryCallback;
@@ -53,10 +52,10 @@ public class UtdfNormalizer implements IMdNormalizer
 	private boolean receivedEndOfLastSaleEligibleControlMessage;
 	private BufferedWriter closePriceWriter;
 
-	public UtdfNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, IMulticastAdapter multicastAdapter)
+	public UtdfNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, int channel)
 	{
 		this.range = range;
-		this.sales = new SaleCache((IMdSaleListener) callbacks.get(MdServiceType.SALE), MdFeed.UTDF, range, multicastAdapter, false);
+		this.sales = new SaleCache((IMdSaleListener) callbacks.get(MdServiceType.SALE), MdFeed.UTDF, range, channel, false);
 		this.tmpBuffer4 = new byte[4];
 		this.tmpBuffer5 = new byte[5];
 		this.tmpBuffer11 = new byte[11];
@@ -223,8 +222,7 @@ public class UtdfNormalizer implements IMdNormalizer
 				{
 					String[] spaceSplit = message.split(" ");
 					String priceString = spaceSplit[5];
-					this.sales.setLatestClosePrice(spaceSplit[4], Exchange.USEQ_SIP, Integer.parseInt(priceString.substring(0, priceString.indexOf("."))) / 100d,
-							timestamp, "SDS");
+					this.sales.setLatestClosePrice(spaceSplit[4], Exchange.USEQ_SIP, Integer.parseInt(priceString.substring(0, priceString.indexOf("."))) / 100d, timestamp, "SDS");
 				}
 			}
 			else if (msgType == TYPE_CLOSING_TRADE_SUMMARY_REPORT)

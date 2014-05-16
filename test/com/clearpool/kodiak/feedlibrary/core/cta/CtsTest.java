@@ -3,7 +3,6 @@ package com.clearpool.kodiak.feedlibrary.core.cta;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.clearpool.commonserver.adapter.IMulticastAdapter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdSaleListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
 import com.clearpool.kodiak.feedlibrary.core.MdLibrary;
@@ -18,14 +17,14 @@ public class CtsTest implements IMdSaleListener
 	public CtsTest() throws Exception
 	{
 		MdLibraryContext context = new MdLibraryContext(false, 1, false, 0, true);
-		MdLibrary ctsLibrary = new MdLibrary(context, MdFeed.CTS, new String[] { "1", "13" }, "127.0.0.1", "127.0.0.1", 5000, "C:\\cta");
+		MdLibrary ctsLibrary = new MdLibrary(context, MdFeed.CTS, new String[] { "1", "13" }, "127.0.0.1", "127.0.0.1", 0, "C:\\cta");
 		ctsLibrary.registerService(MdServiceType.SALE, this);
 		ctsLibrary.initProcessors();
 		context.start();
 	}
 
 	@Override
-	public void saleReceived(Sale sale, IMulticastAdapter multicastAdapter)
+	public void saleReceived(Sale sale, int channel)
 	{
 		System.out.println(MdServiceType.SALE + " " + sale);
 	}
