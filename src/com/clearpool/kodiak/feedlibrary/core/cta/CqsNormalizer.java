@@ -3,7 +3,9 @@ package com.clearpool.kodiak.feedlibrary.core.cta;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
@@ -66,6 +68,9 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 	private boolean isPostMarketSession = false;
 	private boolean isClosed = false;
 
+	private final Set<String> ipoSymbols;
+
+	@SuppressWarnings("unchecked")
 	public CqsNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, int channel)
 	{
 		this.nbbos = new NbboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.NBBO), MdFeed.CQS, range, channel);
@@ -75,6 +80,9 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		this.tmpBuffer4 = new byte[4];
 		this.tmpBuffer11 = new byte[11];
 		this.lotSizes = getLotSizes();
+		Object iposObject = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "IPOS");
+		if (iposObject != null) this.ipoSymbols = (HashSet<String>) iposObject;
+		else this.ipoSymbols = new HashSet<>();
 	}
 
 	private static Map<String, Integer> getLotSizes()
@@ -229,9 +237,10 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 
 				// Update state for symbol
 				MarketState previousState = this.states.getData(symbol);
-				this.states.updateState(symbol, primaryListing, null,
-						getStateConditionCode(nbboLuldIndicator, shortSaleRestrictionIndicator, (previousState == null) ? 0 : previousState.getConditionCode()),
-						getTradingState(quoteCondition, isPrimaryListing), timestamp);
+				int previousConditionCode = (previousState == null) ? 0 : previousState.getConditionCode();
+				int stateConditionCode = getStateConditionCode(nbboLuldIndicator, shortSaleRestrictionIndicator, previousConditionCode, this.ipoSymbols, symbol);
+				this.states.updateState(symbol, primaryListing, null, stateConditionCode,
+						getTradingState(quoteCondition, isPrimaryListing, this.ipoSymbols, this.isPreMarketSession, symbol), timestamp);
 			}
 		}
 		else if (msgCategory == CATEGORY_ADMINISTRATIVE)
@@ -363,7 +372,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		return conditionCode;
 	}
 
-	private static int getStateConditionCode(char nbboLuldIndicator, char shortSaleRestrictionIndicator, int conditionCode)
+	private static int getStateConditionCode(char nbboLuldIndicator, char shortSaleRestrictionIndicator, int conditionCode, Set<String> ipoSymbols, String symbol)
 	{
 		MdEntity.unsetCondition(conditionCode, MarketState.CONDITION_BID_NON_EXECUTABLE);
 		MdEntity.unsetCondition(conditionCode, MarketState.CONDITION_ASK_NON_EXECUTABLE);
@@ -419,18 +428,23 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 			default:
 				break;
 		}
+		if (ipoSymbols.contains(symbol))
+		{
+			conditionCode = MdEntity.setCondition(conditionCode, MarketState.CONDITION_NEW_ISSUE);
+		}
 		return conditionCode;
 	}
 
-	private static TradingState getTradingState(char quoteCondition, boolean isPrimary)
+	static TradingState getTradingState(char quoteCondition, boolean isPrimary, Set<String> ipos, boolean isPreMarket, String symbol)
 	{
 		if (isPrimary)
 		{
+			boolean isPreMarketAndIPO = isPreMarket && ipos.contains(symbol);
 			switch (quoteCondition)
 			{
 				case 'R':
 				case 'T':
-					return TradingState.TRADING;
+					return isPreMarketAndIPO ? TradingState.AUCTION : TradingState.TRADING;
 				case 'D':
 				case 'J':
 				case 'K':
@@ -445,7 +459,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 				case 'M':
 					return TradingState.PAUSED;
 				default:
-					return TradingState.TRADING;
+					return isPreMarketAndIPO ? TradingState.AUCTION : TradingState.TRADING;
 			}
 		}
 		return null;

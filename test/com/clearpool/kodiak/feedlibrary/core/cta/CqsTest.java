@@ -1,11 +1,13 @@
 package com.clearpool.kodiak.feedlibrary.core.cta;
 
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdQuoteListener;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdStateListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
+import com.clearpool.kodiak.feedlibrary.core.MdFeedProps;
 import com.clearpool.kodiak.feedlibrary.core.MdLibrary;
 import com.clearpool.kodiak.feedlibrary.core.MdLibraryContext;
 import com.clearpool.messageobjects.marketdata.MarketState;
@@ -44,6 +46,9 @@ public class CqsTest implements IMdQuoteListener, IMdStateListener
 	{
 		try
 		{
+			HashSet<String> IPOS = new HashSet<>();
+			IPOS.add("SYED");
+			MdFeedProps.putInstanceProperty(IPOS, MdFeed.CQS.toString(), "IPOS");
 			CqsTest server = new CqsTest();
 		}
 		catch (Exception e)

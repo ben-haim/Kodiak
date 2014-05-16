@@ -4,22 +4,29 @@ import static org.junit.Assert.*;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdLibraryCallback;
+import com.clearpool.kodiak.feedlibrary.core.MdFeed;
+import com.clearpool.kodiak.feedlibrary.core.MdFeedProps;
 import com.clearpool.kodiak.feedlibrary.core.TestMDQuoteListener;
 import com.clearpool.kodiak.feedlibrary.core.TestMDStateListener;
 import com.clearpool.kodiak.feedlibrary.utils.ByteBufferUtil;
 import com.clearpool.messageobjects.marketdata.Exchange;
 import com.clearpool.messageobjects.marketdata.MarketSession;
 import com.clearpool.messageobjects.marketdata.MarketState;
+import com.clearpool.messageobjects.marketdata.MdEntity;
 import com.clearpool.messageobjects.marketdata.MdServiceType;
 import com.clearpool.messageobjects.marketdata.Quote;
 import com.clearpool.messageobjects.marketdata.TradingState;
 
+@SuppressWarnings("static-method")
 public class CqsNormalizerTest
 {
 	private final TestMDQuoteListener bboListener = new TestMDQuoteListener();
@@ -31,6 +38,9 @@ public class CqsNormalizerTest
 	@Before
 	public void setUp()
 	{
+		HashSet<String> IPOS = new HashSet<>();
+		IPOS.add("SYED");
+		MdFeedProps.putInstanceProperty(IPOS, MdFeed.CQS.toString(), "IPOS");
 		Map<MdServiceType, IMdLibraryCallback> callbacks = new HashMap<MdServiceType, IMdLibraryCallback>();
 		callbacks.put(MdServiceType.BBO, this.bboListener);
 		callbacks.put(MdServiceType.NBBO, this.nbboListener);
@@ -256,6 +266,15 @@ public class CqsNormalizerTest
 		assertState("IBM", 2, MarketSession.NORMAL, TradingState.PAUSED, 190, 191);
 		assertBBO("IBM", 8194, 190, 191, 200, 300, Exchange.USEQ_NYSE_EURONEXT, Exchange.USEQ_NYSE_EURONEXT, '\u0000');
 		assertNBBO("IBM", 2, 190, 191, 200, 300, Exchange.USEQ_NYSE_EURONEXT, Exchange.USEQ_NYSE_EURONEXT, 'M');
+	}
+
+	@Test
+	public void test_NewIssueConditionSet()
+	{
+		this.normalizer.processMessage("SYED",
+				createCtaPacket(createEquityLongQuote("SYED", 'N', 190, 191, 2, 3, 'E', 'N', 'R', ' ', ' ', ' ', '4', ' ', 190.01, 190.99, 1, 4, 'Y')), false);
+		MarketState state = this.stateListener.getState();
+		Assert.assertTrue(MdEntity.isConditionSet(state.getConditionCode(), MarketState.CONDITION_NEW_ISSUE));
 	}
 
 	@Test
@@ -820,5 +839,15 @@ public class CqsNormalizerTest
 				break;
 
 		}
+	}
+
+	@Test
+	public void test_GetTradingState()
+	{
+		Set<String> ipos = new HashSet<>();
+		ipos.add("SYED");
+		Assert.assertTrue(CqsNormalizer.getTradingState('T', true, ipos, true, "SYED") == TradingState.AUCTION);
+		Assert.assertTrue(CqsNormalizer.getTradingState('X', true, ipos, true, "SYED") == TradingState.AUCTION);
+		Assert.assertTrue(CqsNormalizer.getTradingState('X', true, ipos, false, "SYED") == TradingState.TRADING);
 	}
 }
