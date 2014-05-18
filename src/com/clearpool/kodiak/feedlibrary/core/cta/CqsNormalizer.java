@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import com.clearpool.kodiak.feedlibrary.caches.BboQuoteCache;
@@ -81,8 +81,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		this.tmpBuffer11 = new byte[11];
 		this.lotSizes = getLotSizes();
 		Object iposObject = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "IPOS");
-		if (iposObject != null) this.ipoSymbols = (HashSet<String>) iposObject;
-		else this.ipoSymbols = new HashSet<>();
+		this.ipoSymbols = (Set<String>) ((iposObject != null) ? iposObject : new HashSet<>());
 	}
 
 	private static Map<String, Integer> getLotSizes()
