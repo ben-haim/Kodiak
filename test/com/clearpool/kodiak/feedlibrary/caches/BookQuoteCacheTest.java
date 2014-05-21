@@ -99,7 +99,6 @@ public class BookQuoteCacheTest
 
 		// Confirm aggregate
 		List<BookQuote> aggregatedBuys2 = cache.getAggregatedOrder("A", Side.BUY);
-		System.out.println(cache.getAggregatedOrder("A", Side.BUY).size());
 		BookQuote bookQuote2 = aggregatedBuys2.get(0);
 		Assert.assertEquals(1, aggregatedBuys2.size());
 		Assert.assertEquals(10.0, bookQuote2.getPrice(), BookQuoteCacheTest.PRICE_DOUBLE_PRECISION);
