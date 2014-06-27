@@ -111,17 +111,17 @@ public class MdLibraryStatisticsTask extends TimerTask
 
 	private MetricsState getMetricsState(String mdProcName)
 	{
-		String partition = MdLibraryStatisticsTask.PROC_PARTITION + ":" + mdProcName;
-		String metricStateKey = DateUtil.TODAY_TRADE_DATE + ":" + partition + ":" + MdLibraryStatisticsTask.PROC_NAME + ":" + MetricType.HISTOGRAM + ":" + METRIC_NAME;
+		String metricStateKey = DateUtil.TODAY_TRADE_DATE + ":" + MdLibraryStatisticsTask.PROC_PARTITION + ":" + MdLibraryStatisticsTask.PROC_NAME + ":" + MetricType.HISTOGRAM
+				+ ":" + METRIC_NAME + ":" + mdProcName;
 		MetricsState state = this.metricsStateMap.get(metricStateKey);
 		if (state == null)
 		{
 			state = new MetricsState();
 			state.setVersion(0);
 			state.setProcName(MdLibraryStatisticsTask.PROC_NAME);
-			state.setProcPartition(partition);
+			state.setProcPartition(MdLibraryStatisticsTask.PROC_PARTITION);
 			state.setMetricType(MetricType.HISTOGRAM);
-			state.setMetricName(METRIC_NAME);
+			state.setMetricName(METRIC_NAME + ":" + mdProcName);
 			state.setTradeDate(DateUtil.TODAY_TRADE_DATE);
 			this.metricsStateMap.put(metricStateKey, state);
 		}
