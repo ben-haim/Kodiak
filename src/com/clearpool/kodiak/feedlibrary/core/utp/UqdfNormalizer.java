@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -77,17 +76,12 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 		this.ipoSymbols = new HashSet<>();
 	}
 
+	@SuppressWarnings("unchecked")
 	private static Map<String, Integer> getLotSizes()
 	{
 		Object lotSizeValues = MdFeedProps.getInstanceProperty(MdFeed.UQDF.toString(), "LOTSIZES");
 		if (lotSizeValues == null) return new HashMap<String, Integer>();
-		Map<String, String> stringMap = MdFeedProps.getAsMap((String) lotSizeValues);
-		Map<String, Integer> map = new HashMap<String, Integer>();
-		for (Entry<String, String> entry : stringMap.entrySet())
-		{
-			map.put(entry.getKey(), Integer.valueOf(entry.getValue()));
-		}
-		return map;
+		return (HashMap<String, Integer>) lotSizeValues;
 	}
 
 	private static long getPreMarketOpenTime()

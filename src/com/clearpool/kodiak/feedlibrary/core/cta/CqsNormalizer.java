@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -70,7 +69,6 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 
 	private final Set<String> ipoSymbols;
 
-	@SuppressWarnings("unchecked")
 	public CqsNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, int channel)
 	{
 		this.nbbos = new NbboQuoteCache((IMdQuoteListener) callbacks.get(MdServiceType.NBBO), MdFeed.CQS, range, channel);
@@ -80,23 +78,23 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		this.tmpBuffer4 = new byte[4];
 		this.tmpBuffer11 = new byte[11];
 		this.lotSizes = getLotSizes();
-		Object iposObject = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "IPOS");
-		this.ipoSymbols = (Set<String>) ((iposObject != null) ? iposObject : new HashSet<>());
+		this.ipoSymbols = getIpos();
 	}
 
+	@SuppressWarnings("unchecked")
 	private static Map<String, Integer> getLotSizes()
 	{
 		Object lotSizeValues = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "LOTSIZES");
-		if (lotSizeValues == null) return null;
-		Map<String, String> stringMap = MdFeedProps.getAsMap((String) lotSizeValues);
-		Map<String, Integer> map = new HashMap<String, Integer>();
-		for (Entry<String, String> entry : stringMap.entrySet())
-		{
-			String key = entry.getKey();
-			Integer value = Integer.valueOf(entry.getValue());
-			map.put(key, value);
-		}
-		return map;
+		if (lotSizeValues == null) return new HashMap<String, Integer>();
+		return (HashMap<String, Integer>) lotSizeValues;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Set<String> getIpos()
+	{
+		Object iposObject = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "IPOS");
+		if (iposObject == null) return new HashSet<>();
+		return (Set<String>) iposObject;
 	}
 
 	private static long getPreMarketOpenTime()

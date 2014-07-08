@@ -1,15 +1,9 @@
 package com.clearpool.kodiak.feedlibrary.core.utp;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.clearpool.common.util.DateUtil;
@@ -50,7 +44,6 @@ public class UtdfNormalizer implements IMdNormalizer
 	private final byte[] tmpBuffer11;
 
 	private boolean receivedEndOfLastSaleEligibleControlMessage;
-	private BufferedWriter closePriceWriter;
 
 	public UtdfNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, int channel)
 	{
@@ -61,55 +54,31 @@ public class UtdfNormalizer implements IMdNormalizer
 		this.tmpBuffer11 = new byte[11];
 
 		this.receivedEndOfLastSaleEligibleControlMessage = false;
-		this.closePriceWriter = null;
-
 		loadClosePrices();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void loadClosePrices()
 	{
-		String filePrefix = (String) MdFeedProps.getInstanceProperty(MdFeed.UTDF.toString(), "CLOSE_PRICE_FILE_PREFIX");
-		if (filePrefix != null)
+		Object closePrices = MdFeedProps.getInstanceProperty(MdFeed.UTDF.toString(), "CLOSEPRICES");
+		if (closePrices != null)
 		{
-			File file = new File(filePrefix + "_" + this.range);
-			if (file.exists())
-			{
-				Map<String, Double> prices = new HashMap<String, Double>();
-				try
-				{
-					BufferedReader reader = new BufferedReader(new FileReader(file));
-					String line = null;
+			HashMap<String, Double> prices = (HashMap<String, Double>) closePrices;
 
-					while ((line = reader.readLine()) != null)
+			if (prices.size() > 0)
+			{
+				String[] rangeSplit = this.range.split("-");
+				String firstRange = rangeSplit[0].replace("[", "");
+				String secondRange = rangeSplit[1].replace("]", "") + "ZZZZZZZZ";
+
+				for (Entry<String, Double> entry : prices.entrySet())
+				{
+					String symbol = entry.getKey();
+					if (firstRange.compareTo(symbol) <= 0 && symbol.compareTo(secondRange) <= 0)
 					{
-						String[] split = line.split(",");
-						prices.put(split[0], Double.valueOf(split[1]));
+						this.sales.setLatestClosePrice(symbol, Exchange.USEQ_SIP, entry.getValue().doubleValue(), DateUtil.TODAY_MIDNIGHT_EST.getTime(), "SDS");
 					}
 				}
-				catch (Exception e)
-				{
-					LOGGER.log(Level.SEVERE, e.getMessage(), e);
-				}
-
-				if (prices.size() > 0)
-				{
-					String[] rangeSplit = this.range.split("-");
-					String firstRange = rangeSplit[0].replace("[", "");
-					String secondRange = rangeSplit[1].replace("]", "") + "ZZZZZZZZ";
-
-					for (Entry<String, Double> entry : prices.entrySet())
-					{
-						String symbol = entry.getKey();
-						if (firstRange.compareTo(symbol) <= 0 && symbol.compareTo(secondRange) <= 0)
-						{
-							this.sales.setLatestClosePrice(symbol, Exchange.USEQ_SIP, entry.getValue().doubleValue(), DateUtil.TODAY_MIDNIGHT_EST.getTime(), "SDS");
-						}
-					}
-				}
-			}
-			else
-			{
-				LOGGER.severe("Unable to load close prices because can't find file=" + file);
 			}
 		}
 	}
@@ -242,7 +211,6 @@ public class UtdfNormalizer implements IMdNormalizer
 				ByteBufferUtil.advancePosition(buffer, numberOfMarketCenters * 24);
 
 				this.sales.updateEndofDay(symbol, closingPrice, lowPrice, highPrice, consolidatedVolume, timestamp, closingPriceExchange);
-				writeClosePriceToFile(symbol, closingPrice);
 			}
 		}
 		else if (msgCategory == CATEGORY_CONTROL)
@@ -330,41 +298,4 @@ public class UtdfNormalizer implements IMdNormalizer
 		}
 	}
 
-	private void writeClosePriceToFile(String symbol, double price)
-	{
-		try
-		{
-			if (this.closePriceWriter == null)
-			{
-				String filePrefix = (String) MdFeedProps.getInstanceProperty(MdFeed.UTDF.toString(), "CLOSE_PRICE_FILE_PREFIX");
-				if (filePrefix != null)
-				{
-					File file = new File(filePrefix + "_" + this.range);
-					if (file.exists())
-					{
-						file.delete();
-					}
-					file.createNewFile();
-					this.closePriceWriter = new BufferedWriter(new FileWriter(file));
-				}
-				else
-				{
-					LOGGER.severe("Unable to find CLOSE_PRICE_FILE_PREFIX - Unable to write closePrice-" + symbol + "," + price);
-				}
-			}
-
-			if (this.closePriceWriter != null)
-			{
-				this.closePriceWriter.write(symbol);
-				this.closePriceWriter.write(",");
-				this.closePriceWriter.write(Double.valueOf(price).toString());
-				this.closePriceWriter.newLine();
-				this.closePriceWriter.flush();
-			}
-		}
-		catch (Exception e)
-		{
-			LOGGER.severe("Exception:" + e.getMessage() + " - Unable to write closePrice-" + symbol + "," + price);
-		}
-	}
 }
