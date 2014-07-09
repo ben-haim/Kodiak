@@ -38,7 +38,7 @@ public class UtdfNormalizer implements IMdNormalizer
 	private static final char NASDAQ_PARTICIPANT = 'Q';
 
 	private final String range;
-	private final SaleCache sales;
+	private SaleCache sales;
 	private final byte[] tmpBuffer4;
 	private final byte[] tmpBuffer5;
 	private final byte[] tmpBuffer11;
@@ -56,6 +56,7 @@ public class UtdfNormalizer implements IMdNormalizer
 		this.receivedEndOfLastSaleEligibleControlMessage = false;
 		loadClosePrices();
 	}
+	
 
 	@SuppressWarnings("unchecked")
 	private void loadClosePrices()
@@ -297,5 +298,9 @@ public class UtdfNormalizer implements IMdNormalizer
 				return 0;
 		}
 	}
-
+	
+	//used for junit tests
+	SaleCache getSalesCache() {
+		return this.sales;
+	}
 }

@@ -468,8 +468,8 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 		}
 		return conditionCode;
 	}
-
-	private int getLotSize(String symbol)
+	// made default for junit test
+	int getLotSize(String symbol)
 	{
 		if (this.lotSizes == null) return DEFAULT_LOT_SIZE;
 		Integer lotSize = this.lotSizes.get(symbol);

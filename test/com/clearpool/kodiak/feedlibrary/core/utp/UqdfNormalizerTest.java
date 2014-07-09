@@ -1,4 +1,4 @@
-package com.clearpool.kodiak.feedlibrary.core.nasdaq;
+package com.clearpool.kodiak.feedlibrary.core.utp;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,10 +6,13 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdLibraryCallback;
+import com.clearpool.kodiak.feedlibrary.core.MdFeed;
+import com.clearpool.kodiak.feedlibrary.core.MdFeedProps;
 import com.clearpool.kodiak.feedlibrary.core.TestMDQuoteListener;
 import com.clearpool.kodiak.feedlibrary.core.TestMDStateListener;
 import com.clearpool.kodiak.feedlibrary.core.utp.UqdfNormalizer;
@@ -37,6 +40,9 @@ public class UqdfNormalizerTest
 		callbacks.put(MdServiceType.BBO, this.bboListener);
 		callbacks.put(MdServiceType.NBBO, this.nbboListener);
 		callbacks.put(MdServiceType.STATE, this.stateListener);
+		HashMap<String, Integer> lotsize = new HashMap<String, Integer>();
+		lotsize.put("SYED", new Integer(10));
+		MdFeedProps.putInstanceProperty(lotsize, MdFeed.UQDF.toString(), "LOTSIZES");
 		this.normalizer = new UqdfNormalizer(callbacks, "", 0) {
 			@Override
 			public MarketSession getMarketSession(char primaryListing, long timestamp)
@@ -1347,4 +1353,11 @@ public class UqdfNormalizerTest
 
 		}
 	}
+	@Test
+	public void test_GetLotSize()
+	{
+		Assert.assertEquals(new Integer(10) , new Integer(this.normalizer.getLotSize("SYED")));
+		Assert.assertEquals(100 , this.normalizer.getLotSize("NONE"));
+	}
+	
 }

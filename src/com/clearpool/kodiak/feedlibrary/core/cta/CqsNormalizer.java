@@ -462,7 +462,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		return null;
 	}
 
-	private int getLotSize(String symbol)
+	int getLotSize(String symbol)
 	{
 		if (this.lotSizes == null) return DEFAULT_LOT_SIZE;
 		Integer lotSize = this.lotSizes.get(symbol);
