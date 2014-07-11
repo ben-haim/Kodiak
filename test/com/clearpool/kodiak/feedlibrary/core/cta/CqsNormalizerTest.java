@@ -40,7 +40,8 @@ public class CqsNormalizerTest
 	{
 		HashMap<String, Integer> lotsize = new HashMap<String, Integer>();
 		lotsize.put("SYED", new Integer(10));
-		HashSet<String> IPOS = new HashSet<>();
+		lotsize.put("BRK A", new Integer(1));
+		HashSet<String> IPOS = new HashSet<String>();
 		IPOS.add("SYED");
 		MdFeedProps.putInstanceProperty(lotsize, MdFeed.CQS.toString(), "LOTSIZES");
 		MdFeedProps.putInstanceProperty(IPOS, MdFeed.CQS.toString(), "IPOS");
@@ -853,15 +854,13 @@ public class CqsNormalizerTest
 		Assert.assertTrue(CqsNormalizer.getTradingState('X', true, ipos, true, "SYED") == TradingState.AUCTION);
 		Assert.assertTrue(CqsNormalizer.getTradingState('X', true, ipos, false, "SYED") == TradingState.TRADING);
 	}
-	
-	// made public for junit test
+
 	@Test
 	public void test_GetLotSize()
 	{
-		Assert.assertEquals(new Integer(10) , new Integer(this.normalizer.getLotSize("SYED")));
-		Assert.assertEquals(100 , this.normalizer.getLotSize("NONE"));
+		Assert.assertEquals(new Integer(10), new Integer(this.normalizer.getLotSize("SYED")));
+		Assert.assertEquals(new Integer(1), new Integer(this.normalizer.getLotSize("BRK A")));
+		Assert.assertEquals(100, this.normalizer.getLotSize("NONE"));
 	}
-	
 
-	
 }

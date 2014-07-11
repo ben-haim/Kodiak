@@ -1,9 +1,12 @@
 package com.clearpool.kodiak.feedlibrary.core.cta;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import com.clearpool.common.util.DateUtil;
 import com.clearpool.kodiak.feedlibrary.caches.IMdServiceCache;
 import com.clearpool.kodiak.feedlibrary.caches.SaleCache;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdLibraryCallback;
@@ -11,6 +14,7 @@ import com.clearpool.kodiak.feedlibrary.callbacks.IMdSaleListener;
 import com.clearpool.kodiak.feedlibrary.core.IMdNormalizer;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
 import com.clearpool.kodiak.feedlibrary.core.MdFeedPacket;
+import com.clearpool.kodiak.feedlibrary.core.MdFeedProps;
 import com.clearpool.kodiak.feedlibrary.utils.ByteBufferUtil;
 import com.clearpool.messageobjects.marketdata.Exchange;
 import com.clearpool.messageobjects.marketdata.MdEntity;
@@ -34,16 +38,42 @@ public class CtsNormalizer implements IMdNormalizer
 	private static final char TYPE_ADMIN_UNFORMATTED_TEXT = 'H';
 
 	private final SaleCache sales;
+	private final String range;
 	private final byte[] tmpBuffer3;
 	private final byte[] tmpBuffer4;
 	private final byte[] tmpBuffer11;
 
 	public CtsNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, int channel)
 	{
+		this.range = range;
 		this.sales = new SaleCache((IMdSaleListener) callbacks.get(MdServiceType.SALE), MdFeed.CTS, range, channel, false);
 		this.tmpBuffer3 = new byte[3];
 		this.tmpBuffer4 = new byte[4];
 		this.tmpBuffer11 = new byte[11];
+		loadClosePrices();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void loadClosePrices()
+	{
+		Object closePrices = MdFeedProps.getInstanceProperty(MdFeed.CTS.toString(), "CLOSEPRICES");
+
+		HashMap<String, Double> prices = (HashMap<String, Double>) closePrices;
+		if (prices.size() > 0)
+		{
+			String[] rangeSplit = this.range.split("-");
+			String firstRange = rangeSplit[0].replace("[", "");
+			String secondRange = rangeSplit[1].replace("]", "") + "ZZZZZZZZ";
+
+			for (Entry<String, Double> entry : prices.entrySet())
+			{
+				String symbol = entry.getKey();
+				if (firstRange.compareTo(symbol) <= 0 && symbol.compareTo(secondRange) <= 0)
+				{
+					this.sales.setLatestClosePrice(symbol, Exchange.USEQ_SIP, entry.getValue().doubleValue(), DateUtil.TODAY_MIDNIGHT_EST.getTime(), "SDS");
+				}
+			}
+		}
 	}
 
 	@Override
@@ -306,5 +336,11 @@ public class CtsNormalizer implements IMdNormalizer
 			default:
 				return 0;
 		}
+	}
+
+	// used for junit tests
+	SaleCache getSalesCache()
+	{
+		return this.sales;
 	}
 }

@@ -298,9 +298,10 @@ public class UtdfNormalizer implements IMdNormalizer
 				return 0;
 		}
 	}
-	
-	//used for junit tests
-	SaleCache getSalesCache() {
+
+	// used for junit tests
+	SaleCache getSalesCache()
+	{
 		return this.sales;
 	}
 }
