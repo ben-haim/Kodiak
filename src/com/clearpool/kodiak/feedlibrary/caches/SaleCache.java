@@ -135,7 +135,7 @@ public class SaleCache implements IMdServiceCache
 		sendSale(sale);
 	}
 
-	public void setLatestClosePrice(String symbol, Exchange exchange, double closePrice, long timestamp, String condition)
+	public void setLatestClosePrice(String symbol, Exchange exchange, double closePrice, long timestamp, String condition, boolean sendData)
 	{
 		Sale sale = this.sales.get(symbol);
 		if (sale == null)
@@ -149,7 +149,11 @@ public class SaleCache implements IMdServiceCache
 		sale.setTimestamp(timestamp);
 		sale.setConditionCode(0);
 		sale.setCondition(condition);
-		sendSale(sale);
+
+		if (sendData)
+		{
+			sendSale(sale);
+		}
 	}
 
 	public void updateEndofDay(String symbol, long volume, long openInterest, double openPrice, double highPrice, double lowPrice, double lastPrice, long timestamp)

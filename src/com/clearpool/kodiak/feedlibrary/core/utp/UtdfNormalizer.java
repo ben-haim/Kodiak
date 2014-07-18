@@ -56,7 +56,6 @@ public class UtdfNormalizer implements IMdNormalizer
 		this.receivedEndOfLastSaleEligibleControlMessage = false;
 		loadClosePrices();
 	}
-	
 
 	@SuppressWarnings("unchecked")
 	private void loadClosePrices()
@@ -77,7 +76,7 @@ public class UtdfNormalizer implements IMdNormalizer
 					String symbol = entry.getKey();
 					if (firstRange.compareTo(symbol) <= 0 && symbol.compareTo(secondRange) <= 0)
 					{
-						this.sales.setLatestClosePrice(symbol, Exchange.USEQ_SIP, entry.getValue().doubleValue(), DateUtil.TODAY_MIDNIGHT_EST.getTime(), "SDS");
+						this.sales.setLatestClosePrice(symbol, Exchange.USEQ_SIP, entry.getValue().doubleValue(), DateUtil.TODAY_MIDNIGHT_EST.getTime(), "SDS", false);
 					}
 				}
 			}
@@ -192,7 +191,8 @@ public class UtdfNormalizer implements IMdNormalizer
 				{
 					String[] spaceSplit = message.split(" ");
 					String priceString = spaceSplit[5];
-					this.sales.setLatestClosePrice(spaceSplit[4], Exchange.USEQ_SIP, Integer.parseInt(priceString.substring(0, priceString.indexOf("."))) / 100d, timestamp, "SDS");
+					this.sales.setLatestClosePrice(spaceSplit[4], Exchange.USEQ_SIP, Integer.parseInt(priceString.substring(0, priceString.indexOf("."))) / 100d, timestamp, "SDS",
+							true);
 				}
 			}
 			else if (msgType == TYPE_CLOSING_TRADE_SUMMARY_REPORT)

@@ -70,7 +70,7 @@ public class CtsNormalizer implements IMdNormalizer
 				String symbol = entry.getKey();
 				if (firstRange.compareTo(symbol) <= 0 && symbol.compareTo(secondRange) <= 0)
 				{
-					this.sales.setLatestClosePrice(symbol, Exchange.USEQ_SIP, entry.getValue().doubleValue(), DateUtil.TODAY_MIDNIGHT_EST.getTime(), "SDS");
+					this.sales.setLatestClosePrice(symbol, Exchange.USEQ_SIP, entry.getValue().doubleValue(), DateUtil.TODAY_MIDNIGHT_EST.getTime(), "SDS", false);
 				}
 			}
 		}
@@ -230,7 +230,7 @@ public class CtsNormalizer implements IMdNormalizer
 				int numberOfIterations = (int) ByteBufferUtil.readAsciiLong(buffer, 2);
 				ByteBufferUtil.advancePosition(buffer, numberOfIterations * 30);
 
-				this.sales.setLatestClosePrice(symbol, exchange, previousClosePrice, timestamp, "SDS");
+				this.sales.setLatestClosePrice(symbol, exchange, previousClosePrice, timestamp, "SDS", true);
 			}
 		}
 		else if (msgCategory == CATEGORY_ADMIN)
