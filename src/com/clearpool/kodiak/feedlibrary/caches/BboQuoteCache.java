@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.clearpool.common.datastractures.MutableInteger;
 import com.clearpool.common.symbology.ISymbolConverter;
 import com.clearpool.kodiak.feedlibrary.callbacks.IMdQuoteListener;
 import com.clearpool.kodiak.feedlibrary.core.MdFeed;
@@ -20,7 +21,8 @@ public class BboQuoteCache implements IMdServiceCache
 	private final String range;
 	private final int channel;
 	private final MdServiceType mdServiceType;
-	private final Map<String, Map<Exchange, Quote>> quotes;
+	private final Map<String, Map<Exchange, Quote>> quotes; // feed symbol -> exchange -> quote
+	private final Map<String, MutableInteger> symbolToSequenceNumbers; // CMS symbol -> sequence number
 
 	public BboQuoteCache(IMdQuoteListener quoteListener, MdFeed feedType, String range, int channel)
 	{
@@ -30,6 +32,7 @@ public class BboQuoteCache implements IMdServiceCache
 		this.channel = channel;
 		this.mdServiceType = MdServiceType.BBO;
 		this.quotes = new HashMap<>();
+		this.symbolToSequenceNumbers = new HashMap<String, MutableInteger>();
 	}
 
 	public void updateBidAndOffer(String symbol, Exchange exchange, double bidPrice, int bidSize, double askPrice, int askSize, long timestamp, int conditionCode)
@@ -63,13 +66,24 @@ public class BboQuoteCache implements IMdServiceCache
 	{
 		quote.setMdTimestamp(System.currentTimeMillis());
 		quote.setConditionCode(MdEntity.setCondition(quote.getConditionCode(), MdEntity.CONDITION_FRESH));
-		quote.setSymbolSequenceNumber(quote.getSymbolSequenceNumber() + 1);
+		quote.setSymbolSequenceNumber(getNextSymbolSequenceNumber(quote.getSymbol()));
 
 		if (this.quoteListener != null)
 		{
 			quote = quote.clone();
 			this.quoteListener.quoteReceived(quote, this.channel);
 		}
+	}
+
+	private int getNextSymbolSequenceNumber(String symbol)
+	{
+		MutableInteger sequenceNumber = this.symbolToSequenceNumbers.get(symbol);
+		if (sequenceNumber == null)
+		{
+			sequenceNumber = new MutableInteger(0);
+			this.symbolToSequenceNumbers.put(symbol, sequenceNumber);
+		}
+		return sequenceNumber.incrementAndGet();
 	}
 
 	private Quote createQuote(String symbol, Exchange exchange)
