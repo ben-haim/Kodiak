@@ -473,7 +473,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 	@Override
 	public MarketSession getMarketSession(char primaryListing, long timestamp)
 	{
-		if (primaryListing == 'N')
+		if (primaryListing == 'N' || primaryListing == 'A')
 		{
 			if (CqsNormalizer.PRE_MARKET_OPEN_TIME <= timestamp && timestamp < CqsNormalizer.MARKET_CLOSE_TIME) return MarketSession.PREMARKET;
 		}
