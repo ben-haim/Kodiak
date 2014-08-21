@@ -218,8 +218,8 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 
 			// Update State
 			MarketState previousState = this.states.getData(symbol);
-			this.states.updateState(symbol, participantId, null, getStateConditionCode(luldNbboIndicator, (previousState == null) ? 0 : previousState.getConditionCode()), null,
-					timestamp);
+			this.states.updateState(symbol, participantId, true, null, getStateConditionCode(luldNbboIndicator, (previousState == null) ? 0 : previousState.getConditionCode()),
+					null, timestamp);
 		}
 		else if (msgCategory == CATEGORY_ADMINISTRATIVE)
 		{
@@ -234,7 +234,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 					if (this.ipoSymbols.add(symbol))
 					{
 						MarketState previousState = this.states.getData(symbol);
-						this.states.updateConditionCode(symbol, participantId,
+						this.states.updateConditionCode(symbol, participantId, true,
 								MdEntity.setCondition((previousState == null) ? 0 : previousState.getConditionCode(), MarketState.CONDITION_NEW_ISSUE), timestamp);
 					}
 				}
@@ -268,8 +268,8 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 				// IPO opened
 				if (previousState != null && previousState.getTradingState() == TradingState.AUCTION && previousState.getMarketSession() == MarketSession.PREMARKET
 						&& tradingState == TradingState.TRADING && UqdfNormalizer.MARKET_OPEN_TIME <= timestamp && timestamp < UqdfNormalizer.MARKET_CLOSE_TIME) this.states
-						.updateMarketSessionAndTradingState(symbol, participantId, MarketSession.NORMAL, tradingState, timestamp);
-				else this.states.updateTradingState(symbol, participantId, tradingState, timestamp);
+						.updateMarketSessionAndTradingState(symbol, participantId, true, MarketSession.NORMAL, tradingState, timestamp);
+				else this.states.updateTradingState(symbol, participantId, true, tradingState, timestamp);
 			}
 			else if (msgType == TYPE_ISSUE_SYMBOL_DIRECTORY_MESSAGE)
 			{
@@ -278,7 +278,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 				int roundLotSize = (int) ByteBufferUtil.readAsciiLong(buffer, 5);
 				ByteBufferUtil.advancePosition(buffer, 1); // Financial status indicator
 				this.lotSizes.put(symbol, Integer.valueOf(roundLotSize));
-				this.states.updateMarketSession(symbol, participantId, MarketSession.PREMARKET, timestamp);
+				this.states.updateMarketSession(symbol, participantId, true, MarketSession.PREMARKET, timestamp);
 			}
 			else if (msgType == TYPE_REG_SHO_SSPTR_INDICATOR)
 			{
@@ -299,7 +299,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 					default:
 						break;
 				}
-				this.states.updateConditionCode(symbol, participantId, conditionCode, timestamp);
+				this.states.updateConditionCode(symbol, participantId, true, conditionCode, timestamp);
 			}
 			else if (msgType == TYPE_LULD_PRICE_BAND_MESSAGE)
 			{
@@ -309,7 +309,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 				double lowerBand = UtpUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 10), limitDownPriceDenominator);
 				char limitUpPriceDenominator = (char) buffer.get();
 				double upperBand = UtpUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 10), limitUpPriceDenominator);
-				this.states.updateLowerAndUpperBands(symbol, participantId, lowerBand, upperBand, timestamp, false);
+				this.states.updateLowerAndUpperBands(symbol, participantId, true, lowerBand, upperBand, timestamp);
 			}
 			else if (msgType == TYPE_MWCB_DECLINE_LEVEL_MESSAGE)
 			{
@@ -468,6 +468,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 		}
 		return conditionCode;
 	}
+
 	// made default for junit test
 	int getLotSize(String symbol)
 	{
@@ -478,7 +479,7 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 	}
 
 	@Override
-	public MarketSession getMarketSession(char primaryListing, long timestamp)
+	public MarketSession getMarketSession(char primaryListing, boolean isPrimaryListing, long timestamp)
 	{
 		if (UqdfNormalizer.PRE_MARKET_OPEN_TIME <= timestamp && timestamp < UqdfNormalizer.MARKET_OPEN_TIME) return MarketSession.PREMARKET;
 		if (UqdfNormalizer.MARKET_OPEN_TIME <= timestamp && timestamp < UqdfNormalizer.MARKET_CLOSE_TIME) return MarketSession.NORMAL;

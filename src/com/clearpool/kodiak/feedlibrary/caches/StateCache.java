@@ -40,13 +40,13 @@ public class StateCache implements IMdServiceCache
 		sendState(state, state.getTimestamp());
 	}
 
-	public void updateState(String symbol, char primaryListing, MarketSession marketSession, int conditionCode, TradingState tradingState, long timestamp)
+	public void updateState(String symbol, char primaryListing, boolean isPrimaryListing, MarketSession marketSession, int conditionCode, TradingState tradingState, long timestamp)
 	{
 		boolean isNew = false;
 		MarketState state = this.states.get(symbol);
 		if (state == null)
 		{
-			state = createState(symbol, primaryListing, timestamp);
+			state = createState(symbol, primaryListing, isPrimaryListing, timestamp);
 			this.states.put(symbol, state);
 			isNew = true;
 		}
@@ -76,13 +76,13 @@ public class StateCache implements IMdServiceCache
 		}
 	}
 
-	public void updateTradingState(String symbol, char primaryListing, TradingState tradingState, long timestamp)
+	public void updateTradingState(String symbol, char primaryListing, boolean isPrimaryListing, TradingState tradingState, long timestamp)
 	{
 		boolean isNew = false;
 		MarketState state = this.states.get(symbol);
 		if (state == null)
 		{
-			state = createState(symbol, primaryListing, timestamp);
+			state = createState(symbol, primaryListing, isPrimaryListing, timestamp);
 			this.states.put(symbol, state);
 			isNew = true;
 		}
@@ -100,13 +100,14 @@ public class StateCache implements IMdServiceCache
 		}
 	}
 
-	public void updateMarketSessionAndTradingState(String symbol, char primaryListing, MarketSession marketSession, TradingState tradingState, long timestamp)
+	public void updateMarketSessionAndTradingState(String symbol, char primaryListing, boolean isPrimaryListing, MarketSession marketSession, TradingState tradingState,
+			long timestamp)
 	{
 		boolean isNew = false;
 		MarketState state = this.states.get(symbol);
 		if (state == null)
 		{
-			state = createState(symbol, primaryListing, timestamp);
+			state = createState(symbol, primaryListing, isPrimaryListing, timestamp);
 			this.states.put(symbol, state);
 			isNew = true;
 		}
@@ -129,13 +130,13 @@ public class StateCache implements IMdServiceCache
 		}
 	}
 
-	public void updateMarketSession(String symbol, char primaryListing, MarketSession marketSession, long timestamp)
+	public void updateMarketSession(String symbol, char primaryListing, boolean isPrimaryListing, MarketSession marketSession, long timestamp)
 	{
 		boolean isNew = false;
 		MarketState state = this.states.get(symbol);
 		if (state == null)
 		{
-			state = createState(symbol, primaryListing, timestamp);
+			state = createState(symbol, primaryListing, isPrimaryListing, timestamp);
 			this.states.put(symbol, state);
 			isNew = true;
 		}
@@ -153,13 +154,13 @@ public class StateCache implements IMdServiceCache
 		}
 	}
 
-	public void updateConditionCode(String symbol, char primaryListing, int conditionCode, long timestamp)
+	public void updateConditionCode(String symbol, char primaryListing, boolean isPrimaryListing, int conditionCode, long timestamp)
 	{
 		boolean isNew = false;
 		MarketState state = this.states.get(symbol);
 		if (state == null)
 		{
-			state = createState(symbol, primaryListing, timestamp);
+			state = createState(symbol, primaryListing, isPrimaryListing, timestamp);
 			this.states.put(symbol, state);
 			isNew = true;
 		}
@@ -177,26 +178,18 @@ public class StateCache implements IMdServiceCache
 		}
 	}
 
-	public void updateLowerAndUpperBands(String symbol, char primaryListing, double lowerBand, double upperBand, long timestamp, boolean updateMarketSession)
+	public void updateLowerAndUpperBands(String symbol, char primaryListing, boolean isPrimaryListing, double lowerBand, double upperBand, long timestamp)
 	{
 		boolean isNew = false;
 		MarketState state = this.states.get(symbol);
 		if (state == null)
 		{
-			state = createState(symbol, primaryListing, timestamp);
+			state = createState(symbol, primaryListing, isPrimaryListing, timestamp);
 			this.states.put(symbol, state);
 			isNew = true;
 		}
 
 		boolean sendUpdate = false;
-		if (updateMarketSession && (state.getMarketSession() == MarketSession.PREMARKET || state.getMarketSession() == null))
-		{
-			if (state.getUpperBand() == 0 && state.getLowerBand() == 0 && (lowerBand != 0 || upperBand != 0))
-			{
-				state.setMarketSession(MarketSession.NORMAL);
-			}
-		}
-
 		if (state.getLowerBand() != lowerBand)
 		{
 			state.setLowerBand(lowerBand);
@@ -248,14 +241,14 @@ public class StateCache implements IMdServiceCache
 		}
 	}
 
-	private MarketState createState(String symbol, char primaryListing, long timestamp)
+	private MarketState createState(String symbol, char primaryListing, boolean isPrimaryListing, long timestamp)
 	{
 		MarketState state = new MarketState();
 		state.setServiceType(MdServiceType.STATE);
 		ISymbolConverter symbolConverter = SymbolConverterFactory.getConverterInstance(this.feedType);
 		if (symbolConverter != null) state.setSymbol(symbolConverter.convert(symbol));
 		else state.setSymbol(symbol);
-		state.setMarketSession(this.marketSessionSetter.getMarketSession(primaryListing, timestamp));
+		state.setMarketSession(this.marketSessionSetter.getMarketSession(primaryListing, isPrimaryListing, timestamp));
 		state.setTradingState(TradingState.TRADING);
 		return state;
 	}

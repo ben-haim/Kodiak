@@ -193,7 +193,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 				// Update lower and upper bands
 				if (quoteCondition == '0')
 				{
-					this.states.updateLowerAndUpperBands(symbol, primaryListing, bidPrice, askPrice, timestamp, true);
+					this.states.updateLowerAndUpperBands(symbol, primaryListing, isPrimaryListing, bidPrice, askPrice, timestamp);
 				}
 				else
 				{
@@ -236,7 +236,7 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 				MarketState previousState = this.states.getData(symbol);
 				int previousConditionCode = (previousState == null) ? 0 : previousState.getConditionCode();
 				int stateConditionCode = getStateConditionCode(nbboLuldIndicator, shortSaleRestrictionIndicator, previousConditionCode, this.ipoSymbols, symbol);
-				this.states.updateState(symbol, primaryListing, null, stateConditionCode,
+				this.states.updateState(symbol, primaryListing, isPrimaryListing, getMarketSession(primaryListing, isPrimaryListing, timestamp), stateConditionCode,
 						getTradingState(quoteCondition, isPrimaryListing, this.ipoSymbols, this.isPreMarketSession, symbol), timestamp);
 			}
 		}
@@ -471,10 +471,11 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 	}
 
 	@Override
-	public MarketSession getMarketSession(char primaryListing, long timestamp)
+	public MarketSession getMarketSession(char primaryListing, boolean isPrimaryListing, long timestamp)
 	{
 		if (primaryListing == 'N' || primaryListing == 'A')
 		{
+			if (isPrimaryListing && CqsNormalizer.MARKET_OPEN_TIME <= timestamp && timestamp < CqsNormalizer.MARKET_CLOSE_TIME) return MarketSession.NORMAL;
 			if (CqsNormalizer.PRE_MARKET_OPEN_TIME <= timestamp && timestamp < CqsNormalizer.MARKET_CLOSE_TIME) return MarketSession.PREMARKET;
 		}
 		else

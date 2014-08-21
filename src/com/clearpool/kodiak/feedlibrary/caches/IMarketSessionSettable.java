@@ -4,5 +4,5 @@ import com.clearpool.messageobjects.marketdata.MarketSession;
 
 public interface IMarketSessionSettable
 {
-	public MarketSession getMarketSession(char primaryListing, long timestamp);
+	public MarketSession getMarketSession(char primaryListing, boolean isPrimaryListing, long timestamp);
 }

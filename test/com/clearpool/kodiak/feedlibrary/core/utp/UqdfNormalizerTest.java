@@ -45,7 +45,7 @@ public class UqdfNormalizerTest
 		MdFeedProps.putInstanceProperty(lotsize, MdFeed.UQDF.toString(), "LOTSIZES");
 		this.normalizer = new UqdfNormalizer(callbacks, "", 0) {
 			@Override
-			public MarketSession getMarketSession(char primaryListing, long timestamp)
+			public MarketSession getMarketSession(char primaryListing, boolean isPrimaryListing, long timestamp)
 			{
 				return MarketSession.NORMAL;
 			}
@@ -95,7 +95,7 @@ public class UqdfNormalizerTest
 		callbacks.put(MdServiceType.STATE, this.stateListener);
 		UqdfNormalizer n = new UqdfNormalizer(callbacks, "", 0) {
 			@Override
-			public MarketSession getMarketSession(char primaryListing, long timestamp)
+			public MarketSession getMarketSession(char primaryListing, boolean isPrimaryListing, long timestamp)
 			{
 				return MarketSession.CLOSED;
 			}
