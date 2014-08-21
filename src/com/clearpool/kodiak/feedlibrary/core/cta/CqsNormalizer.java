@@ -234,10 +234,13 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 
 				// Update state for symbol
 				MarketState previousState = this.states.getData(symbol);
-				int previousConditionCode = (previousState == null) ? 0 : previousState.getConditionCode();
-				int stateConditionCode = getStateConditionCode(nbboLuldIndicator, shortSaleRestrictionIndicator, previousConditionCode, this.ipoSymbols, symbol);
-				this.states.updateState(symbol, primaryListing, isPrimaryListing, getMarketSession(primaryListing, isPrimaryListing, timestamp), stateConditionCode,
-						getTradingState(quoteCondition, isPrimaryListing, this.ipoSymbols, this.isPreMarketSession, symbol), timestamp);
+				this.states.updateState(
+						symbol,
+						primaryListing,
+						isPrimaryListing,
+						getMarketSession(previousState, primaryListing, isPrimaryListing, timestamp),
+						getStateConditionCode(nbboLuldIndicator, shortSaleRestrictionIndicator, (previousState == null) ? 0 : previousState.getConditionCode(), this.ipoSymbols,
+								symbol), getTradingState(quoteCondition, isPrimaryListing, this.ipoSymbols, this.isPreMarketSession, symbol), timestamp);
 			}
 		}
 		else if (msgCategory == CATEGORY_ADMINISTRATIVE)
@@ -468,6 +471,24 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 		Integer lotSize = this.lotSizes.get(symbol);
 		if (lotSize == null) return DEFAULT_LOT_SIZE;
 		return lotSize.intValue();
+	}
+
+	private MarketSession getMarketSession(MarketState previousState, char primaryListing, boolean isPrimaryListing, long timestamp)
+	{
+		if (previousState == null) return getMarketSession(primaryListing, isPrimaryListing, timestamp);
+		MarketSession previousSession = previousState.getMarketSession();
+		if (previousSession == MarketSession.PREMARKET || previousSession == null)
+		{
+			if (primaryListing == 'N' || primaryListing == 'A')
+			{
+				if (isPrimaryListing && CqsNormalizer.MARKET_OPEN_TIME <= timestamp && timestamp < CqsNormalizer.MARKET_CLOSE_TIME) return MarketSession.NORMAL;
+			}
+			else
+			{
+				if (CqsNormalizer.MARKET_OPEN_TIME <= timestamp && timestamp < CqsNormalizer.MARKET_CLOSE_TIME) return MarketSession.NORMAL;
+			}
+		}
+		return previousSession;
 	}
 
 	@Override
