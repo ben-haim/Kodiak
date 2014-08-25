@@ -26,6 +26,17 @@ public class ByteBufferUtil
 		return buffer.getInt() & 0xFFFFFFFF;
 	}
 
+	public static long getUnsignedLong(ByteBuffer buffer, int length)
+	{
+		long output = 0;
+		for (int i = 0; i < length; i++)
+		{
+			output = output << 8;
+			output += (buffer.get() & 0xFF);
+		}
+		return output;
+	}
+
 	public static String getString(ByteBuffer buffer, byte[] bytes)
 	{
 		buffer.get(bytes);

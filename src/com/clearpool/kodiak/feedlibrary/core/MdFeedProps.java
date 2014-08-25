@@ -5,12 +5,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.clearpool.kodiak.feedlibrary.core.bx.BxNormalizer;
+import com.clearpool.kodiak.feedlibrary.core.bx.Bx50Normalizer;
 import com.clearpool.kodiak.feedlibrary.core.cta.CqsNormalizer;
 import com.clearpool.kodiak.feedlibrary.core.cta.CtsNormalizer;
-import com.clearpool.kodiak.feedlibrary.core.nasdaq.NasdaqNormalizer;
+import com.clearpool.kodiak.feedlibrary.core.nasdaq.Nasdaq50Normalizer;
 import com.clearpool.kodiak.feedlibrary.core.opra.OpraNormalizer;
-import com.clearpool.kodiak.feedlibrary.core.psx.PsxNormalizer;
+import com.clearpool.kodiak.feedlibrary.core.psx.Psx50Normalizer;
 import com.clearpool.kodiak.feedlibrary.core.utp.UqdfNormalizer;
 import com.clearpool.kodiak.feedlibrary.core.utp.UtdfNormalizer;
 
@@ -231,20 +231,20 @@ public class MdFeedProps
 		props.put("UTDF.6.A", "224.0.1.102:55552");
 		props.put("UTDF.6.B", "224.0.1.103:55553");
 
-		props.put("NASDAQ." + NORMALIZER, NasdaqNormalizer.class.getName());
+		props.put("NASDAQ." + NORMALIZER, Nasdaq50Normalizer.class.getName());
 		props.put("NASDAQ.1.RANGE", "[A-Z]");
-		props.put("NASDAQ.1.A", "233.54.12.102:26477");
-		props.put("NASDAQ.1.B", "233.54.12.150:26477");
+		props.put("NASDAQ.1.A", "233.54.12.111:26477");
+		props.put("NASDAQ.1.B", "233.86.230.111:26477");
 
-		props.put("BX." + NORMALIZER, BxNormalizer.class.getName());
+		props.put("BX." + NORMALIZER, Bx50Normalizer.class.getName());
 		props.put("BX.1.RANGE", "[A-Z]");
-		props.put("BX.1.A", "233.54.12.90:25475");
-		props.put("BX.1.B", "233.54.12.190:25475");
+		props.put("BX.1.A", "233.54.12.40:25475");
+		props.put("BX.1.B", "233.86.230.40:25475");
 
-		props.put("PSX." + NORMALIZER, PsxNormalizer.class.getName());
+		props.put("PSX." + NORMALIZER, Psx50Normalizer.class.getName());
 		props.put("PSX.1.RANGE", "[A-Z]");
-		props.put("PSX.1.A", "233.54.12.76:26477");
-		props.put("PSX.1.B", "233.54.12.176:26477");
+		props.put("PSX.1.A", "233.54.12.45:26477");
+		props.put("PSX.1.B", "233.86.230.45:26477");
 
 		props.put("ARCA.1.RANGE", "1:[A-Z]");
 		props.put("ARCA.1.A", "224.0.59.76:11076");
