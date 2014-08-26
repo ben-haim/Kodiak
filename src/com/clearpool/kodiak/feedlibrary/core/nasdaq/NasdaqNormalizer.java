@@ -24,32 +24,25 @@ public class NasdaqNormalizer implements IMdNormalizer
 {
 	private static final Logger LOGGER = Logger.getLogger(NasdaqNormalizer.class.getName());
 
-	private static final byte TIMESTAMP_SECONDS = 'T';
-	private static final byte SYSTEM_EVENT = 'S';
 	private static final byte ADD_ORDER_NO_MPID = 'A';
-	private static final byte ADD_ORDER_WITH_MPID = 'F';
-	private static final byte ORDER_EXECUTED = 'E';
 	private static final byte ORDER_EXECUTED_WITH_PRICE = 'C';
-	private static final byte ORDER_CANCEL = 'X';
 	private static final byte ORDER_DELETE = 'D';
-	private static final byte ORDER_REPLACE = 'U';
+	private static final byte ORDER_EXECUTED = 'E';
+	private static final byte ADD_ORDER_WITH_MPID = 'F';
 	private static final byte NOII = 'I';
+	private static final byte SYSTEM_EVENT = 'S';
+	private static final byte ORDER_REPLACE = 'U';
+	private static final byte ORDER_CANCEL = 'X';
 
 	private final BookQuoteCache bookCache;
 	private final ImbalanceCache imbalanceCache;
 	private final byte[] tmpBuffer;
-	private final long midnight;
-
-	private long secondsSinceMidnight;
 
 	public NasdaqNormalizer(Map<MdServiceType, IMdLibraryCallback> callbacks, String range, int channel)
 	{
 		this.bookCache = new BookQuoteCache((IMdBookQuoteListener) callbacks.get(MdServiceType.BOOK_XNAS), MdFeed.NASDAQ, MdServiceType.BOOK_XNAS, range, channel);
 		this.imbalanceCache = new ImbalanceCache((IMdImbalanceListener) callbacks.get(MdServiceType.IMBALANCE_XNAS), MdFeed.NASDAQ, MdServiceType.IMBALANCE_XNAS, range, channel);
 		this.tmpBuffer = new byte[8];
-		this.midnight = DateUtil.TODAY_MIDNIGHT_EST.getTime();
-
-		this.secondsSinceMidnight = 0;
 	}
 
 	@Override
@@ -75,7 +68,9 @@ public class NasdaqNormalizer implements IMdNormalizer
 		byte messageType = buffer.get();
 		if (messageType == ADD_ORDER_NO_MPID || messageType == ADD_ORDER_WITH_MPID)
 		{
-			long timestamp = getTimestamp(ByteBufferUtil.getUnsignedInt(buffer));
+			ByteBufferUtil.advancePosition(buffer, 2); // Stock Locate
+			ByteBufferUtil.advancePosition(buffer, 2); // Tracking Number
+			long timestamp = getTimeStamp(ByteBufferUtil.getUnsignedLong(buffer, 6));
 			String orderReferenceNumber = String.valueOf(buffer.getLong());
 			Side side = (buffer.get() == 'B') ? Side.BUY : Side.SELL;
 			long shares = ByteBufferUtil.getUnsignedInt(buffer);
@@ -86,15 +81,19 @@ public class NasdaqNormalizer implements IMdNormalizer
 		}
 		else if (messageType == ORDER_EXECUTED)
 		{
-			long timestamp = getTimestamp(ByteBufferUtil.getUnsignedInt(buffer));
+			ByteBufferUtil.advancePosition(buffer, 2); // Stock Locate
+			ByteBufferUtil.advancePosition(buffer, 2); // Tracking Number
+			long timestamp = getTimeStamp(ByteBufferUtil.getUnsignedLong(buffer, 6));
 			String orderReferenceNumber = String.valueOf(buffer.getLong());
 			long executedShares = ByteBufferUtil.getUnsignedInt(buffer);
-			ByteBufferUtil.advancePosition(buffer, 8);
+			ByteBufferUtil.advancePosition(buffer, 8); // Match Number
 			this.bookCache.cancelOrder(orderReferenceNumber, (int) executedShares, timestamp);
 		}
 		else if (messageType == ORDER_EXECUTED_WITH_PRICE)
 		{
-			long timestamp = getTimestamp(ByteBufferUtil.getUnsignedInt(buffer));
+			ByteBufferUtil.advancePosition(buffer, 2); // Stock Locate
+			ByteBufferUtil.advancePosition(buffer, 2); // Tracking Number
+			long timestamp = getTimeStamp(ByteBufferUtil.getUnsignedLong(buffer, 6));
 			String orderReferenceNumber = String.valueOf(buffer.getLong());
 			long executedShares = ByteBufferUtil.getUnsignedInt(buffer);
 			ByteBufferUtil.advancePosition(buffer, 13);
@@ -102,34 +101,37 @@ public class NasdaqNormalizer implements IMdNormalizer
 		}
 		else if (messageType == ORDER_CANCEL)
 		{
-			long timestamp = getTimestamp(ByteBufferUtil.getUnsignedInt(buffer));
+			ByteBufferUtil.advancePosition(buffer, 2); // Stock Locate
+			ByteBufferUtil.advancePosition(buffer, 2); // Tracking Number
+			long timestamp = getTimeStamp(ByteBufferUtil.getUnsignedLong(buffer, 6));
 			String orderReferenceNumber = String.valueOf(buffer.getLong());
 			long cancelledShares = ByteBufferUtil.getUnsignedInt(buffer);
 			this.bookCache.cancelOrder(orderReferenceNumber, (int) cancelledShares, timestamp);
 		}
 		else if (messageType == ORDER_DELETE)
 		{
-			long timestamp = getTimestamp(ByteBufferUtil.getUnsignedInt(buffer));
+			ByteBufferUtil.advancePosition(buffer, 2); // Stock Locate
+			ByteBufferUtil.advancePosition(buffer, 2); // Tracking Number
+			long timestamp = getTimeStamp(ByteBufferUtil.getUnsignedLong(buffer, 6));
 			String orderReferenceNumber = String.valueOf(buffer.getLong());
 			this.bookCache.cancelOrder(orderReferenceNumber, timestamp);
 		}
 		else if (messageType == ORDER_REPLACE)
 		{
-			long timestamp = getTimestamp(ByteBufferUtil.getUnsignedInt(buffer));
+			ByteBufferUtil.advancePosition(buffer, 2); // Stock Locate
+			ByteBufferUtil.advancePosition(buffer, 2); // Tracking Number
+			long timestamp = getTimeStamp(ByteBufferUtil.getUnsignedLong(buffer, 6));
 			String originalOrderReferenceNumber = String.valueOf(buffer.getLong());
 			String newOrderReferenceNumber = String.valueOf(buffer.getLong());
 			long shares = ByteBufferUtil.getUnsignedInt(buffer);
 			double price = getPrice(ByteBufferUtil.getUnsignedInt(buffer));
 			this.bookCache.replaceOrder(originalOrderReferenceNumber, newOrderReferenceNumber, (int) shares, price, timestamp);
 		}
-		else if (messageType == TIMESTAMP_SECONDS)
-		{
-			long timestampSeconds = ByteBufferUtil.getUnsignedInt(buffer);
-			this.secondsSinceMidnight = this.midnight + timestampSeconds * 1000;
-		}
 		else if (messageType == SYSTEM_EVENT)
 		{
-			ByteBufferUtil.advancePosition(buffer, 4);
+			ByteBufferUtil.advancePosition(buffer, 2); // Stock Locate
+			ByteBufferUtil.advancePosition(buffer, 2); // Tracking Number
+			ByteBufferUtil.advancePosition(buffer, 6); // Timestamp
 			char eventCode = (char) buffer.get();
 			switch (eventCode)
 			{
@@ -158,7 +160,9 @@ public class NasdaqNormalizer implements IMdNormalizer
 		}
 		else if (messageType == NOII)
 		{
-			long timestamp = getTimestamp(ByteBufferUtil.getUnsignedInt(buffer));
+			ByteBufferUtil.advancePosition(buffer, 2); // Stock Locate
+			ByteBufferUtil.advancePosition(buffer, 2); // Tracking Number
+			long timestamp = getTimeStamp(ByteBufferUtil.getUnsignedLong(buffer, 6));
 			long pairedShares = buffer.getLong();
 			long imbalanceShares = buffer.getLong();
 			Side imbalanceSide = getImbalanceSide((char) buffer.get());
@@ -171,13 +175,13 @@ public class NasdaqNormalizer implements IMdNormalizer
 			this.imbalanceCache.updateImbalance(symbol, pairedShares, imbalanceShares, imbalanceSide, 0, currentReferencePrice, nearPrice, farPrice, 0, Exchange.USEQ_NASDAQ_OMX,
 					auctionType, timestamp);
 		}
-
 		buffer.position(position + messageLength);
 	}
 
-	private long getTimestamp(long nanos)
+	private static long getTimeStamp(long nanosSinceMidnight)
 	{
-		return this.secondsSinceMidnight + nanos / 1000000;
+		long millisSinceMidnight = nanosSinceMidnight / DateUtil.NANOS_PER_MILLISECOND;
+		return DateUtil.TODAY_MIDNIGHT_EST.getTime() + millisSinceMidnight;
 	}
 
 	private static Side getImbalanceSide(char c)
