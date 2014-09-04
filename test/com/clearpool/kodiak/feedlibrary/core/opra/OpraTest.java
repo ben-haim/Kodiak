@@ -19,7 +19,7 @@ public class OpraTest implements IMdQuoteListener, IMdSaleListener
 	public OpraTest() throws Exception
 	{
 		MdLibraryContext context = new MdLibraryContext(false, 1, false, 0, true);
-		MdLibrary library = new MdLibrary(context, MdFeed.OPRA, new String[] { "3" }, "127.0.0.1", "127.0.0.1", 0, "C:\\opra");
+		MdLibrary library = new MdLibrary(context, MdFeed.OPRA, new String[] { "3" }, "127.0.0.1", "127.0.0.1", "C:\\opra");
 		library.registerService(MdServiceType.NBBO, this);
 		library.registerService(MdServiceType.BBO, this);
 		library.registerService(MdServiceType.SALE, this);

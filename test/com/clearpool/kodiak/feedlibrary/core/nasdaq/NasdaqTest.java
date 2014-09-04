@@ -19,7 +19,7 @@ public class NasdaqTest implements IMdBookQuoteListener, IMdImbalanceListener
 	public NasdaqTest() throws Exception
 	{
 		MdLibraryContext context = new MdLibraryContext(false, 1, false, 0, true);
-		MdLibrary nasdaqLibrary = new MdLibrary(context, MdFeed.NASDAQ, new String[] { "1" }, "127.0.0.1", "127.0.0.1", 0, "C:\\nasdaq");
+		MdLibrary nasdaqLibrary = new MdLibrary(context, MdFeed.NASDAQ, new String[] { "1" }, "127.0.0.1", "127.0.0.1", "C:\\nasdaq");
 		nasdaqLibrary.registerService(MdServiceType.BOOK_XNAS, this);
 		nasdaqLibrary.registerService(MdServiceType.IMBALANCE_XNAS, this);
 		nasdaqLibrary.initProcessors();

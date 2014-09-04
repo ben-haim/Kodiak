@@ -21,7 +21,7 @@ public class CqsTest implements IMdQuoteListener, IMdStateListener
 	public CqsTest() throws Exception
 	{
 		MdLibraryContext context = new MdLibraryContext(false, 1, false, 0, true);
-		MdLibrary cqsLibrary = new MdLibrary(context, MdFeed.CQS, new String[] { "1", "13" }, "127.0.0.1", "127.0.0.1", 0, "C:\\cta");
+		MdLibrary cqsLibrary = new MdLibrary(context, MdFeed.CQS, new String[] { "1", "13" }, "127.0.0.1", "127.0.0.1", "C:\\cta");
 		cqsLibrary.registerService(MdServiceType.NBBO, this);
 		cqsLibrary.registerService(MdServiceType.BBO, this);
 		cqsLibrary.registerService(MdServiceType.STATE, this);

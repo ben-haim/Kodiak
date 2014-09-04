@@ -3,8 +3,8 @@ package com.clearpool.kodiak.feedlibrary.mbeans;
 import java.util.Arrays;
 import java.util.Collection;
 
-import com.clearpool.commonserver.mbean.marketdata.MdEntityHtmlFormatter;
 import com.clearpool.kodiak.feedlibrary.caches.SaleCache;
+import com.clearpool.kodiak.feedlibrary.mbeans.format.MdEntityHtmlFormatter;
 import com.clearpool.messageobjects.marketdata.Sale;
 
 public class SaleCacheMgmt implements SaleCacheMgmtMBean

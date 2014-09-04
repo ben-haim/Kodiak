@@ -19,7 +19,7 @@ public class BxTest implements IMdBookQuoteListener, IMdImbalanceListener
 	public BxTest() throws Exception
 	{
 		MdLibraryContext context = new MdLibraryContext(false, 1, false, 0, true);
-		MdLibrary nasdaqLibrary = new MdLibrary(context, MdFeed.BX, new String[] { "1" }, "127.0.0.1", "127.0.0.1", 0, "C:\\nasdaq");
+		MdLibrary nasdaqLibrary = new MdLibrary(context, MdFeed.BX, new String[] { "1" }, "127.0.0.1", "127.0.0.1", "C:\\nasdaq");
 		nasdaqLibrary.registerService(MdServiceType.BOOK_XBOS, this);
 		nasdaqLibrary.registerService(MdServiceType.IMBALANCE_XBOS, this);
 		nasdaqLibrary.initProcessors();

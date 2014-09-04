@@ -1,7 +1,7 @@
 package com.clearpool.kodiak.feedlibrary.mbeans;
 
-import com.clearpool.commonserver.mbean.MBeanMethodDescription;
-import com.clearpool.commonserver.mbean.ParameterDescription;
+import com.clearpool.kodiak.feedlibrary.mbeans.format.MBeanMethodDescription;
+import com.clearpool.kodiak.feedlibrary.mbeans.format.ParameterDescription;
 
 public interface IMdServiceCacheMgmt
 {

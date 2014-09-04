@@ -21,7 +21,7 @@ public class MdLibrary
 	private final MdProcessor[] mdProcessors;
 	private final Map<MdServiceType, IMdLibraryCallback> callbacks;
 
-	public MdLibrary(MdLibraryContext context, MdFeed feed, String[] lines, String interfaceA, String interfaceB, long startTime, String readFromDir) throws Exception
+	public MdLibrary(MdLibraryContext context, MdFeed feed, String[] lines, String interfaceA, String interfaceB, String readFromDir) throws Exception
 	{
 		this.context = context;
 		this.feed = feed;
@@ -31,7 +31,6 @@ public class MdLibrary
 		this.readFromDir = readFromDir;
 		this.mdProcessors = new MdProcessor[this.lines.length];
 		this.callbacks = new HashMap<MdServiceType, IMdLibraryCallback>();
-		if (startTime > 0) this.context.schedule(new MdLibraryStatisticsTask(this), startTime, startTime);
 	}
 
 	public void registerService(MdServiceType serviceType, IMdLibraryCallback callback)

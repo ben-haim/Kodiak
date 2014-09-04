@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.clearpool.common.datastractures.Pair;
-import com.clearpool.commonserver.mbean.marketdata.MdEntityHtmlFormatter;
 import com.clearpool.kodiak.feedlibrary.caches.BookQuoteCache;
+import com.clearpool.kodiak.feedlibrary.mbeans.format.MdEntityHtmlFormatter;
 import com.clearpool.messageobjects.marketdata.BookQuote;
 
 public class BookQuoteCacheMgmt implements BookQuoteCacheMgmtMBean

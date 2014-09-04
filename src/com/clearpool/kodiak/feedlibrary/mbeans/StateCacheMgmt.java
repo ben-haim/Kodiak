@@ -3,9 +3,9 @@ package com.clearpool.kodiak.feedlibrary.mbeans;
 import java.util.Arrays;
 import java.util.Collection;
 
-import com.clearpool.commonserver.mbean.AnnotatedMBean;
-import com.clearpool.commonserver.mbean.marketdata.MdEntityHtmlFormatter;
 import com.clearpool.kodiak.feedlibrary.caches.StateCache;
+import com.clearpool.kodiak.feedlibrary.mbeans.format.AnnotatedMBean;
+import com.clearpool.kodiak.feedlibrary.mbeans.format.MdEntityHtmlFormatter;
 import com.clearpool.messageobjects.marketdata.MarketSession;
 import com.clearpool.messageobjects.marketdata.MarketState;
 import com.clearpool.messageobjects.marketdata.TradingState;

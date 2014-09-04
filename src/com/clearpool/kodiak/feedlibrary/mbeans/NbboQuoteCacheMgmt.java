@@ -3,9 +3,9 @@ package com.clearpool.kodiak.feedlibrary.mbeans;
 import java.util.Arrays;
 import java.util.Collection;
 
-import com.clearpool.commonserver.mbean.AnnotatedMBean;
-import com.clearpool.commonserver.mbean.marketdata.MdEntityHtmlFormatter;
 import com.clearpool.kodiak.feedlibrary.caches.NbboQuoteCache;
+import com.clearpool.kodiak.feedlibrary.mbeans.format.AnnotatedMBean;
+import com.clearpool.kodiak.feedlibrary.mbeans.format.MdEntityHtmlFormatter;
 import com.clearpool.messageobjects.marketdata.Quote;
 
 public class NbboQuoteCacheMgmt extends AnnotatedMBean<NbboQuoteCacheMgmtMBean> implements NbboQuoteCacheMgmtMBean

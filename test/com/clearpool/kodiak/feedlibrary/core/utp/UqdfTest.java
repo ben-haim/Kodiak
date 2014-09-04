@@ -19,7 +19,7 @@ public class UqdfTest implements IMdQuoteListener, IMdStateListener
 	public UqdfTest() throws Exception
 	{
 		MdLibraryContext context = new MdLibraryContext(false, 1, false, 0, true);
-		MdLibrary uqdfLibrary = new MdLibrary(context, MdFeed.UQDF, new String[] { "1" }, "127.0.0.1", "127.0.0.1", 0, "C:\\utp");
+		MdLibrary uqdfLibrary = new MdLibrary(context, MdFeed.UQDF, new String[] { "1" }, "127.0.0.1", "127.0.0.1", "C:\\utp");
 		uqdfLibrary.registerService(MdServiceType.NBBO, this);
 		uqdfLibrary.registerService(MdServiceType.BBO, this);
 		uqdfLibrary.registerService(MdServiceType.STATE, this);

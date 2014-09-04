@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
-import com.clearpool.commonserver.mbean.marketdata.MdEntityHtmlFormatter;
 import com.clearpool.kodiak.feedlibrary.caches.BboQuoteCache;
+import com.clearpool.kodiak.feedlibrary.mbeans.format.MdEntityHtmlFormatter;
 import com.clearpool.messageobjects.marketdata.Exchange;
 import com.clearpool.messageobjects.marketdata.Quote;
 

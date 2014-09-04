@@ -1,6 +1,7 @@
 package com.clearpool.kodiak.feedlibrary.mbeans;
 
-import com.clearpool.commonserver.mbean.MBeanMethodDescription;
+import com.clearpool.kodiak.feedlibrary.mbeans.format.MBeanMethodDescription;
+
 
 public interface BboQuoteCacheMgmtMBean extends IMdServiceCacheMgmt
 {

@@ -17,7 +17,7 @@ public class UtdfTest implements IMdSaleListener
 	public UtdfTest() throws Exception
 	{
 		MdLibraryContext context = new MdLibraryContext(false, 1, false, 0, true);
-		MdLibrary utdfLibrary = new MdLibrary(context, MdFeed.UTDF, new String[] { "1" }, "127.0.0.1", "127.0.0.1", 0, "C:\\utp");
+		MdLibrary utdfLibrary = new MdLibrary(context, MdFeed.UTDF, new String[] { "1" }, "127.0.0.1", "127.0.0.1", "C:\\utp");
 		utdfLibrary.registerService(MdServiceType.SALE, this);
 		utdfLibrary.initProcessors();
 		context.start();

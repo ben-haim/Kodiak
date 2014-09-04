@@ -17,7 +17,7 @@ public class CtsTest implements IMdSaleListener
 	public CtsTest() throws Exception
 	{
 		MdLibraryContext context = new MdLibraryContext(false, 1, false, 0, true);
-		MdLibrary ctsLibrary = new MdLibrary(context, MdFeed.CTS, new String[] { "1", "13" }, "127.0.0.1", "127.0.0.1", 0, "C:\\cta");
+		MdLibrary ctsLibrary = new MdLibrary(context, MdFeed.CTS, new String[] { "1", "13" }, "127.0.0.1", "127.0.0.1", "C:\\cta");
 		ctsLibrary.registerService(MdServiceType.SALE, this);
 		ctsLibrary.initProcessors();
 		context.start();
