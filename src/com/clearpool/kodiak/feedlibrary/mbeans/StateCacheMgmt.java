@@ -59,8 +59,8 @@ public class StateCacheMgmt extends AnnotatedMBean<StateCacheMgmtMBean> implemen
 		if (session == null) return "Unable to find MarketSession for value=" + marketSession;
 
 		MarketState previousState = this.stateCache.getData(symbol);
-		MarketSession previousSession = previousState.getMarketSession();
-		if (previousSession == session) return "MarketSession is already " + previousSession;
+		MarketSession previousSession = (previousState != null) ? previousState.getMarketSession() : null;
+		if (previousState != null && previousSession == session) return "MarketSession is already " + previousSession;
 
 		this.stateCache.updateMarketSession(symbol, primaryListing, isPrimaryListing, session, System.currentTimeMillis());
 		return "Updated MarketSession. Prev=" + previousSession + " New=" + session;
@@ -77,8 +77,8 @@ public class StateCacheMgmt extends AnnotatedMBean<StateCacheMgmtMBean> implemen
 		if (state == null) return "Unable to find TradingState for value=" + tradingState;
 
 		MarketState previousState = this.stateCache.getData(symbol);
-		TradingState previousTradingState = previousState.getTradingState();
-		if (previousTradingState == state) return "TradingState is already " + previousTradingState;
+		TradingState previousTradingState = (previousState != null) ? previousState.getTradingState() : null;
+		if (previousState != null && previousTradingState == state) return "TradingState is already " + previousTradingState;
 
 		this.stateCache.updateTradingState(symbol, primaryListing, isPrimaryListing, state, System.currentTimeMillis());
 		return "Updated TradingState. Prev=" + previousTradingState + " New=" + state;
@@ -94,8 +94,8 @@ public class StateCacheMgmt extends AnnotatedMBean<StateCacheMgmtMBean> implemen
 		int condition = Integer.parseInt(conditionCode);
 
 		MarketState previousState = this.stateCache.getData(symbol);
-		int previousConditionCode = previousState.getConditionCode();
-		if (previousConditionCode == condition) return "ConditionCode is already " + previousConditionCode;
+		int previousConditionCode = (previousState != null) ? previousState.getConditionCode() : 0;
+		if (previousState != null && previousConditionCode == condition) return "ConditionCode is already " + previousConditionCode;
 
 		this.stateCache.updateConditionCode(symbol, primaryListing, isPrimaryListing, condition, System.currentTimeMillis());
 		return "Updated ConditionCode. Prev=" + previousConditionCode + " New=" + condition;
