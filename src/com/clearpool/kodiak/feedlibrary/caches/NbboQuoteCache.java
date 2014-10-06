@@ -55,7 +55,7 @@ public class NbboQuoteCache implements IMdServiceCache
 		quote.setAskSize(askSize);
 		quote.setAskExchange(askExchange);
 		quote.setTimestamp(timestamp);
-		quote.setCondition(condition);
+		quote.setCondition(String.valueOf(condition));
 		quote.setConditionCode(0);
 		sendQuote(quote);
 	}
@@ -73,7 +73,7 @@ public class NbboQuoteCache implements IMdServiceCache
 		quote.setBidSize(bidSize);
 		quote.setBidExchange(bidExchange);
 		quote.setTimestamp(timestamp);
-		quote.setCondition(condition);
+		quote.setCondition(String.valueOf(condition));
 		quote.setConditionCode(0);
 		sendQuote(quote);
 	}
@@ -91,7 +91,7 @@ public class NbboQuoteCache implements IMdServiceCache
 		quote.setAskSize(askSize);
 		quote.setAskExchange(askExchange);
 		quote.setTimestamp(timestamp);
-		quote.setCondition(condition);
+		quote.setCondition(String.valueOf(condition));
 		quote.setConditionCode(0);
 		sendQuote(quote);
 	}

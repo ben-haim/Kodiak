@@ -1155,7 +1155,9 @@ public class UqdfNormalizerTest
 		assertEquals(askSize, quote.getAskSize());
 		assertEquals(bidExchange, quote.getBidExchange());
 		assertEquals(askExchange, quote.getAskExchange());
-		assertEquals(condition, quote.getCondition());
+		
+		if (condition == '\u0000') Assert.assertNull(quote.getCondition());
+		else assertEquals(String.valueOf(condition), quote.getCondition());
 	}
 
 	private ByteBuffer createLongQuote(String symbol, double bidPrice, double askPrice, long bidSizeLots, long askSizeLots, char quoteCondition, char luldBBOIndicator,
