@@ -1,6 +1,6 @@
 package com.clearpool.kodiak.feedlibrary.core.cta;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -863,4 +863,19 @@ public class CqsNormalizerTest
 		Assert.assertEquals(100, this.normalizer.getLotSize("NONE"));
 	}
 
+	@Test
+	public void testGetTradingState()
+	{
+		Assert.assertEquals(TradingState.TRADING, CqsNormalizer.getTradingState('P', true, new HashSet<String>(), false, "RSH"));
+		Assert.assertEquals(TradingState.TRADING, CqsNormalizer.getTradingState('K', true, new HashSet<String>(), false, "RSH"));
+
+		Assert.assertEquals(TradingState.HALTED, CqsNormalizer.getTradingState('D', true, new HashSet<String>(), false, "RSH"));
+		Assert.assertEquals(TradingState.HALTED, CqsNormalizer.getTradingState('J', true, new HashSet<String>(), false, "RSH"));
+		Assert.assertEquals(TradingState.HALTED, CqsNormalizer.getTradingState('Q', true, new HashSet<String>(), false, "RSH"));
+		Assert.assertEquals(TradingState.HALTED, CqsNormalizer.getTradingState('V', true, new HashSet<String>(), false, "RSH"));
+		Assert.assertEquals(TradingState.HALTED, CqsNormalizer.getTradingState('Z', true, new HashSet<String>(), false, "RSH"));
+		Assert.assertEquals(TradingState.HALTED, CqsNormalizer.getTradingState('1', true, new HashSet<String>(), false, "RSH"));
+		Assert.assertEquals(TradingState.HALTED, CqsNormalizer.getTradingState('2', true, new HashSet<String>(), false, "RSH"));
+		Assert.assertEquals(TradingState.HALTED, CqsNormalizer.getTradingState('3', true, new HashSet<String>(), false, "RSH"));
+	}
 }

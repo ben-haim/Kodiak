@@ -455,8 +455,6 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 					return isPreMarketAndIPO ? TradingState.AUCTION : TradingState.TRADING;
 				case 'D':
 				case 'J':
-				case 'K':
-				case 'P':
 				case 'Q':
 				case 'V':
 				case 'Z':
