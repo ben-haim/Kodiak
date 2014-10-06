@@ -79,9 +79,13 @@ public class UqdfNormalizer implements IMdNormalizer, IMarketSessionSettable
 	@SuppressWarnings("unchecked")
 	private static Map<String, Integer> getLotSizes()
 	{
+		Map<String, Integer> output = new HashMap<String, Integer>();
 		Object lotSizeValues = MdFeedProps.getInstanceProperty(MdFeed.UQDF.toString(), "LOTSIZES");
-		if (lotSizeValues == null) return new HashMap<String, Integer>();
-		return (HashMap<String, Integer>) lotSizeValues;
+		if (lotSizeValues != null)
+		{
+			output.putAll((HashMap<String, Integer>) lotSizeValues);
+		}
+		return output;
 	}
 
 	private static long getPreMarketOpenTime()

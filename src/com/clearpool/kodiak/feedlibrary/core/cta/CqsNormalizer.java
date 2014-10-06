@@ -84,17 +84,25 @@ public class CqsNormalizer implements IMdNormalizer, IMarketSessionSettable
 	@SuppressWarnings("unchecked")
 	private static Map<String, Integer> getLotSizes()
 	{
+		Map<String, Integer> output = new HashMap<String, Integer>();
 		Object lotSizeValues = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "LOTSIZES");
-		if (lotSizeValues == null) return new HashMap<String, Integer>();
-		return (HashMap<String, Integer>) lotSizeValues;
+		if (lotSizeValues != null)
+		{
+			output.putAll((HashMap<String, Integer>) lotSizeValues);
+		}
+		return output;
 	}
 
 	@SuppressWarnings("unchecked")
 	private static Set<String> getIpos()
 	{
+		Set<String> output = new HashSet<>();
 		Object iposObject = MdFeedProps.getInstanceProperty(MdFeed.CQS.toString(), "IPOS");
-		if (iposObject == null) return new HashSet<>();
-		return (Set<String>) iposObject;
+		if (iposObject != null)
+		{
+			output.addAll((Set<String>) iposObject);
+		}
+		return output;
 	}
 
 	private static long getPreMarketOpenTime()
