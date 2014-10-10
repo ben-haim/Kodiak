@@ -243,6 +243,8 @@ public class UtdfNormalizer implements IMdNormalizer
 		conditionCode = ((marketCenterClose && (previousSale == null || previousSale.getLatestClosePrice() == 0)) || marketCenterCloseUpdate) ? MdEntity.setCondition(
 				conditionCode, Sale.CONDITION_CODE_LATEST_CLOSE) : conditionCode;
 		conditionCode = (marketCenterOpen && isPrimary) ? MdEntity.setCondition(conditionCode, Sale.CONDITION_CODE_OPEN) : conditionCode;
+		if (marketCenterOpen || marketCenterClose || marketCenterCloseUpdate)
+			conditionCode = MdEntity.unsetCondition(conditionCode, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME);
 		return conditionCode;
 	}
 
@@ -253,20 +255,24 @@ public class UtdfNormalizer implements IMdNormalizer
 
 		switch (charSaleCondition)
 		{
+			case 'O':
+				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST,
+						Sale.CONDITION_CODE_OPEN_AUCTION_SUMMARY);
+			case '6':
+				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST,
+						Sale.CONDITION_CODE_CLOSE_AUCTION_SUMMARY);
 			case '@':
 			case 'A':
 			case 'B':
 			case 'D':
 			case 'F':
 			case 'K':
-			case 'O':
 			case 'S':
 			case 'V':
 			case 'X':
 			case 'Y':
 			case '1':
 			case '5':
-			case '6':
 				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
 			case 'C':
 			case 'I':
@@ -274,13 +280,15 @@ public class UtdfNormalizer implements IMdNormalizer
 				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME);
 			case 'G':
 			case 'P':
-			case 'Z':
 			case '3':
 			case '4':
 				if (noteOne)
 					return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW,
 							Sale.CONDITION_CODE_LAST);
 				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW);
+			case 'Z':
+				if (noteOne) return MdEntity.setCondition(0, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
+				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW);
 			case 'H':
 			case 'N':
 			case 'W':
