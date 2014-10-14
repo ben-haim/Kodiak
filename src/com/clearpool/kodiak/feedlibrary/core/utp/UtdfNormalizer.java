@@ -281,11 +281,11 @@ public class UtdfNormalizer implements IMdNormalizer
 			case 'G':
 			case 'P':
 			case '3':
-			case '4':
 				if (noteOne)
 					return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW,
 							Sale.CONDITION_CODE_LAST);
 				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VWAP, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW);
+			case '4':
 			case 'Z':
 				if (noteOne) return MdEntity.setCondition(0, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW, Sale.CONDITION_CODE_LAST);
 				return MdEntity.setCondition(0, Sale.CONDITION_CODE_VOLUME, Sale.CONDITION_CODE_HIGH, Sale.CONDITION_CODE_LOW);
