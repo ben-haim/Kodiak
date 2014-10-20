@@ -255,8 +255,8 @@ public class SaleCache implements IMdServiceCache
 		}
 	}
 
-	public void cancelWithStats(String symbol, double originalPrice, int originalSize, int originalConditionCode, long timestamp, Exchange exchange, double lastPrice,
-			double highPrice, double lowPrice, double openPrice, long volume)
+	public void cancelWithStats(String symbol, double originalPrice, int originalSize, String originalCondition, int originalConditionCode, long timestamp, Exchange exchange,
+			double lastPrice, double highPrice, double lowPrice, double openPrice, long volume)
 	{
 		boolean isFirstSale = false;
 		Sale sale = this.sales.get(symbol);
@@ -312,12 +312,13 @@ public class SaleCache implements IMdServiceCache
 		sale.setNonDisplayablePrice(originalPrice);
 		sale.setNonDisplayableSize(originalSize);
 		sale.setConditionCode(MdEntity.setCondition(saleCondition, MdEntity.CONDITION_FRESH));
-		sale.setCondition("CXL");
+		sale.setCondition(originalCondition); // CLEAR-3055 : Condition is set to the _original_ condition
 		sendSale(sale);
 	}
 
-	public void correctWithStats(String symbol, double originalPrice, int originalSize, int originalConditionCode, double correctedPrice, int correctedSize,
-			int correctedConditionCode, long timestamp, Exchange exchange, double lastPrice, double highPrice, double lowPrice, double openPrice, long volume)
+	public void correctWithStats(String symbol, double originalPrice, int originalSize, String originalCondition, int originalConditionCode, double correctedPrice,
+			int correctedSize, String correctedCondition, int correctedConditionCode, long timestamp, Exchange exchange, double lastPrice, double highPrice, double lowPrice,
+			double openPrice, long volume)
 	{
 		boolean isFirstSale = false;
 		Sale sale = this.sales.get(symbol);
@@ -382,7 +383,7 @@ public class SaleCache implements IMdServiceCache
 		sale.setNonDisplayablePrice(originalPrice);
 		sale.setNonDisplayableSize(originalSize);
 		sale.setConditionCode(MdEntity.setCondition(saleCondition, MdEntity.CONDITION_FRESH));
-		sale.setCondition("COR");
+		sale.setCondition(originalCondition + ":" + correctedCondition); // CLEAR-3055 : Condition is set to the original condition + ":" + corrected condition
 		sendSale(sale);
 	}
 

@@ -161,10 +161,10 @@ public class CtsNormalizer implements IMdNormalizer
 				double openPrice = CtaUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 12), openPriceDenominatorIndicator);
 				ByteBufferUtil.advancePosition(buffer, 38); // high price denominator, high price, low price denominator, low price, reserved
 
-				this.sales.correctWithStats(symbol, originalPrice, originalTradeVolume,
+				this.sales.correctWithStats(symbol, originalPrice, originalTradeVolume, originalSaleCondition,
 						getSaleConditions(originalSaleCondition, null, participantId, primaryListing == participantId), correctedPrice, correctedTradeVolume,
-						getSaleConditions(correctedSaleCondition, null, participantId, primaryListing == participantId), timestamp, lastExchange, lastPrice, highPrice, lowPrice,
-						openPrice, totalVolume);
+						correctedSaleCondition, getSaleConditions(correctedSaleCondition, null, participantId, primaryListing == participantId), timestamp, lastExchange,
+						lastPrice, highPrice, lowPrice, openPrice, totalVolume);
 				LOGGER.info(processorName + " - Received Correction Message - Symbol=" + symbol + " orig=" + originalPrice + "@" + originalTradeVolume + " (origiSeqNo="
 						+ sequenceNumber + ") corrected=" + correctedPrice + "@" + correctedTradeVolume);
 			}
@@ -196,7 +196,7 @@ public class CtsNormalizer implements IMdNormalizer
 				double openPrice = CtaUtils.getPrice(ByteBufferUtil.readAsciiLong(buffer, 12), openPriceDenominatorIndicator);
 				ByteBufferUtil.advancePosition(buffer, 38); // high price denominator, high price, low price denominator, low price, reserved
 
-				this.sales.cancelWithStats(symbol, originalPrice, originalTradeVolume,
+				this.sales.cancelWithStats(symbol, originalPrice, originalTradeVolume, originalSaleCondition,
 						getSaleConditions(originalSaleCondition, null, participantId, primaryListing == participantId), timestamp, lastExchange, lastPrice, highPrice, lowPrice,
 						openPrice, totalVolume);
 				LOGGER.info(processorName + " - Received Cancel Message - Symbol=" + symbol + " orig=" + originalPrice + "@" + originalTradeVolume + " (origiSeqNo="

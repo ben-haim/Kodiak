@@ -147,9 +147,10 @@ public class UtdfNormalizer implements IMdNormalizer
 				long consolidatedVolume = ByteBufferUtil.readAsciiLong(buffer, 11);
 				ByteBufferUtil.advancePosition(buffer, 1); // consolidatedPriceChangeIndicator
 
-				this.sales.correctWithStats(symbol, originalPrice, originalSize, getSaleConditions(originalSaleCondition, null, participantId == NASDAQ_PARTICIPANT),
-						correctedPrice, correctedSize, getSaleConditions(correctedSaleCondition, null, participantId == NASDAQ_PARTICIPANT), timestamp, lastExchange, lastPrice,
-						highPrice, lowPrice, -1, consolidatedVolume);
+				this.sales.correctWithStats(symbol, originalPrice, originalSize, originalSaleCondition,
+						getSaleConditions(originalSaleCondition, null, participantId == NASDAQ_PARTICIPANT), correctedPrice, correctedSize, correctedSaleCondition,
+						getSaleConditions(correctedSaleCondition, null, participantId == NASDAQ_PARTICIPANT), timestamp, lastExchange, lastPrice, highPrice, lowPrice, -1,
+						consolidatedVolume);
 				LOGGER.info(processorName + " - Received Correction Message - Symbol=" + symbol + " orig=" + originalPrice + "@" + originalSize + " (origiSeqNo="
 						+ originalSequenceNumber + ") corrected=" + correctedPrice + "@" + correctedSize);
 			}
@@ -175,8 +176,9 @@ public class UtdfNormalizer implements IMdNormalizer
 				long consolidatedVolume = ByteBufferUtil.readAsciiLong(buffer, 11);
 				ByteBufferUtil.advancePosition(buffer, 1); // consolidatedPriceChangeIndicator
 
-				this.sales.cancelWithStats(symbol, originalPrice, originalSize, getSaleConditions(originalSaleCondition, null, participantId == NASDAQ_PARTICIPANT), timestamp,
-						lastExchange, lastPrice, highPrice, lowPrice, -1, consolidatedVolume);
+				this.sales.cancelWithStats(symbol, originalPrice, originalSize, originalSaleCondition,
+						getSaleConditions(originalSaleCondition, null, participantId == NASDAQ_PARTICIPANT), timestamp, lastExchange, lastPrice, highPrice, lowPrice, -1,
+						consolidatedVolume);
 				LOGGER.info(processorName + " - Received Cancel Message - Symbol=" + symbol + " orig=" + originalPrice + "@" + originalSize + " (origiSeqNo="
 						+ originalSequenceNumber + ")");
 			}
